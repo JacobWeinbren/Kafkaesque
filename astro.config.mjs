@@ -16,5 +16,10 @@ export default defineConfig({
 			},
 		},
 	},
+	image: {
+		service: {
+			entrypoint: "@astrojs/cloudflare/image-service",
+		},
+	},
 	adapter: cloudflare(),
 });

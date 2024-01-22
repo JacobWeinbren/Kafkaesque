@@ -1,6 +1,5 @@
 ---
 import { AstroFont } from "astro-font";
-import SpeedInsights from "@vercel/speed-insights/astro";
 
 export interface CommonHeadProps {
 	title: string;
@@ -26,5 +25,4 @@ const { title } = Astro.props as CommonHeadProps;
 			},
 		]}
 	/>
-	<SpeedInsights />
 </head>
