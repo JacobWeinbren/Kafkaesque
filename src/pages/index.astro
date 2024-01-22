@@ -1,5 +1,7 @@
 ---
 import { AstroFont } from "astro-font";
+import SpeedInsights from "@vercel/speed-insights/astro";
+import { Analytics } from "@vercel/analytics/react";
 import { ghostClient } from "../lib/ghost";
 const posts = await ghostClient.posts
 	.browse({
@@ -37,5 +39,7 @@ const posts = await ghostClient.posts
 				</a>
 			))
 		}
+		<SpeedInsights />
+		<Analytics />
 	</body>
 </html>
