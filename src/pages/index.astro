@@ -1,19 +1,13 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { ghostClient } from "@/lib/ghost";
+import { getBlogPosts } from "@/lib/ghost"; // Updated import
 
-const posts = await ghostClient.posts
-	.browse({
-		limit: "all",
-	})
-	.catch((err) => {
-		console.error(err);
-	});
+const posts = await getBlogPosts();
 ---
 
 <BaseLayout title="Kafkaesque Blog">
 	{
-		posts.map((post) => (
+		posts?.map((post) => (
 			<a href={`/post/${post.slug}`}>
 				<h1>{post.title}</h1>
 			</a>

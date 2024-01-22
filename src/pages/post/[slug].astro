@@ -1,19 +1,14 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { Image } from "astro:assets";
-import { ghostClient } from "@/lib/ghost";
+import { getBlogPosts } from "@/lib/ghost"; // Updated import
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-	const posts = await ghostClient.posts
-		.browse({
-			limit: "all",
-		})
-		.catch((err) => {
-			console.error(err);
-		});
-	return posts?.map((post) => {
+	let posts;
+	posts = await getBlogPosts();
+	return posts.map((post) => {
 		return {
 			params: {
 				slug: post.slug,
