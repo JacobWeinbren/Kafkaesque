@@ -1,5 +1,6 @@
 ---
 import { ghostClient } from "../../lib/ghost";
+export const prerender = true;
 export async function getStaticPaths() {
 	const posts = await ghostClient.posts
 		.browse({
