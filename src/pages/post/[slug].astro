@@ -6,8 +6,14 @@ import { getBlogPosts } from "@/lib/ghost"; // Updated import
 export const prerender = true;
 
 export async function getStaticPaths() {
-	let posts;
-	posts = await getBlogPosts();
+	const posts = await getBlogPosts({
+		title: true,
+		slug: true,
+		id: true,
+		reading_time: true,
+		feature_image: true,
+		html: true,
+	});
 	return posts.map((post) => {
 		return {
 			params: {
