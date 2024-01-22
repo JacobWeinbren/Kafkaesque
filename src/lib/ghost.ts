@@ -1,7 +1,7 @@
 import { TSGhostContentAPI } from "@ts-ghost/content-api";
 
 const api = new TSGhostContentAPI(
-	"https://kafkaesque.digitalpress.blog" || "",
+	"https://kafkaesque.digitalpress.blog",
 	process.env.GHOST_CONTENT_API_KEY || "",
 	"v5.47.0"
 );
