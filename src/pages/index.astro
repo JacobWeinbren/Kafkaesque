@@ -5,7 +5,10 @@ import { getBlogPosts } from "@/lib/ghost"; // Updated import
 const posts = await getBlogPosts({ title: true, slug: true }, 10);
 ---
 
-<BaseLayout title="Kafkaesque Blog">
+<BaseLayout
+	title="Kafkaesque Blog"
+	description="Discussion on Kafka, and personal home for projects"
+>
 	{
 		posts?.map((post) => (
 			<a href={`/post/${post.slug}`}>

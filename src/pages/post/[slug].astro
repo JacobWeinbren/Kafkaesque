@@ -13,6 +13,7 @@ export async function getStaticPaths() {
 		reading_time: true,
 		feature_image: true,
 		html: true,
+		excerpt: true,
 	});
 	return posts.map((post) => {
 		return {
@@ -31,12 +32,16 @@ type PostType = {
 	feature_image: string;
 	reading_time: number;
 	html: string;
+	excerpt: string;
 };
 
 const { post } = Astro.props as { post: PostType };
 ---
 
-<BaseLayout title={`Kafkaesque Blog - ${post.title}`}>
+<BaseLayout
+	title={`Kafkaesque Blog - ${post.title}`}
+	description={post.excerpt}
+>
 	<Image
 		src={post.feature_image}
 		alt={post.title}

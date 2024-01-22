@@ -1,11 +1,11 @@
 ---
 import Head from "@/components/Head.astro";
-const { title } = Astro.props;
+const { title, description } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
-	<Head title={title} />
+	<Head title={title} description={description} />
 	<body>
 		<nav>
 			<a href="/">Home</a>

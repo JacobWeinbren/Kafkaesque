@@ -1,17 +1,19 @@
 ---
 import { AstroFont } from "astro-font";
 
-export interface CommonHeadProps {
+export interface Props {
 	title: string;
+	description: string;
 }
 
-const { title } = Astro.props as CommonHeadProps;
+const { title, description } = Astro.props as Props;
 ---
 
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>{title}</title>
+	<meta name="description" content={description} />
 	<AstroFont
 		config={[
 			{
