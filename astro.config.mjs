@@ -8,5 +8,9 @@ export default defineConfig({
 	site: "https://kafkaesque.blog/",
 	output: "server",
 	integrations: [tailwind(), sitemap()],
-	adapter: vercel(),
+	adapter: vercel({
+		webAnalytics: {
+			enabled: true,
+		},
+	}),
 });
