@@ -1,4 +1,5 @@
 ---
+import { AstroFont } from "astro-font";
 import { ghostClient } from "../lib/ghost";
 const posts = await ghostClient.posts
 	.browse({
@@ -11,8 +12,22 @@ const posts = await ghostClient.posts
 
 <html lang="en">
 	<head>
-		<meta name="viewport" />
-		<title>Astro + Ghost 👻</title>
+		<AstroFont
+			config={[
+				{
+					src: [],
+					name: "Inter",
+					display: "swap",
+					selector: "html",
+					fallback: "sans-serif",
+					googleFontsURL:
+						"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
+				},
+			]}
+		/>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Kafkaesque Blog</title>
 	</head>
 	<body>
 		{
