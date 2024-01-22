@@ -1,7 +1,7 @@
 ---
-import { AstroFont } from "astro-font";
-import SpeedInsights from "@vercel/speed-insights/astro";
-import { ghostClient } from "../lib/ghost";
+import { ghostClient } from "@/lib/ghost";
+import Head from "@/components/Head.astro";
+
 const posts = await ghostClient.posts
 	.browse({
 		limit: "all",
@@ -12,32 +12,15 @@ const posts = await ghostClient.posts
 ---
 
 <html lang="en">
-	<head>
-		<AstroFont
-			config={[
-				{
-					src: [],
-					name: "Inter",
-					display: "swap",
-					selector: "html",
-					fallback: "sans-serif",
-					googleFontsURL:
-						"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
-				},
-			]}
-		/>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Kafkaesque Blog</title>
-		<SpeedInsights />
-	</head>
-	<body>
-		{
-			posts?.map((post) => (
-				<a href={`/post/${post.slug}`}>
-					<h1> {post.title} </h1>
-				</a>
-			))
-		}
-	</body>
+	<Head title="Kafkaesque Blog">
+		<body>
+			{
+				posts?.map((post) => (
+					<a href={`/post/${post.slug}`}>
+						<h1> {post.title} </h1>
+					</a>
+				))
+			}
+		</body>
+	</Head>
 </html>

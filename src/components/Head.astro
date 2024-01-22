@@ -1,0 +1,30 @@
+---
+import { AstroFont } from "astro-font";
+import SpeedInsights from "@vercel/speed-insights/astro";
+
+export interface CommonHeadProps {
+	title: string;
+}
+
+const { title } = Astro.props as CommonHeadProps;
+---
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>{title}</title>
+	<AstroFont
+		config={[
+			{
+				src: [],
+				name: "Inter",
+				display: "swap",
+				selector: "html",
+				fallback: "sans-serif",
+				googleFontsURL:
+					"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
+			},
+		]}
+	/>
+	<SpeedInsights />
+</head>
