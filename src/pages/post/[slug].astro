@@ -43,9 +43,9 @@ const { post } = Astro.props as { post: PostType };
 		<Image
 			src={post.feature_image}
 			alt={post.title}
-			width={500}
-			height={500}
-			class="object-cover"
+			width={384}
+			height={384}
+			class="object-cover w-96 h-96"
 		/>
 
 		<h1>{post.title}</h1>
