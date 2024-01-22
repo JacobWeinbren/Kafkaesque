@@ -1,6 +1,5 @@
 ---
 import { ghostClient } from "../../lib/ghost";
-import { Image } from "astro:assets";
 
 export const prerender = true;
 
@@ -40,12 +39,7 @@ const { post } = Astro.props as { post: PostType };
 		<title>{post.title}</title>
 	</head>
 	<body>
-		<Image
-			src={post.feature_image as any}
-			alt={post.title}
-			width={500}
-			height={500}
-		/>
+		<img src={post.feature_image} alt={post.title} />
 
 		<h1>{post.title}</h1>
 		<p>{post.reading_time} min read</p>
