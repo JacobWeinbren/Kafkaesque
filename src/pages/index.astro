@@ -1,6 +1,6 @@
 ---
+import BaseLayout from "@/layouts/BaseLayout.astro";
 import { ghostClient } from "@/lib/ghost";
-import Head from "@/components/Head.astro";
 
 const posts = await ghostClient.posts
 	.browse({
@@ -11,15 +11,12 @@ const posts = await ghostClient.posts
 	});
 ---
 
-<html lang="en">
-	<Head title="Kafkaesque Blog" />
-	<body>
-		{
-			posts.map((post) => (
-				<a href={`/post/${post.slug}`}>
-					<h1>{post.title}</h1>
-				</a>
-			))
-		}
-	</body>
-</html>
+<BaseLayout title="Kafkaesque Blog">
+	{
+		posts.map((post) => (
+			<a href={`/post/${post.slug}`}>
+				<h1>{post.title}</h1>
+			</a>
+		))
+	}
+</BaseLayout>

@@ -1,7 +1,7 @@
 ---
-import { ghostClient } from "@/lib/ghost";
-import Head from "@/components/Head.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
 import { Image } from "astro:assets";
+import { ghostClient } from "@/lib/ghost";
 
 export const prerender = true;
 
@@ -35,21 +35,17 @@ type PostType = {
 const { post } = Astro.props as { post: PostType };
 ---
 
-<!doctype html>
-<html lang="en">
-	<Head title={`Kafkaesque Blog - ${post.title}`} />
-	<body>
-		<Image
-			src={post.feature_image}
-			alt={post.title}
-			width={600}
-			height={300}
-			class="object-cover w-[600px] h-[300px]"
-		/>
+<BaseLayout title={`Kafkaesque Blog - ${post.title}`}>
+	<Image
+		src={post.feature_image}
+		alt={post.title}
+		width={600}
+		height={300}
+		class="object-cover w-[600px] h-[300px]"
+	/>
 
-		<h1>{post.title}</h1>
-		<p>{post.reading_time} min read</p>
+	<h1>{post.title}</h1>
+	<p>{post.reading_time} min read</p>
 
-		<Fragment set:html={post.html} />
-	</body>
-</html>
+	<Fragment set:html={post.html} />
+</BaseLayout>

@@ -1,0 +1,23 @@
+---
+import Head from "@/components/Head.astro";
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<Head title={title} />
+	<body>
+		<nav>
+			<a href="/">Home</a>
+			<a href="/posts">Posts</a>
+		</nav>
+
+		<main>
+			<slot />
+		</main>
+
+		<footer>
+			<p>© Kafkaesque Blog</p>
+		</footer>
+	</body>
+</html>
