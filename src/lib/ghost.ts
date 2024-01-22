@@ -2,7 +2,7 @@ import { TSGhostContentAPI } from "@ts-ghost/content-api";
 
 const api = new TSGhostContentAPI(
 	"https://kafkaesque.digitalpress.blog",
-	process.env.GHOST_CONTENT_API_KEY || "",
+	import.meta.env.GHOST_CONTENT_API_KEY || "",
 	"v5.47.0"
 );
 
@@ -15,6 +15,9 @@ export async function getBlogPosts() {
 			title: true,
 			slug: true,
 			id: true,
+			reading_time: true,
+			feature_image: true,
+			html: true,
 		})
 		.fetch();
 	if (!response.success) {

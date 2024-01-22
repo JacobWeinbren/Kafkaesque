@@ -2,12 +2,12 @@
 	"name": "kafkaesque",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.js",
 	"scripts": {
 		"dev": "astro dev",
 		"start": "astro dev",
 		"build": "astro build",
-		"preview": "astro preview"
+		"preview": "astro preview",
+		"deploy": "wrangler pages deploy dist"
 	},
 	"keywords": [],
 	"author": "",
@@ -25,6 +25,7 @@
 		"astro-compress": "^2.2.8",
 		"astro-font": "^0.0.77",
 		"sharp": "^0.32.6",
-		"tailwindcss": "^3.4.1"
+		"tailwindcss": "^3.4.1",
+		"wrangler": "^3.23.0"
 	}
 }
