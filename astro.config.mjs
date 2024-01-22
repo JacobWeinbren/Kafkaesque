@@ -1,11 +1,10 @@
 import { defineConfig } from "astro/config";
-import vercelServerless from "@astrojs/vercel/serverless";
-
+import cloudflare from "@astrojs/cloudflare";
 import tailwind from "@astrojs/tailwind";
 
 // https://astro.build/config
 export default defineConfig({
-  output: "server",
-  adapter: vercelServerless(),
-  integrations: [tailwind()]
+	output: "server",
+	integrations: [tailwind()],
+	adapter: cloudflare(),
 });
