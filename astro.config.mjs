@@ -17,10 +17,13 @@ export default defineConfig({
 			},
 		},
 	},
-	image: {
-		service: {
-			entrypoint: "@astrojs/cloudflare/image-service",
-		},
-	},
+	image:
+		process.env.NODE_ENV === "production"
+			? {
+					service: {
+						entrypoint: "@astrojs/cloudflare/image-service",
+					},
+			  }
+			: {},
 	adapter: cloudflare(),
 });
