@@ -15,43 +15,43 @@ const components: { title: string; href: string; description: string }[] = [
 	{
 		title: "Israeli Elections",
 		href: "/docs/primitives/alert-dialog",
-		description: "Mapping all Israeli elections from 1992 to 2021.",
+		description: "Geographic visualisation of Israeli elections from 1992.",
 	},
 	{
 		title: "Housing",
 		href: "/docs/primitives/hover-card",
 		description:
-			"UK House prices trends mapped and charted from 2000-2022.",
+			"Spatial mapping and charting of UK House prices from 2000-2022.",
 	},
 	{
 		title: "Local Elections",
 		href: "/docs/primitives/progress",
-		description: "British Local Elections in 2021 mapped and charted.",
+		description:
+			"Visual mapping of British Local Elections in 2022 mapped.",
 	},
 	{
 		title: "Hebrew Duolingo Flashcards",
 		href: "/docs/primitives/progress",
 		description:
-			"A collection of all the words on Hebrew Duolingo as Anki flashcards.",
+			"A collaborative project to make all Hebrew Duolingo words as Anki flashcards.",
 	},
 	{
 		title: "Israeli Local Data",
 		href: "/docs/primitives/progress",
 		description:
-			"Local Area Data from the Bureau of Statistics for Israeli Localities",
+			"Local Area Data mapped from the CBS for Israeli localities",
 	},
 	{
 		title: "British Local Data",
 		href: "/docs/primitives/progress",
-		description:
-			"Classification data from the Office of National Statistics for British Local Small Output Areas.",
+		description: "Mapped classification data from the ONS for LSOAs.",
 	},
 ];
 
 export default function NavigationMenuDemo() {
 	return (
 		<>
-			<NavigationMenu className="hidden md:block">
+			<NavigationMenu className="hidden sm:block">
 				<NavigationMenuList>
 					<NavigationMenuItem>
 						<NavigationMenuLink
@@ -98,12 +98,12 @@ export default function NavigationMenuDemo() {
 										</a>
 									</NavigationMenuLink>
 								</li>
-								<ListItem href="/docs" title="Archive">
+								<ListItem href="/archive" title="Archive">
 									The definitive collection of all my posts to
 									date.
 								</ListItem>
 								<ListItem
-									href="/docs/primitives/typography"
+									href="https://www.thesocialreview.co.uk/author/jacobweinbren/"
 									title="The Social Review"
 								>
 									My writings on politics and social
@@ -114,7 +114,7 @@ export default function NavigationMenuDemo() {
 					</NavigationMenuItem>
 				</NavigationMenuList>
 			</NavigationMenu>
-			<NavigationMenu className="block md:hidden">
+			<NavigationMenu className="block sm:hidden">
 				<NavigationMenuList>
 					<NavigationMenuItem>
 						<NavigationMenuTrigger>Menu</NavigationMenuTrigger>
