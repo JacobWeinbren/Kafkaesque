@@ -10,7 +10,7 @@ const { title, description } = Astro.props;
 <html lang="en">
 	<Head title={title} description={description} />
 	<body>
-		<nav class="max-w-7xl px-8 mx-auto py-6 flex items-center h-20">
+		<nav class="max-w-[1400px] px-8 mx-auto py-6 flex items-center h-20">
 			<a href="/" class="mr-6 font-medium leading-5">Jacob Weinbren</a>
 			<Navbar client:only="react" />
 		</nav>
@@ -19,7 +19,7 @@ const { title, description } = Astro.props;
 			<slot />
 		</main>
 
-		<footer class="max-w-7xl px-8 mx-auto">
+		<footer class="max-w-[1400px] px-8 mx-auto">
 			<Footer />
 		</footer>
 	</body>

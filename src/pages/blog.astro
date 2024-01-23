@@ -1,0 +1,26 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getBlogPosts } from "@/lib/ghost";
+
+import { Image } from "astro:assets";
+import Logo from "@/img/logo.png";
+
+const posts = await getBlogPosts({ title: true, slug: true }, 10);
+---
+
+<BaseLayout
+	title="Kafkaesque Blog"
+	description="Discussion on Kafka, and personal home for projects"
+>
+	<Image src={Logo} alt="Kafkaesque Logo" class="w-44" />
+	<p class="text-xl text-muted-foreground my-3">
+		Zionism, Jewish life, and other cultural reflections
+	</p>
+	{
+		posts?.map((post) => (
+			<a href={`/post/${post.slug}`}>
+				<h1>{post.title}</h1>
+			</a>
+		))
+	}
+</BaseLayout>

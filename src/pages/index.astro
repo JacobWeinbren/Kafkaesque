@@ -1,23 +1,33 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { getBlogPosts } from "@/lib/ghost";
-
-import { Image } from "astro:assets";
-import Logo from "@/img/logo.png";
-
-const posts = await getBlogPosts({ title: true, slug: true }, 10);
 ---
 
-<BaseLayout
-	title="Kafkaesque Blog"
-	description="Discussion on Kafka, and personal home for projects"
->
-	<Image src={Logo} alt="Kafkaesque Logo" class="w-44" />
-	{
-		posts?.map((post) => (
-			<a href={`/post/${post.slug}`}>
-				<h1>{post.title}</h1>
-			</a>
-		))
-	}
+<BaseLayout title="Jacob Weinbren" description="An introduction to Jacob">
+	<h1 class="text-7xl">Jacob Weinbren</h1>
+	<h2 class="text-2xl mt-4">
+		I'm a programmer, blogger, and data visualiser.
+	</h2>
+	<h3 class="text-xl mt-4">You can check out my projects above.</h3>
+	<div class="max-w-3xl">
+		<p class="mt-4">
+			I'm experienced in web development and writing with a deep
+			understanding of the full web development stack, including Git, PHP,
+			HTML, CSS, JavaScript, React, Svelte, Next.JS, and WordPress.
+		</p>
+		<p class="mt-2">
+			Proficient in backend technologies such as Python and Java, with a
+			preference for agile methodologies and a strong grasp on data and
+			server management tools such as Docker, AWS, MySQL, and Google
+			Analytics.
+		</p>
+		<p class="mt-2">
+			My work in data visualisation focuses on geographical visualisation
+			and real-time charting, complementing my technical expertise with a
+			strong foundation in cultural and literary analysis.
+		</p>
+		<p class="mt-2">
+			I have proven teamwork and project execution skills, honed through
+			large-scale projects at previous employers.
+		</p>
+	</div>
 </BaseLayout>

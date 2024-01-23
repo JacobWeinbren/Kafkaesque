@@ -11,9 +11,6 @@ import {
 	navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-import Logo from "@/img/logo.png";
-import { Image } from "astro:assets";
-
 const components: { title: string; href: string; description: string }[] = [
 	{
 		title: "Israeli Elections",
@@ -59,10 +56,26 @@ export default function NavigationMenuDemo() {
 					<NavigationMenuItem>
 						<NavigationMenuLink
 							className={navigationMenuTriggerStyle()}
-							href="/docs"
+							href="/"
 						>
 							About Me
 						</NavigationMenuLink>
+					</NavigationMenuItem>
+					<NavigationMenuItem>
+						<NavigationMenuTrigger>Projects</NavigationMenuTrigger>
+						<NavigationMenuContent>
+							<ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+								{components.map((component) => (
+									<ListItem
+										key={component.title}
+										title={component.title}
+										href={component.href}
+									>
+										{component.description}
+									</ListItem>
+								))}
+							</ul>
+						</NavigationMenuContent>
 					</NavigationMenuItem>
 					<NavigationMenuItem>
 						<NavigationMenuTrigger>Blog</NavigationMenuTrigger>
@@ -72,7 +85,7 @@ export default function NavigationMenuDemo() {
 									<NavigationMenuLink asChild>
 										<a
 											className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-											href="/"
+											href="/blog"
 										>
 											<div className="mb-2 mt-4 text-lg font-medium">
 												Kafkaesque Blog
@@ -99,22 +112,6 @@ export default function NavigationMenuDemo() {
 							</ul>
 						</NavigationMenuContent>
 					</NavigationMenuItem>
-					<NavigationMenuItem>
-						<NavigationMenuTrigger>Projects</NavigationMenuTrigger>
-						<NavigationMenuContent>
-							<ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-								{components.map((component) => (
-									<ListItem
-										key={component.title}
-										title={component.title}
-										href={component.href}
-									>
-										{component.description}
-									</ListItem>
-								))}
-							</ul>
-						</NavigationMenuContent>
-					</NavigationMenuItem>
 				</NavigationMenuList>
 			</NavigationMenu>
 			<NavigationMenu className="block md:hidden">
@@ -123,15 +120,12 @@ export default function NavigationMenuDemo() {
 						<NavigationMenuTrigger>Menu</NavigationMenuTrigger>
 						<NavigationMenuContent>
 							<ul className="grid w-[150px] gap-1 p-4">
-								<ListItem
-									title="About Me"
-									href="/about"
-								></ListItem>
-								<ListItem title="Blog" href="/"></ListItem>
+								<ListItem title="About Me" href="/"></ListItem>
 								<ListItem
 									title="Projects"
 									href="/projects"
 								></ListItem>
+								<ListItem title="Blog" href="/blog"></ListItem>
 							</ul>
 						</NavigationMenuContent>
 					</NavigationMenuItem>
