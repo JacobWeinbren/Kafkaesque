@@ -1,6 +1,7 @@
 ---
 import Head from "@/components/BaseHead.astro";
 import Navbar from "@/components/Navbar.tsx";
+import Footer from "@/components/Footer.astro";
 
 const { title, description } = Astro.props;
 ---
@@ -10,16 +11,16 @@ const { title, description } = Astro.props;
 	<Head title={title} description={description} />
 	<body>
 		<nav class="max-w-7xl px-8 mx-auto py-6 flex items-center h-20">
-			<div class="mr-6 font-medium leading-5">Jacob Weinbren</div>
+			<a href="/" class="mr-6 font-medium leading-5">Jacob Weinbren</a>
 			<Navbar client:only="react" />
 		</nav>
 
-		<main>
+		<main class="max-w-4xl py-6 lg:py-10 mx-auto px-8">
 			<slot />
 		</main>
 
-		<footer>
-			<p>© Kafkaesque Blog</p>
+		<footer class="max-w-7xl px-8 mx-auto">
+			<Footer />
 		</footer>
 	</body>
 </html>

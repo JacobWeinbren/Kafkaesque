@@ -11,6 +11,9 @@ import {
 	navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
+import Logo from "@/img/logo.png";
+import { Image } from "astro:assets";
+
 const components: { title: string; href: string; description: string }[] = [
 	{
 		title: "Israeli Elections",
@@ -72,7 +75,7 @@ export default function NavigationMenuDemo() {
 											href="/"
 										>
 											<div className="mb-2 mt-4 text-lg font-medium">
-												Blog
+												Kafkaesque Blog
 											</div>
 											<p className="text-sm leading-tight text-muted-foreground">
 												Home to my thoughts on
