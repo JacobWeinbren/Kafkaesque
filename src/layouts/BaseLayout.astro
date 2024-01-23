@@ -1,5 +1,6 @@
 ---
-import Head from "@/layouts/BaseHead.astro";
+import Head from "@/components/BaseHead.astro";
+import Navbar from "@/components/Navbar.tsx";
 const { title, description } = Astro.props;
 ---
 
@@ -8,8 +9,7 @@ const { title, description } = Astro.props;
 	<Head title={title} description={description} />
 	<body>
 		<nav>
-			<a href="/">Home</a>
-			<a href="/posts">Posts</a>
+			<Navbar client:idle />
 		</nav>
 
 		<main>

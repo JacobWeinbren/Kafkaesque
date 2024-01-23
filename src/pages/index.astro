@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { getBlogPosts } from "@/lib/ghost"; // Updated import
+import { getBlogPosts } from "@/lib/ghost";
 
 const posts = await getBlogPosts({ title: true, slug: true }, 10);
 ---
