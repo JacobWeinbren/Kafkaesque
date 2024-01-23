@@ -12,7 +12,7 @@ const posts = await getBlogPosts({ title: true, slug: true }, 10);
 	title="Kafkaesque Blog"
 	description="Discussion on Kafka, and personal home for projects"
 >
-	<Image src={Logo} alt="Kafkaesque Logo" class="w-40" />
+	<Image src={Logo} alt="Kafkaesque Logo" class="w-44" />
 	{
 		posts?.map((post) => (
 			<a href={`/post/${post.slug}`}>
