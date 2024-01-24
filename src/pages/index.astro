@@ -3,16 +3,25 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 ---
 
 <BaseLayout title="Jacob Weinbren" description="An introduction to Jacob">
-	<h1 class="text-7xl">Jacob Weinbren</h1>
+	<h1 class="text-5xl">Jacob Weinbren</h1>
 	<h2 class="text-2xl mt-4">
 		I'm a programmer, blogger, and data visualiser.
 	</h2>
-	<h3 class="text-xl mt-4">You can check out my projects above.</h3>
 	<div class="max-w-3xl">
+		<h3 class="text-lg mt-4">
+			You can check out my <a href="/projects" class="font-semibold"
+				>projects</a
+			>. Or you can give my <a href="/blog" class="font-semibold">blog</a>
+			a read.
+		</h3>
 		<p class="mt-4">
 			I'm experienced in web development with a deep understanding of the
 			full web development stack, including Git, PHP, HTML, CSS,
-			JavaScript, React, Svelte, Next.JS, and WordPress.
+			JavaScript, React, Svelte, Next.JS, and WordPress. I'm a bit
+			advocate for open source, and you can find all my code on <a
+				href="https://github.com/JacobWeinbren/"
+				class="font-semibold">Github</a
+			>.
 		</p>
 		<p class="mt-2">
 			Skilled in backend technologies such as Python and Java, with a
@@ -28,6 +37,12 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 		<p class="mt-2">
 			I have proven teamwork and execution skills, honed through
 			large-scale projects at previous employers.
+		</p>
+		<p class="mt-2">
+			Feel free to reach out and <a
+				href="mailto:jacobweinbren@gmail.com"
+				class="font-semibold">contact me</a
+			>.
 		</p>
 	</div>
 </BaseLayout>
