@@ -12,30 +12,45 @@ const { title, description } = Astro.props as Props;
 ---
 
 <script is:inline>
-	const getThemePreference = () => {
-		if (
-			typeof localStorage !== "undefined" &&
-			localStorage.getItem("theme")
-		) {
-			return localStorage.getItem("theme");
-		}
-		return window.matchMedia("(prefers-color-scheme: dark)").matches
-			? "dark"
-			: "light";
-	};
-	const isDark = getThemePreference() === "dark";
-	document.documentElement.classList[isDark ? "add" : "remove"]("dark");
+	(function () {
+		const THEME_KEY = "theme";
+		const DARK_CLASS = "dark";
+		const isLocalStorageAvailable = typeof localStorage !== "undefined";
 
-	if (typeof localStorage !== "undefined") {
-		const observer = new MutationObserver(() => {
-			const isDark = document.documentElement.classList.contains("dark");
-			localStorage.setItem("theme", isDark ? "dark" : "light");
+		// Function to toggle dark theme on a document
+		const toggleDarkTheme = (doc, isDark) => {
+			doc.documentElement.classList[isDark ? "add" : "remove"](
+				DARK_CLASS
+			);
+			if (isLocalStorageAvailable) {
+				localStorage.setItem(THEME_KEY, isDark ? DARK_CLASS : "light");
+			}
+		};
+
+		// Function to get the theme preference
+		const getThemePreference = () => {
+			if (isLocalStorageAvailable && localStorage.getItem(THEME_KEY)) {
+				return localStorage.getItem(THEME_KEY) === DARK_CLASS;
+			}
+			return window.matchMedia("(prefers-color-scheme: dark)").matches;
+		};
+
+		// Initial theme application
+		toggleDarkTheme(document, getThemePreference());
+
+		// Event listener for theme changes (e.g., system theme change)
+		window.matchMedia("(prefers-color-scheme: dark)").addListener((e) => {
+			toggleDarkTheme(document, e.matches);
 		});
-		observer.observe(document.documentElement, {
-			attributes: true,
-			attributeFilter: ["class"],
+
+		// Handle astro:before-swap event
+		document.addEventListener("astro:before-swap", (ev) => {
+			const newDocIsDark =
+				document.documentElement.classList.contains(DARK_CLASS);
+			console.log(newDocIsDark);
+			toggleDarkTheme(ev.newDocument, newDocIsDark);
 		});
-	}
+	})();
 </script>
 
 <head>
