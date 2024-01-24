@@ -20,6 +20,7 @@ const { title, description, image } = Astro.props;
 			doc.documentElement.classList[isDark ? "add" : "remove"](
 				DARK_CLASS
 			);
+			console.log(localStorage.getItem(THEME_KEY));
 			if (isLocalStorageAvailable) {
 				localStorage.setItem(THEME_KEY, isDark ? DARK_CLASS : "light");
 			}
@@ -37,15 +38,16 @@ const { title, description, image } = Astro.props;
 		toggleDarkTheme(document, getThemePreference());
 
 		// Event listener for theme changes (e.g., system theme change)
-		window.matchMedia("(prefers-color-scheme: dark)").addListener((e) => {
-			toggleDarkTheme(document, e.matches);
-		});
+		window
+			.matchMedia("(prefers-color-scheme: dark)")
+			.addEventListener("change", (e) => {
+				toggleDarkTheme(document, e.matches);
+			});
 
 		// Handle astro:before-swap event
 		document.addEventListener("astro:before-swap", (ev) => {
 			const newDocIsDark =
 				document.documentElement.classList.contains(DARK_CLASS);
-			console.log(newDocIsDark);
 			toggleDarkTheme(ev.newDocument, newDocIsDark);
 		});
 	})();
