@@ -9,49 +9,6 @@ const permalink = `${Astro.url.origin}${Astro.url.pathname}`;
 const { title, description, image } = Astro.props;
 ---
 
-<script is:inline>
-	(function () {
-		const THEME_KEY = "theme";
-		const DARK_CLASS = "dark";
-		const isLocalStorageAvailable = typeof localStorage !== "undefined";
-
-		// Function to toggle dark theme on a document
-		const toggleDarkTheme = (doc, isDark) => {
-			doc.documentElement.classList[isDark ? "add" : "remove"](
-				DARK_CLASS
-			);
-			if (isLocalStorageAvailable) {
-				localStorage.setItem(THEME_KEY, isDark ? DARK_CLASS : "light");
-			}
-		};
-
-		// Function to get the theme preference
-		const getThemePreference = () => {
-			if (isLocalStorageAvailable && localStorage.getItem(THEME_KEY)) {
-				return localStorage.getItem(THEME_KEY) === DARK_CLASS;
-			}
-			return window.matchMedia("(prefers-color-scheme: dark)").matches;
-		};
-
-		// Initial theme application
-		toggleDarkTheme(document, getThemePreference());
-
-		// Event listener for theme changes (e.g., system theme change)
-		window
-			.matchMedia("(prefers-color-scheme: dark)")
-			.addEventListener("change", (e) => {
-				toggleDarkTheme(document, e.matches);
-			});
-
-		// Handle astro:before-swap event
-		document.addEventListener("astro:before-swap", (ev) => {
-			const newDocIsDark =
-				document.documentElement.classList.contains(DARK_CLASS);
-			toggleDarkTheme(ev.newDocument, newDocIsDark);
-		});
-	})();
-</script>
-
 <head>
 	<title>{title}</title>
 
