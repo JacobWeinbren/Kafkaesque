@@ -68,11 +68,11 @@ const { post } = Astro.props;
 		<Image
 			src={post.feature_image}
 			alt={post.title}
-			width={700}
+			width={800}
 			height={400}
-			class="my-8 object-cover w-[700px] h-[400px]"
+			class="my-8 rounded-md border bg-muted object-cover w-[800px] h-[400px]"
 		/>
 
-		<div class="prose" set:html={post.html} />
+		<div class="prose max-w-4xl" set:html={post.html} />
 	</article>
 </BaseLayout>
