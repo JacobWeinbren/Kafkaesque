@@ -2,18 +2,18 @@
 	"name": "kafkaesque",
 	"version": "1.0.0",
 	"description": "",
-	"scripts": {
-		"dev": "astro dev",
-		"start": "astro dev",
-		"build": "astro build",
-		"preview": "astro preview",
-		"deploy": "wrangler pages deploy dist"
-	},
 	"keywords": [],
+	"license": "MIT",
 	"author": "",
-	"license": "ISC",
+	"scripts": {
+		"build": "astro build",
+		"deploy": "wrangler pages deploy dist",
+		"dev": "astro dev",
+		"preview": "astro preview",
+		"start": "astro dev"
+	},
 	"dependencies": {
-		"@astrojs/cloudflare": "^8.1.0",
+		"@astrojs/cloudflare": "^9.0.0",
 		"@astrojs/react": "^3.0.9",
 		"@astrojs/sitemap": "^3.0.5",
 		"@astrojs/tailwind": "^5.1.0",
@@ -46,16 +46,15 @@
 		"@radix-ui/react-toggle": "^1.0.3",
 		"@radix-ui/react-toggle-group": "^1.0.4",
 		"@radix-ui/react-tooltip": "^1.0.7",
+		"@tailwindcss/typography": "^0.5.10",
 		"@ts-ghost/content-api": "^4.0.11",
-		"@types/react": "^18.2.48",
-		"@types/react-dom": "^18.2.18",
-		"astro": "^4.2.3",
+		"astro": "^4.2.4",
 		"astro-font": "^0.0.77",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.1.0",
 		"cmdk": "^0.2.0",
 		"date-fns": "^3.3.1",
-		"embla-carousel-react": "^8.0.0-rc19",
+		"embla-carousel-react": "^8.0.0-rc20",
 		"lucide-react": "^0.314.0",
 		"next-themes": "^0.2.1",
 		"react": "^18.2.0",
@@ -68,7 +67,11 @@
 		"tailwindcss": "^3.4.1",
 		"tailwindcss-animate": "^1.0.7",
 		"vaul": "^0.8.9",
-		"wrangler": "^3.23.0",
+		"wrangler": "^3.24.0",
 		"zod": "^3.22.4"
+	},
+	"devDependencies": {
+		"@types/react": "^18.2.48",
+		"@types/react-dom": "^18.2.18"
 	}
 }

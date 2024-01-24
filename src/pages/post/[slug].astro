@@ -2,6 +2,8 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { Image } from "astro:assets";
 import { getBlogPosts } from "@/lib/ghost";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 
 export const prerender = true;
 
@@ -14,6 +16,7 @@ export async function getStaticPaths() {
 		feature_image: true,
 		html: true,
 		excerpt: true,
+		published_at: true,
 	});
 	return posts.map((post) => {
 		return {
@@ -34,16 +37,42 @@ const { post } = Astro.props;
 	title={`Kafkaesque Blog - ${post.title}`}
 	description={post.excerpt}
 >
-	<Image
-		src={post.feature_image}
-		alt={post.title}
-		width={600}
-		height={300}
-		class="object-cover w-[600px] h-[300px]"
-	/>
+	<article class="relative max-w-4xl">
+		<a href="/blog">
+			<Button
+				variant="ghost"
+				className="absolute left-[-200px] hidden xl:inline-flex"
+			>
+				<ChevronLeft className="mr-2" strokeWidth={1} />See all posts
+			</Button>
+		</a>
 
-	<h1>{post.title}</h1>
-	<p>{post.reading_time} min read</p>
+		<div>
+			<p class="text-sm text-muted-foreground">
+				Published on {
+					new Date(post.published_at).toLocaleDateString("en-UK", {
+						year: "numeric",
+						month: "long",
+						day: "numeric",
+					})
+				}
+			</p>
 
-	<Fragment set:html={post.html} />
+			<h1
+				class="mt-2 inline-block font-heading text-4xl leading-tight lg:text-5xl"
+			>
+				{post.title}
+			</h1>
+		</div>
+
+		<Image
+			src={post.feature_image}
+			alt={post.title}
+			width={700}
+			height={400}
+			class="my-8 object-cover w-[700px] h-[400px]"
+		/>
+
+		<div class="prose" set:html={post.html} />
+	</article>
 </BaseLayout>

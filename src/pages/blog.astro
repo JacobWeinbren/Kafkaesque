@@ -1,11 +1,21 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { getBlogPosts } from "@/lib/ghost";
+import { Separator } from "@/components/ui/separator";
 
 import { Image } from "astro:assets";
 import Logo from "@/img/logo.png";
 
-const posts = await getBlogPosts({ title: true, slug: true }, 10);
+const posts = await getBlogPosts(
+	{
+		title: true,
+		slug: true,
+		feature_image: true,
+		excerpt: true,
+		published_at: true,
+	},
+	4
+);
 ---
 
 <BaseLayout
@@ -16,11 +26,35 @@ const posts = await getBlogPosts({ title: true, slug: true }, 10);
 	<p class="text-2xl text-muted-foreground my-3">
 		Zionism, Jewish life, and other cultural reflections
 	</p>
-	{
-		posts?.map((post) => (
-			<a href={`/post/${post.slug}`}>
-				<h1>{post.title}</h1>
-			</a>
-		))
-	}
+	<Separator className="my-8 " />
+	<div class="grid gap-10 sm:grid-cols-2">
+		{
+			posts?.map((post) => (
+				<a href={`/post/${post.slug}`}>
+					<article class="group relative flex flex-col space-y-2">
+						<Image
+							src={post.feature_image}
+							alt={post.title}
+							width={600}
+							height={300}
+							class="object-cover w-[600px] h-[300px] rounded-md border bg-muted"
+						/>
+						<h2 class="text-2xl font-extrabold">{post.title}</h2>
+
+						<p class="text-muted-foreground">{post.excerpt}</p>
+						<p class="text-sm text-muted-foreground">
+							{new Date(post.published_at).toLocaleDateString(
+								"en-UK",
+								{
+									year: "numeric",
+									month: "long",
+									day: "numeric",
+								}
+							)}
+						</p>
+					</article>
+				</a>
+			))
+		}
+	</div>
 </BaseLayout>
