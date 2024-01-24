@@ -20,7 +20,6 @@ const { title, description, image } = Astro.props;
 			doc.documentElement.classList[isDark ? "add" : "remove"](
 				DARK_CLASS
 			);
-			console.log(localStorage.getItem(THEME_KEY));
 			if (isLocalStorageAvailable) {
 				localStorage.setItem(THEME_KEY, isDark ? DARK_CLASS : "light");
 			}
