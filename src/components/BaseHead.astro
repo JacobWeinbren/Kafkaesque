@@ -1,7 +1,6 @@
 ---
 import "@/styles/globals.css";
 import { AstroFont } from "astro-font";
-import { ViewTransitions } from "astro:transitions";
 import Logo from "@/img/logo_white.webp";
 
 const permalink = `${Astro.url.origin}${Astro.url.pathname}`;
@@ -76,5 +75,4 @@ const { title, description, image } = Astro.props;
 			},
 		]}
 	/>
-	<ViewTransitions />
 </head>
