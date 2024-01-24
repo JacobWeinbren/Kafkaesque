@@ -2,6 +2,7 @@
 import "@/styles/globals.css";
 import { AstroFont } from "astro-font";
 import { ViewTransitions } from "astro:transitions";
+import Logo from "@/img/logo.png";
 
 const permalink = `${Astro.url.origin}${Astro.url.pathname}`;
 
@@ -84,7 +85,7 @@ const { title, description, image } = Astro.props;
 	<meta property="og:title" content={title} />
 	{permalink && <meta property="og:url" content={permalink} />}
 	{description && <meta property="og:description" content={description} />}
-	<meta property="og:image" content={image || "../img/logo.png"} />
+	<meta property="og:image" content={image || Logo.src} />
 
 	<!-- Twitter -->
 	<meta property="twitter:card" content="summary_large_image" />
@@ -95,7 +96,7 @@ const { title, description, image } = Astro.props;
 			<meta property="twitter:description" content={description} />
 		)
 	}
-	<meta property="twitter:image" content={image || "../img/logo.png"} />
+	<meta property="twitter:image" content={image || Logo.src} />
 
 	<!-- Font -->
 	<AstroFont
