@@ -11,6 +11,17 @@ import {
 	navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
+import { navigate } from "astro:transitions/client";
+
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import { Button } from "@/components/ui/button";
+
 const components: { title: string; href: string; description: string }[] = [
 	{
 		title: "Israeli Elections",
@@ -114,23 +125,24 @@ export default function NavigationMenuDemo() {
 					</NavigationMenuItem>
 				</NavigationMenuList>
 			</NavigationMenu>
-			<NavigationMenu className="block sm:hidden">
-				<NavigationMenuList>
-					<NavigationMenuItem>
-						<NavigationMenuTrigger>Menu</NavigationMenuTrigger>
-						<NavigationMenuContent>
-							<ul className="grid w-[150px] gap-1 p-4">
-								<ListItem title="About Me" href="/"></ListItem>
-								<ListItem
-									title="Projects"
-									href="/projects"
-								></ListItem>
-								<ListItem title="Blog" href="/blog"></ListItem>
-							</ul>
-						</NavigationMenuContent>
-					</NavigationMenuItem>
-				</NavigationMenuList>
-			</NavigationMenu>
+			<div className="block sm:hidden cursor-pointer">
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="outline">Menu</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">
+						<DropdownMenuItem onClick={() => navigate("/")}>
+							About Me
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={() => navigate("/projects")}>
+							Projects
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={() => navigate("/blog")}>
+							Blog
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			</div>
 		</>
 	);
 }
