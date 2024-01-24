@@ -53,10 +53,12 @@ const { title, description, image } = Astro.props;
 <head>
 	<title>{title}</title>
 
+	<!-- Meta details -->
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<meta name="description" content={description} />
 
+	<!-- Favicon -->
 	<link
 		rel="apple-touch-icon"
 		sizes="180x180"
@@ -95,6 +97,7 @@ const { title, description, image } = Astro.props;
 	}
 	<meta property="twitter:image" content={image || "../img/logo.png"} />
 
+	<!-- Font -->
 	<AstroFont
 		config={[
 			{
