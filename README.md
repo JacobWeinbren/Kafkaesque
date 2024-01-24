@@ -28,7 +28,7 @@ To get started with development:
 
 ## Notes
 
-I ran this on the components (and to the navbar). Otherwise, the shadcn components are intact.
+I ran this on the components (and to the navbar, dark mode button). Otherwise, the shadcn components are intact.
 
 ```bash
 find src/components/ui -type f -name "*.tsx" -exec sed -i '' -e 's/transition-colors//g' -e 's/transition\([ "]\)/transition-transform\1/g' {} +
