@@ -5,3 +5,4 @@ dist/**
 .vercel
 package-lock.json
 .wrangler
+.unlighthouse
