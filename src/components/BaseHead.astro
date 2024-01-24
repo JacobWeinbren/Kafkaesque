@@ -3,12 +3,9 @@ import "@/styles/globals.css";
 import { AstroFont } from "astro-font";
 import { ViewTransitions } from "astro:transitions";
 
-export interface Props {
-	title: string;
-	description: string;
-}
+const permalink = `${Astro.url.origin}${Astro.url.pathname}`;
 
-const { title, description } = Astro.props as Props;
+const { title, description, image } = Astro.props;
 ---
 
 <script is:inline>
@@ -55,9 +52,11 @@ const { title, description } = Astro.props as Props;
 
 <head>
 	<title>{title}</title>
+
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<meta name="description" content={description} />
+
 	<link
 		rel="apple-touch-icon"
 		sizes="180x180"
@@ -77,6 +76,25 @@ const { title, description } = Astro.props as Props;
 	/>
 	<link rel="icon" type="image/x-icon" href="/favicon/favicon.ico" />
 	<link rel="manifest" href="/favicon/site.webmanifest" />
+
+	<!-- Open Graph Tags (Facebook) -->
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content={title} />
+	{permalink && <meta property="og:url" content={permalink} />}
+	{description && <meta property="og:description" content={description} />}
+	<meta property="og:image" content={image || "../img/logo.png"} />
+
+	<!-- Twitter -->
+	<meta property="twitter:card" content="summary_large_image" />
+	<meta property="twitter:title" content={title} />
+	{permalink && <meta property="twitter:url" content={permalink} />}
+	{
+		description && (
+			<meta property="twitter:description" content={description} />
+		)
+	}
+	<meta property="twitter:image" content={image || "../img/logo.png"} />
+
 	<AstroFont
 		config={[
 			{

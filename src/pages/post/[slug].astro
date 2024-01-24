@@ -36,6 +36,7 @@ const { post } = Astro.props;
 <BaseLayout
 	title={`Kafkaesque Blog - ${post.title}`}
 	description={post.excerpt}
+	image={post.feature_image}
 >
 	<article class="relative max-w-4xl">
 		<a href="/blog">

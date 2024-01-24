@@ -5,12 +5,12 @@ import Footer from "@/components/Footer.astro";
 import { ModeToggle } from "@/components/ModeToggle";
 import { fade } from "astro:transitions";
 
-const { title, description } = Astro.props;
+const { title, description, image } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en" transition:animate={fade({ duration: "0.2s" })}>
-	<Head title={title} description={description} />
+	<Head title={title} description={description} image={image} />
 	<body>
 		<nav
 			class="max-w-[1400px] px-8 mx-auto py-6 flex items-center h-20 justify-between"
