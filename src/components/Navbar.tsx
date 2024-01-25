@@ -44,7 +44,7 @@ const components: { title: string; href: string; description: string }[] = [
 		title: "Hebrew Duolingo Flashcards",
 		href: "/docs/primitives/progress",
 		description:
-			"A collaborative project to make all Hebrew Duolingo words as Anki flashcards.",
+			"Collaborative project to make all Hebrew Duolingo words as flashcards.",
 	},
 	{
 		title: "Israeli Local Data",
