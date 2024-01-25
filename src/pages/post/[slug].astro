@@ -17,6 +17,7 @@ export async function getStaticPaths() {
 		html: true,
 		excerpt: true,
 		published_at: true,
+		feature_image_caption: true,
 	});
 	return posts.map((post) => {
 		return {
@@ -71,7 +72,11 @@ const { post } = Astro.props;
 			alt={post.title}
 			width={800}
 			height={400}
-			class="my-8 rounded-md border bg-muted object-cover w-[800px] h-[400px]"
+			class="mt-8 mb-2 rounded-md border bg-muted object-cover w-[800px] h-[400px]"
+		/>
+		<div
+			class="text-muted-foreground mb-8 text-center text-sm prose dark:prose-invert min-w-full"
+			set:html={post.feature_image_caption}
 		/>
 
 		<div class="prose max-w-4xl dark:prose-invert" set:html={post.html} />
