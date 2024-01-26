@@ -1,0 +1,58 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+---
+
+<BaseLayout title={`Search`} description="Search Kafkaesque Blog">
+	<h1 class="text-4xl">Search</h1>
+	<p class="text-2xl text-muted-foreground my-3">
+		Look through my blog posts
+	</p>
+	<Separator className="my-8" />
+	<div>
+		<Input type="text" id="search-input" className="my-8 w-96 text-md" />
+	</div>
+	<div id="search-results"></div>
+
+	<script>
+		import { createRoot } from "react-dom/client";
+		import React from "react";
+		import Fuse from "fuse.js";
+		import { getBlogPosts } from "@/lib/ghost";
+		import SearchResultsTable from "@/components/SearchResultsTable";
+
+		const allPosts = await getBlogPosts({
+			title: true,
+			slug: true,
+			excerpt: true,
+			published_at: true,
+			feature_image: true,
+		});
+
+		let fuse = new Fuse(allPosts, {
+			keys: ["title", "html"],
+		});
+
+		const searchResultsContainer =
+			document.getElementById("search-results");
+
+		const root = createRoot(searchResultsContainer); // Create a root.
+
+		const updateSearchResults = (results) => {
+			const resultsComponent = React.createElement(SearchResultsTable, {
+				results,
+			});
+			root.render(resultsComponent); // Use the root to render.
+		};
+
+		document
+			.getElementById("search-input")
+			.addEventListener("input", (event) => {
+				const input = event.target as HTMLInputElement;
+				const query = input.value;
+				const results = fuse.search(query).map((result) => result.item);
+				updateSearchResults(results);
+			});
+	</script>
+</BaseLayout>

@@ -3,13 +3,14 @@ import Head from "@/components/BaseHead.astro";
 import Navbar from "@/components/Navbar.tsx";
 import Footer from "@/components/Footer.astro";
 import { ModeToggle } from "@/components/ModeToggle";
+import { Button } from "@/components/ui/button";
 
 const { title, description, image } = Astro.props;
 ---
 
 <html lang="en">
 	<Head title={title} description={description} image={image} />
-	<body>
+	<body data-pagefind-body>
 		<nav
 			class="max-w-[1400px] px-8 mx-auto py-6 flex items-center h-20 justify-between"
 		>
@@ -18,7 +19,11 @@ const { title, description, image } = Astro.props;
 				>
 				<Navbar client:only="react" />
 			</div>
-			<div>
+
+			<div class="flex gap-2">
+				<a href="/search">
+					<Button variant="outline">Search</Button>
+				</a>
 				<ModeToggle client:only="react" />
 			</div>
 		</nav>
