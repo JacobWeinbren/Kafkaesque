@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import SearchBox from "@/components/Search";
 ---
 
 <BaseLayout title={`Search`} description="Search Kafkaesque Blog">
@@ -10,74 +10,6 @@ import { Separator } from "@/components/ui/separator";
 		Look through my blog posts
 	</p>
 	<Separator className="my-8" />
-	<div>
-		<Input
-			type="text"
-			id="search-input"
-			className="mt-8 w-full md:w-[calc(50%-.5rem)] text-md p-5"
-		/>
-	</div>
 	<div id="search-results"></div>
-
-	<script>
-		import { createRoot } from "react-dom/client";
-		import React from "react";
-		import Fuse from "fuse.js";
-		import { getBlogPosts } from "@/lib/ghost";
-		import SearchResultsTable from "@/components/SearchResultsTable";
-
-		// Initialize the search functionality
-		async function initSearch() {
-			const allPosts = await getBlogPosts({
-				title: true,
-				slug: true,
-				excerpt: true,
-				published_at: true,
-				feature_image: true,
-			});
-			const fuse = new Fuse(allPosts, {
-				keys: ["title", "html"],
-				threshold: 0.4,
-			});
-			const searchInput = document.getElementById(
-				"search-input"
-			) as HTMLInputElement;
-			const searchResultsContainer =
-				document.getElementById("search-results");
-			const root = createRoot(searchResultsContainer);
-
-			function updateSearchResults(results) {
-				root.render(
-					React.createElement(SearchResultsTable, { results })
-				);
-			}
-
-			function updateURLQuery(query) {
-				const newUrl = new URL(window.location.href);
-				newUrl.searchParams.set("query", query);
-				window.history.pushState({}, "", newUrl);
-			}
-
-			function performSearch(query) {
-				updateURLQuery(query);
-				updateSearchResults(
-					fuse.search(query).map((result) => result.item)
-				);
-			}
-
-			// Event listener for input on search field
-			searchInput.addEventListener("input", (event) => {
-				const query = (event.target as HTMLInputElement).value;
-				performSearch(query);
-			});
-
-			// Perform initial search based on query parameter
-			const urlParams = new URLSearchParams(window.location.search);
-			const initialQuery = urlParams.get("query") || "";
-			searchInput.value = initialQuery;
-			performSearch(initialQuery);
-		}
-
-		initSearch();
-	</script>
+	<SearchBox client:only="react" />
 </BaseLayout>
