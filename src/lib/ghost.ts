@@ -8,9 +8,20 @@ const api = new TSGhostContentAPI(
 
 export async function getBlogPosts(
 	fields = {},
-	limit?: number
+	limit?: number,
+	tagFilter?: string
 ) {
-	const response = await api.posts.browse({ limit }).fields(fields).fetch();
+	let options: any = {
+		limit,
+		fields,
+	};
+
+	if (tagFilter) {
+		options.filter = `tags:${tagFilter}`;
+	}
+
+	const response = await api.posts.browse(options).fetch();
+
 	if (!response.success) {
 		const errorResponse = response as {
 			success: false;
