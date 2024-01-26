@@ -7,7 +7,6 @@
 	"author": "",
 	"scripts": {
 		"build": "astro build",
-		"deploy": "wrangler pages deploy dist",
 		"dev": "astro dev",
 		"preview": "astro preview",
 		"start": "astro dev"
