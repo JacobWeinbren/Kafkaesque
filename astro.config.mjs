@@ -25,7 +25,4 @@ export default defineConfig({
 			  }
 			: {},
 	adapter: cloudflare(),
-	build: {
-		format: "file",
-	},
 });
