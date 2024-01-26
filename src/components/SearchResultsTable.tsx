@@ -22,15 +22,15 @@ const SearchResultsTable: React.FC<SearchResultsTableProps> = ({ results }) => {
 					key={result.slug}
 					style={{ display: "grid" }}
 				>
-					<div className="flex border p-4 items-center">
+					<div className="flex border rounded p-4 items-center">
 						<img
 							src={result.feature_image}
 							alt={`Featured for ${result.title}`}
 							width={80}
 							height={80}
-							className="min-w-[60px] w-[60px] h-[60px] rounded-md object-cover mr-4"
+							className="min-w-20 w-20 h-20 min-h-20 rounded-md object-cover mr-4"
 						/>
-						<div className="flex flex-col justify-between">
+						<div className="flex flex-col justify-between gap-1">
 							<p className="text-sm">{result.title}</p>
 							<p className="text-xs">{result.excerpt}</p>
 							<p className="text-xs text-muted-foreground">
