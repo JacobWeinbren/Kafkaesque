@@ -14,7 +14,7 @@ interface SearchResultsTableProps {
 
 const SearchResultsTable: React.FC<SearchResultsTableProps> = ({ results }) => {
 	return (
-		<div className="grid gap-4 md:grid-cols-2">
+		<div className="grid gap-4 md:grid-cols-2 mt-8">
 			{results.map((result) => (
 				<a
 					href={`/post/${result.slug}`}
