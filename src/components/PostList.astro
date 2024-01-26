@@ -1,10 +1,9 @@
 ---
 import { Image } from "astro:assets";
-
 const { posts } = Astro.props;
 ---
 
-<div class="grid gap-10 sm:grid-cols-2">
+<div id="postList" class="grid gap-10 sm:grid-cols-2">
 	{
 		posts?.map((post) => (
 			<a href={`/post/${post.slug}`} class="group">
@@ -38,3 +37,15 @@ const { posts } = Astro.props;
 		))
 	}
 </div>
+
+<script type="module">
+	const postListContainer = document.getElementById("postList");
+
+	window.appendPosts = (newPosts) => {
+		if (!newPosts || !Array.isArray(newPosts)) return;
+		newPosts.forEach((post) => {
+			const postElement = document.createElement("div");
+			postListContainer.appendChild(postElement);
+		});
+	};
+</script>

@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 const components: { title: string; href: string; description: string }[] = [
 	{
 		title: "Israeli Elections",
-		href: "/docs/primitives/alert-dialog",
+		href: "/post/updated-israel-map",
 		description: "Geographic visualisation of Israeli elections from 1992.",
 	},
 	{
@@ -109,7 +109,7 @@ export default function NavigationMenuDemo() {
 										</a>
 									</NavigationMenuLink>
 								</li>
-								<ListItem href="/archive" title="Archive">
+								<ListItem href="/archive/1" title="Archive">
 									The definitive collection of all my posts to
 									date.
 								</ListItem>

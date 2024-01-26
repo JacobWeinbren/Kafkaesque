@@ -2,9 +2,23 @@ import { TSGhostContentAPI } from "@ts-ghost/content-api";
 
 const api = new TSGhostContentAPI(
 	"https://kafkaesque.digitalpress.blog",
-	import.meta.env.GHOST_CONTENT_API_KEY || "",
+	import.meta.env.PUBLIC_CONTENT_API_KEY || "",
 	"v5.47.0"
 );
+
+async function fetchPosts(options: any) {
+	const response = await api.posts.browse(options).fetch();
+
+	if (!response.success) {
+		const errorResponse = response as {
+			success: false;
+			errors: { message: string; type: string }[];
+		};
+		console.error(errorResponse.errors.map((e) => e.message).join(", "));
+		return { data: [], error: true };
+	}
+	return { data: response.data, error: false };
+}
 
 export async function getBlogPosts(
 	fields = {},
@@ -14,21 +28,26 @@ export async function getBlogPosts(
 	let options: any = {
 		limit,
 		fields,
+		...(tagFilter && { filter: `tags:${tagFilter}` }),
 	};
 
-	if (tagFilter) {
-		options.filter = `tags:${tagFilter}`;
-	}
+	const { data, error } = await fetchPosts(options);
+	return error ? [] : data;
+}
 
-	const response = await api.posts.browse(options).fetch();
+export async function loadMorePosts(
+	page: number,
+	limit: number = 10,
+	fields = {},
+	tagFilter?: string
+) {
+	let options: any = {
+		limit,
+		fields,
+		page,
+		...(tagFilter && { filter: `tags:${tagFilter}` }),
+	};
 
-	if (!response.success) {
-		const errorResponse = response as {
-			success: false;
-			errors: { message: string; type: string }[];
-		};
-		console.error(errorResponse.errors.map((e) => e.message).join(", "));
-		return [];
-	}
-	return response.data;
+	const { data, error } = await fetchPosts(options);
+	return { posts: data, error };
 }

@@ -1,0 +1,70 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PostList from "@/components/PostList.astro";
+import { getBlogPosts } from "@/lib/ghost";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+export const prerender = true;
+
+export async function getStaticPaths({ paginate }) {
+	const allPosts = await getBlogPosts({
+		title: true,
+		slug: true,
+		feature_image: true,
+		excerpt: true,
+		published_at: true,
+	});
+	const pageSize = 4;
+
+	return paginate(allPosts, { pageSize });
+}
+
+interface PageData {
+	data: any;
+	page: any;
+}
+
+const { page } = Astro.props as PageData;
+---
+
+<BaseLayout
+	title="Archive"
+	description="Archive of all posts on Kafkaesque Blog"
+>
+	<h1 class="text-4xl">Archive</h1>
+	<p class="text-2xl text-muted-foreground my-3">
+		All my writing in one place.
+	</p>
+	<Separator className="my-8" />
+	<PostList posts={page.data} />
+	<nav aria-label="Pagination" class="w-full flex mt-8">
+		{
+			page.url.prev ? (
+				<a href={page.url.prev} class="pagination-previous" rel="prev">
+					<Button variant="outline">
+						<ChevronLeft className="mr-2 h-4 w-4" />
+						Previous Page
+					</Button>
+				</a>
+			) : (
+				<span class="flex-grow" />
+			)
+		}
+		{
+			page.url.next && (
+				<a
+					href={page.url.next}
+					class="pagination-next ml-auto"
+					rel="next"
+				>
+					<Button variant="outline">
+						Next Page
+						<ChevronRight className="ml-2 h-4 w-4" />
+					</Button>
+				</a>
+			)
+		}
+	</nav>
+</BaseLayout>
