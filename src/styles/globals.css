@@ -57,9 +57,3 @@
 		@apply bg-background text-foreground;
 	}
 }
-
-@media (prefers-color-scheme: dark) {
-	html {
-		background-color: 240 10% 3.9%;
-	}
-}

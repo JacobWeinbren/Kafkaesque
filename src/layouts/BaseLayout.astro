@@ -18,14 +18,16 @@ const { title, description, image } = Astro.props;
 				<a href="/" class="mr-6 font-medium leading-5 !text-foreground"
 					>Jacob Weinbren</a
 				>
-				<Navbar client:load />
+				<Navbar client:only="react" />
 			</div>
 
 			<div class="flex gap-2">
 				<a href="/search">
-					<Button variant="outline" client:load>Search</Button>
+					<Button variant="outline" client:only="react">
+						Search
+					</Button>
 				</a>
-				<ModeToggle client:load />
+				<ModeToggle client:only="react" />
 			</div>
 		</nav>
 
