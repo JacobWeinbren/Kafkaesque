@@ -66,7 +66,7 @@ export default function NavigationMenuDemo() {
 				<NavigationMenuList>
 					<NavigationMenuItem>
 						<NavigationMenuLink
-							className={navigationMenuTriggerStyle()}
+							className={`${navigationMenuTriggerStyle()} !text-foreground`}
 							href="/"
 						>
 							About Me

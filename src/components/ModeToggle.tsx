@@ -12,7 +12,19 @@ import {
 export function ModeToggle() {
 	const [theme, setThemeState] = React.useState<
 		"theme-light" | "dark" | "system"
-	>("theme-light");
+	>("system");
+
+	const updateAllDataWrapperSrc = (isDark) => {
+		const dataWrapperScripts = document.querySelectorAll(
+			'iframe[src*="datawrapper.dwcdn.net/"]'
+		);
+		dataWrapperScripts.forEach((script) => {
+			const src = script.getAttribute("src");
+			const newSrc =
+				src.split("?")[0] + `?dark=${isDark ? "true" : "false"}`;
+			script.setAttribute("src", newSrc);
+		});
+	};
 
 	React.useEffect(() => {
 		const isDarkMode = document.documentElement.classList.contains("dark");
@@ -26,6 +38,7 @@ export function ModeToggle() {
 				window.matchMedia("(prefers-color-scheme: dark)").matches);
 		document.documentElement.classList[isDark ? "add" : "remove"]("dark");
 		localStorage.setItem("theme", isDark ? "dark" : "light");
+		updateAllDataWrapperSrc(isDark);
 	}, [theme]);
 
 	return (

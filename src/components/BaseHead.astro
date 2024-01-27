@@ -77,45 +77,50 @@ const { title, description, image } = Astro.props;
 	/>
 
 	<script is:inline>
-		(function () {
-			const THEME_KEY = "theme";
-			const DARK_CLASS = "dark";
-			const isLocalStorageAvailable = typeof localStorage !== "undefined";
+		const THEME_KEY = "theme";
+		const DARK_CLASS = "dark";
+		const isLocalStorageAvailable = typeof localStorage !== "undefined";
 
-			// Function to toggle dark theme on a document
-			const toggleDarkTheme = (doc, isDark) => {
-				doc.documentElement.classList[isDark ? "add" : "remove"](
-					DARK_CLASS
-				);
-				if (isLocalStorageAvailable) {
-					localStorage.setItem(
-						THEME_KEY,
-						isDark ? DARK_CLASS : "light"
-					);
-				}
-			};
+		// Function to toggle dark theme on a document
+		const toggleDarkTheme = (isDark) => {
+			document.documentElement.classList[isDark ? "add" : "remove"](
+				DARK_CLASS
+			);
+			if (isLocalStorageAvailable) {
+				localStorage.setItem(THEME_KEY, isDark ? DARK_CLASS : "light");
+			}
+			updateDataWrapperSrc(isDark);
+		};
 
-			// Function to get the theme preference
-			const getThemePreference = () => {
-				if (
-					isLocalStorageAvailable &&
-					localStorage.getItem(THEME_KEY)
-				) {
-					return localStorage.getItem(THEME_KEY) === DARK_CLASS;
-				}
-				return window.matchMedia("(prefers-color-scheme: dark)")
-					.matches;
-			};
+		// Function to update all Datawrapper embed URLs
+		const updateDataWrapperSrc = (isDark) => {
+			const dataWrapperIframes = document.querySelectorAll(
+				'iframe[src*="datawrapper.dwcdn.net/"]'
+			);
+			dataWrapperIframes.forEach((iframe) => {
+				const src = iframe.getAttribute("src");
+				const newSrc =
+					src.split("?")[0] + `?dark=${isDark ? "true" : "false"}`;
+				iframe.setAttribute("src", newSrc);
+			});
+		};
 
-			// Initial theme application
-			toggleDarkTheme(document, getThemePreference());
+		// Function to get the theme preference
+		const getThemePreference = () => {
+			if (isLocalStorageAvailable && localStorage.getItem(THEME_KEY)) {
+				return localStorage.getItem(THEME_KEY) === DARK_CLASS;
+			}
+			return window.matchMedia("(prefers-color-scheme: dark)").matches;
+		};
 
-			// Event listener for theme changes (e.g., system theme change)
-			window
-				.matchMedia("(prefers-color-scheme: dark)")
-				.addEventListener("change", (e) => {
-					toggleDarkTheme(document, e.matches);
-				});
-		})();
+		// Initial theme application
+		toggleDarkTheme(getThemePreference());
+
+		// Event listener for theme changes (e.g., system theme change)
+		window
+			.matchMedia("(prefers-color-scheme: dark)")
+			.addEventListener("change", (e) => {
+				toggleDarkTheme(e.matches);
+			});
 	</script>
 </head>
