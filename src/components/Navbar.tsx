@@ -30,32 +30,20 @@ const components: { title: string; href: string; description: string }[] = [
 	},
 	{
 		title: "Housing",
-		href: "/docs/primitives/hover-card",
+		href: "/",
 		description:
 			"Spatial mapping and charting of UK House prices from 2000-2022.",
 	},
 	{
-		title: "Local Elections",
-		href: "/docs/primitives/progress",
-		description:
-			"Visual mapping of British Local Elections in 2022 mapped.",
-	},
-	{
 		title: "Hebrew Duolingo Flashcards",
-		href: "/docs/primitives/progress",
+		href: "/post/complete-duolingo-hebrew-set/",
 		description:
 			"Collaborative project to make all Hebrew Duolingo words as flashcards.",
 	},
 	{
-		title: "Israeli Local Data",
-		href: "/docs/primitives/progress",
-		description:
-			"Local Area Data mapped from the CBS for Israeli localities",
-	},
-	{
-		title: "British Local Data",
-		href: "/docs/primitives/progress",
-		description: "Mapped classification data from the ONS for LSOAs.",
+		title: "Area Classifications",
+		href: "/",
+		description: "Mapping of Area Classifications based on the 2021 UK Census.",
 	},
 ];
 
