@@ -30,7 +30,7 @@ const components: { title: string; href: string; description: string }[] = [
 	},
 	{
 		title: "Housing",
-		href: "/",
+		href: "/post/interactive-housing-map/",
 		description:
 			"Spatial mapping and charting of UK House prices from 2000-2022.",
 	},
@@ -43,7 +43,8 @@ const components: { title: string; href: string; description: string }[] = [
 	{
 		title: "Area Classifications",
 		href: "/",
-		description: "Mapping of Area Classifications based on the 2021 UK Census.",
+		description:
+			"Mapping of Area Classifications based on the 2021 UK Census.",
 	},
 ];
 
