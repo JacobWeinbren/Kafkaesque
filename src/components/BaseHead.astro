@@ -115,12 +115,5 @@ const { title, description, image } = Astro.props;
 
 		// Initial theme application
 		toggleDarkTheme(getThemePreference());
-
-		// Event listener for theme changes (e.g., system theme change)
-		window
-			.matchMedia("(prefers-color-scheme: dark)")
-			.addEventListener("change", (e) => {
-				toggleDarkTheme(e.matches);
-			});
 	</script>
 </head>

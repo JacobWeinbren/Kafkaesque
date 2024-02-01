@@ -32,10 +32,12 @@ export function ModeToggle() {
 	}, []);
 
 	React.useEffect(() => {
-		const isDark =
-			theme === "dark" ||
-			(theme === "system" &&
-				window.matchMedia("(prefers-color-scheme: dark)").matches);
+		let isDark;
+		if (theme === "system") {
+			isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+		} else {
+			isDark = theme === "dark";
+		}
 		document.documentElement.classList[isDark ? "add" : "remove"]("dark");
 		localStorage.setItem("theme", isDark ? "dark" : "light");
 		updateAllDataWrapperSrc(isDark);
