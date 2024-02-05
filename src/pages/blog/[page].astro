@@ -2,8 +2,8 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PostList from "@/components/PostList.astro";
 import { getBlogPosts } from "@/lib/ghost";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
+import Separator from "@/components/Seperator";
+import { Button } from "@nextui-org/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export const prerender = true;
@@ -33,17 +33,17 @@ const { page } = Astro.props as PageData;
 	title="Archive"
 	description="Archive of all posts on Kafkaesque Blog"
 >
-	<h1 class="text-4xl">Archive</h1>
+	<h1 class="text-4xl">Blog</h1>
 	<p class="text-2xl text-muted-foreground my-3">
 		All my writing in one place.
 	</p>
-	<Separator className="my-8" />
+	<Separator />
 	<PostList posts={page.data} />
 	<nav aria-label="Pagination" class="w-full flex mt-8">
 		{
 			page.url.prev ? (
 				<a href={page.url.prev} class="pagination-previous" rel="prev">
-					<Button variant="outline">
+					<Button variant="bordered">
 						<ChevronLeft className="mr-2 h-4 w-4" />
 						Previous Page
 					</Button>
@@ -59,7 +59,7 @@ const { page } = Astro.props as PageData;
 					class="pagination-next ml-auto"
 					rel="next"
 				>
-					<Button variant="outline">
+					<Button variant="bordered">
 						Next Page
 						<ChevronRight className="ml-2 h-4 w-4" />
 					</Button>

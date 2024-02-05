@@ -10,7 +10,7 @@ const { title, description, image } = Astro.props;
 <html lang="en" class="absolute w-screen h-screen !m-0 !p-0">
 	<Head title={title} description={description} image={image} />
 	<body class="absolute w-screen h-screen !m-0 !p-0">
-		<NextUIProvider client:visible>
+		<NextUIProvider client:only="react">
 			<nav
 				class="max-w-[1400px] px-8 mx-auto py-6 flex items-center h-20 justify-between"
 			>

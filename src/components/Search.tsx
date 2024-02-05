@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import SearchResultsTable from "@/components/SearchResultsTable";
-import { Input } from "@/components/ui/input";
+import { Input } from "@nextui-org/react";
 
 const Search = () => {
 	const [results, setResults] = useState([]);
@@ -39,9 +39,11 @@ const Search = () => {
 			<Input
 				type="text"
 				id="search-input"
-				className="mt-8 w-full md:w-[calc(50%-.5rem)] text-md p-5"
+				variant="bordered"
 				value={query}
 				onChange={handleInputChange}
+				className="w-full border rounded"
+				placeholder="Search for a blog post"
 			/>
 			<SearchResultsTable results={results} />
 		</div>

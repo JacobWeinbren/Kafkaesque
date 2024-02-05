@@ -18,7 +18,7 @@ export default function App() {
 	const menuItems = [
 		{ name: "About Me", link: "/" },
 		{ name: "Projects", link: "/projects" },
-		{ name: "Blog", link: "/blog" },
+		{ name: "Blog", link: "/blog/1" },
 		{ name: "Search", link: "/search" },
 	];
 
@@ -46,7 +46,7 @@ export default function App() {
 						</Link>
 					</NavbarItem>
 					<NavbarItem>
-						<Link href="/blog" className="text-sm">
+						<Link href="/blog/1" className="text-sm">
 							Blog
 						</Link>
 					</NavbarItem>
