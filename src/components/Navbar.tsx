@@ -1,165 +1,87 @@
-import * as React from "react";
-
-import { cn } from "@/lib/utils";
+import React from "react";
 import {
-	NavigationMenu,
-	NavigationMenuContent,
-	NavigationMenuItem,
-	NavigationMenuLink,
-	NavigationMenuList,
-	NavigationMenuTrigger,
-	navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
+	Navbar,
+	NavbarBrand,
+	NavbarContent,
+	NavbarItem,
+	Link,
+	Button,
+	NavbarMenu,
+	NavbarMenuToggle,
+	NavbarMenuItem,
+} from "@nextui-org/react";
+import { ModeToggle } from "@/components/ModeToggle";
 
-import { navigate } from "astro:transitions/client";
+export default function App() {
+	const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+	const menuItems = [
+		{ name: "About Me", link: "/" },
+		{ name: "Projects", link: "/projects" },
+		{ name: "Blog", link: "/blog" },
+		{ name: "Search", link: "/search" },
+	];
 
-import { Button } from "@/components/ui/button";
-
-const components: { title: string; href: string; description: string }[] = [
-	{
-		title: "Israeli Elections",
-		href: "/post/updated-israel-map",
-		description: "Geographic visualisation of Israeli elections from 1992.",
-	},
-	{
-		title: "Housing",
-		href: "/post/interactive-housing-map/",
-		description:
-			"Spatial mapping and charting of UK House prices from 2000-2022.",
-	},
-	{
-		title: "Hebrew Duolingo Flashcards",
-		href: "/post/complete-duolingo-hebrew-set/",
-		description:
-			"Collaborative project to make all Hebrew Duolingo words as flashcards.",
-	},
-	{
-		title: "Area Classifications",
-		href: "/",
-		description:
-			"Mapping of Area Classifications based on the 2021 UK Census.",
-	},
-];
-
-export default function NavigationMenuDemo() {
 	return (
-		<>
-			<NavigationMenu className="hidden sm:block">
-				<NavigationMenuList>
-					<NavigationMenuItem>
-						<NavigationMenuLink
-							className={`${navigationMenuTriggerStyle()} !text-foreground`}
-							href="/"
-						>
+		<Navbar onMenuOpenChange={setIsMenuOpen}>
+			<NavbarContent justify="start">
+				<NavbarMenuToggle
+					aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+					className="sm:hidden"
+				/>
+				<NavbarItem>
+					<a href="/" className="mr-6 font-medium leading-5">
+						Jacob Weinbren
+					</a>
+				</NavbarItem>
+				<div className="hidden sm:flex gap-8">
+					<NavbarItem>
+						<Link href="/" className="text-sm">
 							About Me
-						</NavigationMenuLink>
-					</NavigationMenuItem>
-					<NavigationMenuItem>
-						<NavigationMenuTrigger>Projects</NavigationMenuTrigger>
-						<NavigationMenuContent>
-							<ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-								{components.map((component) => (
-									<ListItem
-										key={component.title}
-										title={component.title}
-										href={component.href}
-									>
-										{component.description}
-									</ListItem>
-								))}
-							</ul>
-						</NavigationMenuContent>
-					</NavigationMenuItem>
-					<NavigationMenuItem>
-						<NavigationMenuTrigger>Blog</NavigationMenuTrigger>
-						<NavigationMenuContent>
-							<ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-								<li className="row-span-3">
-									<NavigationMenuLink asChild>
-										<a
-											className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-											href="/blog"
-										>
-											<div className="mb-2 mt-4 text-lg font-medium">
-												Kafkaesque Blog
-											</div>
-											<p className="text-sm leading-tight text-muted-foreground">
-												Home to my thoughts on
-												literature, politics, and
-												programming.
-											</p>
-										</a>
-									</NavigationMenuLink>
-								</li>
-								<ListItem href="/archive/1" title="Archive">
-									The definitive collection of all my posts to
-									date.
-								</ListItem>
-								<ListItem
-									href="https://www.thesocialreview.co.uk/author/jacobweinbren/"
-									title="The Social Review"
-								>
-									My writings on politics and social
-									democracy.
-								</ListItem>
-							</ul>
-						</NavigationMenuContent>
-					</NavigationMenuItem>
-				</NavigationMenuList>
-			</NavigationMenu>
-			<div className="block sm:hidden cursor-pointer">
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="outline">Menu</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						<DropdownMenuItem onClick={() => navigate("/")}>
-							About Me
-						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => navigate("/projects")}>
+						</Link>
+					</NavbarItem>
+					<NavbarItem>
+						<Link href="/projects" className="text-sm">
 							Projects
-						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => navigate("/blog")}>
+						</Link>
+					</NavbarItem>
+					<NavbarItem>
+						<Link href="/blog" className="text-sm">
 							Blog
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			</div>
-		</>
+						</Link>
+					</NavbarItem>
+					<NavbarItem>
+						<Link href="/search" className="text-sm">
+							Search
+						</Link>
+					</NavbarItem>
+				</div>
+			</NavbarContent>
+			<NavbarContent justify="end">
+				<NavbarItem>
+					<ModeToggle />
+				</NavbarItem>
+			</NavbarContent>
+			<NavbarMenu>
+				{menuItems.map((item, index) => (
+					<NavbarMenuItem key={`${item.name}-${index}`}>
+						<Link
+							color={
+								index === 2
+									? "primary"
+									: index === menuItems.length - 1
+									? "danger"
+									: "foreground"
+							}
+							className="w-full text-sm"
+							href={item.link}
+							size="lg"
+						>
+							{item.name}
+						</Link>
+					</NavbarMenuItem>
+				))}
+			</NavbarMenu>
+		</Navbar>
 	);
 }
-
-const ListItem = React.forwardRef<
-	React.ElementRef<"a">,
-	React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
-	return (
-		<li>
-			<NavigationMenuLink asChild>
-				<a
-					ref={ref}
-					className={cn(
-						"block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-						className
-					)}
-					{...props}
-				>
-					<div className="text-sm font-medium leading-none">
-						{title}
-					</div>
-					<p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-						{children}
-					</p>
-				</a>
-			</NavigationMenuLink>
-		</li>
-	);
-});
-ListItem.displayName = "ListItem";
