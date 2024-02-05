@@ -73,7 +73,7 @@ export default function App() {
 									? "danger"
 									: "foreground"
 							}
-							className="w-full text-sm"
+							className="w-full"
 							href={item.link}
 							size="lg"
 						>
