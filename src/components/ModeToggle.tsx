@@ -9,9 +9,26 @@ import {
 import { Moon, Sun } from "lucide-react";
 
 export function ModeToggle() {
-	const [theme, setThemeState] = React.useState<
-		"theme-light" | "dark" | "system"
-	>("system");
+	const THEME_KEY = "theme";
+	const DARK_CLASS = "dark";
+	const isLocalStorageAvailable = typeof localStorage !== "undefined";
+
+	// Function to get the theme preference from localStorage or system preference
+	const getThemePreference = (): "light" | "dark" | "system" => {
+		if (isLocalStorageAvailable && localStorage.getItem(THEME_KEY)) {
+			return localStorage.getItem(THEME_KEY) as
+				| "light"
+				| "dark"
+				| "system";
+		}
+		return window.matchMedia("(prefers-color-scheme: dark)").matches
+			? "dark"
+			: "light";
+	};
+
+	const [theme, setThemeState] = React.useState<"light" | "dark" | "system">(
+		getThemePreference()
+	);
 
 	const updateAllDataWrapperSrc = (isDark) => {
 		const dataWrapperScripts = document.querySelectorAll(
@@ -26,20 +43,40 @@ export function ModeToggle() {
 	};
 
 	React.useEffect(() => {
-		const isDarkMode = document.documentElement.classList.contains("dark");
-		setThemeState(isDarkMode ? "dark" : "theme-light");
-	}, []);
+		// Applies the theme by toggling the "dark" class on the document element and updating local storage
+		const applyTheme = (theme) => {
+			const isDark = theme === "dark";
+			document.documentElement.classList[isDark ? "add" : "remove"](
+				DARK_CLASS
+			);
+			if (isLocalStorageAvailable) {
+				localStorage.setItem(THEME_KEY, theme);
+			}
+			updateAllDataWrapperSrc(isDark);
+		};
 
-	React.useEffect(() => {
-		let isDark;
 		if (theme === "system") {
-			isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+			// Determine if the system prefers a dark theme
+			const mediaQuery = window.matchMedia(
+				"(prefers-color-scheme: dark)"
+			);
+			applyTheme(mediaQuery.matches ? "dark" : "light");
+			// Listen for changes in the system's dark mode setting
+			const mediaQueryChangeListener = (e) => {
+				applyTheme(e.matches ? "dark" : "light");
+			};
+			// Use addEventListener to listen for changes in the system's theme preference
+			mediaQuery.addEventListener("change", mediaQueryChangeListener);
+
+			// Cleanup listener on component unmount or theme change
+			return () =>
+				mediaQuery.removeEventListener(
+					"change",
+					mediaQueryChangeListener
+				);
 		} else {
-			isDark = theme === "dark";
+			applyTheme(theme);
 		}
-		document.documentElement.classList[isDark ? "add" : "remove"]("dark");
-		localStorage.setItem("theme", isDark ? "dark" : "light");
-		updateAllDataWrapperSrc(isDark);
 	}, [theme]);
 
 	return (
@@ -61,7 +98,7 @@ export function ModeToggle() {
 					key="light"
 					textValue="Light"
 					className="text-sm"
-					onClick={() => setThemeState("theme-light")}
+					onClick={() => setThemeState("light")}
 				>
 					Light
 				</DropdownItem>
