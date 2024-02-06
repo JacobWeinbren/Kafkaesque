@@ -11,7 +11,7 @@ const { title, description, image } = Astro.props;
 	<Head title={title} description={description} image={image} />
 	<body class="absolute w-screen h-screen !m-0 !p-0">
 		<NextUIProvider client:only="react">
-			<nav class="max-w-[1400px] px-2 mx-auto">
+			<nav class="max-w-[1400px] h-16 px-2 mx-auto">
 				<Navbar client:only="react" />
 			</nav>
 
