@@ -43,7 +43,10 @@ const { page } = Astro.props as PageData;
 		{
 			page.url.prev ? (
 				<a href={page.url.prev} class="pagination-previous" rel="prev">
-					<Button variant="bordered">
+					<Button
+						variant="bordered"
+						className="border rounded shadow px-2 py-1"
+					>
 						<ChevronLeft className="mr-2 h-4 w-4" />
 						Previous Page
 					</Button>
@@ -59,7 +62,10 @@ const { page } = Astro.props as PageData;
 					class="pagination-next ml-auto"
 					rel="next"
 				>
-					<Button variant="bordered">
+					<Button
+						variant="bordered"
+						className="border rounded shadow px-2 py-1"
+					>
 						Next Page
 						<ChevronRight className="ml-2 h-4 w-4" />
 					</Button>
