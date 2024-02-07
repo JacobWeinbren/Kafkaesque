@@ -80,7 +80,7 @@ export function ModeToggle() {
 	}, [theme]);
 
 	return (
-		<Dropdown>
+		<Dropdown className="min-w-20">
 			<DropdownTrigger>
 				<Button
 					variant="flat"
@@ -92,7 +92,7 @@ export function ModeToggle() {
 			</DropdownTrigger>
 			<DropdownMenu
 				aria-label="Theme Selection"
-				className="border shadow rounded z-20 w-24 bg-white dark:bg-black"
+				className="border shadow rounded z-20 w-20 bg-white dark:bg-black"
 			>
 				<DropdownItem
 					key="light"
