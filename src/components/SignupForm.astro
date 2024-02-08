@@ -35,6 +35,8 @@
 		const form = document.getElementById(
 			"createMemberForm"
 		) as HTMLFormElement;
+		console.log(form);
+		console.log(document);
 		form.onsubmit = async (e: Event) => {
 			e.preventDefault();
 			const submitButton = form.querySelector(
