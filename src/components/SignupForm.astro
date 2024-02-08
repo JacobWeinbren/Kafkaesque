@@ -2,31 +2,64 @@
 
 ---
 
-<form id="createMemberForm" action="/api/signup" method="POST">
-	<input
-		type="email"
-		name="email"
-		placeholder="Enter member's email"
-		required
-		pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-		title="Please enter a valid email address."
-	/>
-	<button type="submit">Create Member</button>
-</form>
+<div class="flex flex-col items-center mt-10">
+	<p class="font-semibold text-center">Stay up to date</p>
+	<p class="text-center">
+		Subscribe to my blog to stay up to date on my articles and projects
+	</p>
+	<form
+		id="createMemberForm"
+		action="/api/signup"
+		method="POST"
+		class="flex gap-2 mt-4"
+	>
+		<input
+			type="email"
+			name="email"
+			placeholder="Your email address"
+			required
+			class="px-4 py-2 border rounded"
+			pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+			title="Please enter a valid email address."
+		/>
+		<button type="submit" class="px-4 py-2 text-white bg-green-500 rounded"
+			>Subscribe</button
+		>
+	</form>
+</div>
 
 <script>
-	document.getElementById("createMemberForm").onsubmit = async (e) => {
-		e.preventDefault();
-		const form = e.target as HTMLFormElement;
-		const formData = new FormData(form);
-		const response = await fetch(form.action, {
-			method: form.method,
-			body: formData,
-			headers: {
-				"Content-Type": "application/json",
-			},
+	document.addEventListener("DOMContentLoaded", (event) => {
+		console.log(document);
+		console.log("Document fully loaded");
+		const form = document.querySelector("#createMemberForm");
+		console.log(form);
+		form.addEventListener("submit", async (e) => {
+			e.preventDefault();
+			const submitButton = form.querySelector('button[type="submit"]');
+			const originalButtonText = submitButton.textContent;
+			submitButton.textContent = "Loading...";
+			submitButton.disabled = true;
+
+			try {
+				const formData = new FormData(form);
+				const response = await fetch(form.action, {
+					method: form.method,
+					body: formData,
+				});
+				const result = await response.json();
+				submitButton.textContent = response.ok ? "Success" : "Error";
+				alert(result.message);
+			} catch (error) {
+				console.error("Fetch error:", error);
+				submitButton.textContent = "Error";
+				alert("An error occurred. Please try again.");
+			} finally {
+				setTimeout(() => {
+					submitButton.textContent = originalButtonText;
+					submitButton.disabled = false;
+				}, 2000);
+			}
 		});
-		const result = await response.json();
-		alert(result.message);
-	};
+	});
 </script>
