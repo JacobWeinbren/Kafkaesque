@@ -30,14 +30,18 @@
 	</form>
 </div>
 
-<script is:inline>
+<script>
 	document.addEventListener("DOMContentLoaded", () => {
-		const form = document.getElementById("createMemberForm");
+		const form = document.getElementById(
+			"createMemberForm"
+		) as HTMLFormElement;
 		console.log(form);
 		console.log(document);
-		form.onsubmit = async (e) => {
+		form.onsubmit = async (e: Event) => {
 			e.preventDefault();
-			const submitButton = form.querySelector('button[type="submit"]');
+			const submitButton = form.querySelector(
+				'button[type="submit"]'
+			) as HTMLButtonElement;
 			submitButton.textContent = "Loading...";
 			submitButton.disabled = true;
 
