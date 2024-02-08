@@ -63,7 +63,7 @@ const processedHtml = post.html.replace(/&nbsp;/g, " ");
 			</p>
 
 			<h1
-				class="mt-2 inline-block font-heading text-4xl leading-tight lg:text-5xl"
+				class="inline-block mt-2 text-4xl leading-tight font-heading lg:text-5xl"
 			>
 				{post.title}
 			</h1>
@@ -77,12 +77,12 @@ const processedHtml = post.html.replace(/&nbsp;/g, " ");
 			class="mt-8 mb-2 rounded-md border bg-muted object-cover w-[800px] h-[400px]"
 		/>
 		<div
-			class="text-muted-foreground mb-8 text-center text-sm prose dark:prose-invert min-w-full"
+			class="min-w-full mb-8 text-sm prose text-center text-muted-foreground dark:prose-invert"
 			set:html={post.feature_image_caption}
 		/>
 
 		<div
-			class="prose max-w-4xl dark:prose-invert"
+			class="max-w-4xl prose dark:prose-invert"
 			set:html={processedHtml}
 		/>
 
