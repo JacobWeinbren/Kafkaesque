@@ -95,7 +95,6 @@ module.exports = {
 		},
 	},
 	plugins: [
-		require("@tailwindcss/nesting"),
 		require("tailwindcss-animate"),
 		require("@tailwindcss/typography"),
 		require("@nextui-org/react"),
