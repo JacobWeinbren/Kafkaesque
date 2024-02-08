@@ -16,6 +16,7 @@
 		"@astrojs/react": "^3.0.10",
 		"@astrojs/sitemap": "^3.0.5",
 		"@astrojs/tailwind": "^5.1.0",
+		"@astrojs/vercel": "^7.3.0",
 		"@nextui-org/react": "^2.2.9",
 		"@tailwindcss/nesting": "^0.0.0-insiders.565cd3e",
 		"@tailwindcss/typography": "^0.5.10",

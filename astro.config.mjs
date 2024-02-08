@@ -1,7 +1,7 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
-import cloudflare from "@astrojs/cloudflare";
+import vercel from "@astrojs/vercel";
 import react from "@astrojs/react";
 
 // https://astro.build/config
@@ -16,16 +16,8 @@ export default defineConfig({
 			},
 		},
 	},
-	image:
-		process.env.NODE_ENV === "production"
-			? {
-					service: {
-						entrypoint: "@astrojs/cloudflare/image-service",
-					},
-			  }
-			: {},
 	redirects: {
 		"/blog": "/blog/1",
 	},
-	adapter: cloudflare(),
+	adapter: vercel(),
 });
