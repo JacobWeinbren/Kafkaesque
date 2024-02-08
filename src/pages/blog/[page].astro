@@ -2,7 +2,6 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PostList from "@/components/PostList.astro";
 import { getBlogPosts } from "@/lib/ghost";
-import Separator from "@/components/Seperator";
 import { Button } from "@nextui-org/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -34,10 +33,9 @@ const { page } = Astro.props as PageData;
 	description="Archive of all posts on Kafkaesque Blog"
 >
 	<h1 class="text-4xl">Blog</h1>
-	<p class="text-2xl text-muted-foreground my-3">
+	<p class="text-2xl text-muted-foreground mt-3 mb-8">
 		All my writing in one place.
 	</p>
-	<Separator />
 	<PostList posts={page.data} />
 	<nav aria-label="Pagination" class="w-full flex mt-8">
 		{

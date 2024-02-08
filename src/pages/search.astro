@@ -1,15 +1,13 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import Separator from "@/components/Seperator";
 import SearchBox from "@/components/Search";
 ---
 
 <BaseLayout title={`Search`} description="Search Kafkaesque Blog">
 	<h1 class="text-4xl">Search</h1>
-	<p class="text-2xl text-muted-foreground my-3">
+	<p class="text-2xl text-muted-foreground mt-3 mb-8">
 		Look through my blog posts
 	</p>
-	<Separator />
 	<div id="search-results"></div>
 	<SearchBox client:only="react" />
 </BaseLayout>

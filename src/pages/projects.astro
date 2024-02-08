@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { getBlogPosts } from "@/lib/ghost";
-import Separator from "@/components/Seperator";
 import PostList from "@/components/PostList.astro";
 
 const posts = await getBlogPosts(
@@ -22,9 +21,8 @@ const posts = await getBlogPosts(
 	description="Discussion on Kafka, and personal home for projects"
 >
 	<h1 class="text-4xl">Projects</h1>
-	<p class="text-2xl text-muted-foreground my-3">
+	<p class="text-2xl text-muted-foreground my-3 mb-8">
 		What I've been working on recently.
 	</p>
-	<Separator />
 	<PostList posts={posts} />
 </BaseLayout>
