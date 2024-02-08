@@ -13,7 +13,7 @@
 	},
 	"dependencies": {
 		"@astrojs/cloudflare": "^9.0.0",
-		"@astrojs/react": "^3.0.9",
+		"@astrojs/react": "^3.0.10",
 		"@astrojs/sitemap": "^3.0.5",
 		"@astrojs/tailwind": "^5.1.0",
 		"@nextui-org/react": "^2.2.9",
@@ -21,12 +21,12 @@
 		"@tailwindcss/typography": "^0.5.10",
 		"@ts-ghost/admin-api": "^4.0.1",
 		"@ts-ghost/content-api": "^4.0.11",
-		"astro": "^4.2.4",
+		"astro": "^4.3.5",
 		"astro-font": "^0.0.77",
 		"clsx": "^2.1.0",
 		"framer-motion": "^11.0.3",
 		"fuse.js": "^7.0.0",
-		"lucide-react": "^0.314.0",
+		"lucide-react": "^0.323.0",
 		"node-fetch": "^3.3.2",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
@@ -35,7 +35,7 @@
 		"tailwindcss-animate": "^1.0.7"
 	},
 	"devDependencies": {
-		"@types/react": "^18.2.48",
-		"@types/react-dom": "^18.2.18"
+		"@types/react": "^18.2.55",
+		"@types/react-dom": "^18.2.19"
 	}
 }
