@@ -21,49 +21,51 @@ export default function App({ currentUrl }: NavbarProps) {
 	const menuItems = [
 		{ name: "About Me", link: "/" },
 		{ name: "Projects", link: "/projects" },
-		{ name: "Blog", link: "/blog/1" },
+		{ name: "Blog", link: "/blog" },
 		{ name: "Search", link: "/search" },
 	];
 
 	return (
 		<Navbar onMenuOpenChange={setIsMenuOpen}>
-				<NavbarContent justify="start">
-					<NavbarMenuToggle
-						aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-						className="sm:hidden"
-					/>
-					<NavbarItem>
-						<a
-							href="/"
-							className={`mr-6 font-medium leading-5 ${
-								currentUrl === "/" ? "font-bold" : ""
-							}`}
-						>
-							Jacob Weinbren
-						</a>
-					</NavbarItem>
-					<div className="hidden sm:flex gap-8">
-						{menuItems.map((item, index) => (
-							<NavbarItem key={`${item.name}-${index}`}>
-								<Link
-									href={item.link}
-									className={`text-sm ${
-										currentUrl === item.link
-											? "font-bold"
-											: ""
-									}`}
-								>
-									{item.name}
-								</Link>
-							</NavbarItem>
-						))}
-					</div>
-				</NavbarContent>
-				<NavbarContent justify="end">
-					<NavbarItem>
-						<ModeToggle />
-					</NavbarItem>
-				</NavbarContent>
+			<NavbarContent justify="start">
+				<NavbarMenuToggle
+					aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+					className="sm:hidden"
+				/>
+				<NavbarItem>
+					<a
+						href="/"
+						className={`mr-6 font-medium leading-5 ${
+							currentUrl === "/" ? "font-bold" : ""
+						}`}
+					>
+						Jacob Weinbren
+					</a>
+				</NavbarItem>
+				<div className="hidden sm:flex gap-8">
+					{menuItems.map((item, index) => (
+						<NavbarItem key={`${item.name}-${index}`}>
+							<Link
+								href={item.link}
+								className={`text-sm ${
+									currentUrl === item.link ||
+									(item.link !== "/" &&
+										currentUrl.startsWith(item.link))
+										? "font-bold"
+										: ""
+								}`}
+							>
+								{item.name}
+							</Link>
+						</NavbarItem>
+					))}
+				</div>
+			</NavbarContent>
+			<NavbarContent justify="end">
+				<NavbarItem>
+					<ModeToggle />
+				</NavbarItem>
+			</NavbarContent>
 			<NavbarMenu>
 				{menuItems.map((item, index) => (
 					<NavbarMenuItem key={`${item.name}-${index}`}>
