@@ -44,7 +44,7 @@ export default function App({ currentUrl }: NavbarProps) {
 				</NavbarItem>
 			</NavbarContent>
 			<NavbarContent justify="end">
-				<div className="hidden sm:flex gap-8">
+				<div className="hidden sm:flex gap-8 mr-4">
 					{menuItems.map((item, index) => (
 						<NavbarItem key={`${item.name}-${index}`}>
 							<Link
