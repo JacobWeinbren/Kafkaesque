@@ -11,22 +11,18 @@ const currentUrl = new URL(Astro.request.url, import.meta.url).pathname;
 <html lang="en" class="absolute w-full h-full !m-0 !p-0">
 	<Head title={title} description={description} image={image} />
 	<body class="absolute w-full h-full !m-0 !p-0">
-		<NextUIProvider client:only="react">
-			<nav class="h-16 max-w-4xl px-2 mx-auto mb-8">
-				<Navbar currentUrl={currentUrl} client:only="react" />
-				<div
-					class="shrink-0 bg-green-500 h-[1px] max-w-[1024px] mb-8 mx-6"
-				>
-				</div>
-			</nav>
+		<nav class="h-16 max-w-4xl px-2 mx-auto mb-8">
+			<Navbar currentUrl={currentUrl} client:only="react" />
+			<div class="shrink-0 bg-green-500 h-[1px] max-w-[1024px] mb-8 mx-6">
+			</div>
+		</nav>
 
-			<main class="max-w-4xl px-8 py-6 mx-auto">
-				<slot />
-			</main>
+		<main class="max-w-4xl px-8 py-6 mx-auto">
+			<slot />
+		</main>
 
-			<footer class="max-w-4xl px-8 mx-auto mt-8">
-				<Footer />
-			</footer>
-		</NextUIProvider>
+		<footer class="max-w-4xl px-8 mx-auto mt-8">
+			<Footer />
+		</footer>
 	</body>
 </html>

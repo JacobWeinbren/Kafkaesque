@@ -42,6 +42,8 @@ export default function App({ currentUrl }: NavbarProps) {
 						Jacob Weinbren
 					</a>
 				</NavbarItem>
+			</NavbarContent>
+			<NavbarContent justify="end">
 				<div className="hidden sm:flex gap-8">
 					{menuItems.map((item, index) => (
 						<NavbarItem key={`${item.name}-${index}`}>
@@ -60,8 +62,6 @@ export default function App({ currentUrl }: NavbarProps) {
 						</NavbarItem>
 					))}
 				</div>
-			</NavbarContent>
-			<NavbarContent justify="end">
 				<NavbarItem>
 					<ModeToggle />
 				</NavbarItem>
