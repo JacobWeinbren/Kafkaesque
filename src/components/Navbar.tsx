@@ -1,18 +1,21 @@
 import React from "react";
 import {
 	Navbar,
-	NavbarBrand,
 	NavbarContent,
 	NavbarItem,
 	Link,
-	Button,
 	NavbarMenu,
 	NavbarMenuToggle,
 	NavbarMenuItem,
 } from "@nextui-org/react";
 import { ModeToggle } from "@/components/ModeToggle";
 
-export default function App() {
+// Add a prop type for currentUrl
+interface NavbarProps {
+	currentUrl: string;
+}
+
+export default function App({ currentUrl }: NavbarProps) {
 	const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
 	const menuItems = [
@@ -24,44 +27,43 @@ export default function App() {
 
 	return (
 		<Navbar onMenuOpenChange={setIsMenuOpen}>
-			<NavbarContent justify="start">
-				<NavbarMenuToggle
-					aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-					className="sm:hidden"
-				/>
-				<NavbarItem>
-					<a href="/" className="mr-6 font-medium leading-5">
-						Jacob Weinbren
-					</a>
-				</NavbarItem>
-				<div className="hidden sm:flex gap-8">
+				<NavbarContent justify="start">
+					<NavbarMenuToggle
+						aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+						className="sm:hidden"
+					/>
 					<NavbarItem>
-						<Link href="/" className="text-sm">
-							About Me
-						</Link>
+						<a
+							href="/"
+							className={`mr-6 font-medium leading-5 ${
+								currentUrl === "/" ? "font-bold" : ""
+							}`}
+						>
+							Jacob Weinbren
+						</a>
 					</NavbarItem>
+					<div className="hidden sm:flex gap-8">
+						{menuItems.map((item, index) => (
+							<NavbarItem key={`${item.name}-${index}`}>
+								<Link
+									href={item.link}
+									className={`text-sm ${
+										currentUrl === item.link
+											? "font-bold"
+											: ""
+									}`}
+								>
+									{item.name}
+								</Link>
+							</NavbarItem>
+						))}
+					</div>
+				</NavbarContent>
+				<NavbarContent justify="end">
 					<NavbarItem>
-						<Link href="/projects" className="text-sm">
-							Projects
-						</Link>
+						<ModeToggle />
 					</NavbarItem>
-					<NavbarItem>
-						<Link href="/blog/1" className="text-sm">
-							Blog
-						</Link>
-					</NavbarItem>
-					<NavbarItem>
-						<Link href="/search" className="text-sm">
-							Search
-						</Link>
-					</NavbarItem>
-				</div>
-			</NavbarContent>
-			<NavbarContent justify="end">
-				<NavbarItem>
-					<ModeToggle />
-				</NavbarItem>
-			</NavbarContent>
+				</NavbarContent>
 			<NavbarMenu>
 				{menuItems.map((item, index) => (
 					<NavbarMenuItem key={`${item.name}-${index}`}>

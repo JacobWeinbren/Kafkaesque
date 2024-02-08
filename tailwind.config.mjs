@@ -79,9 +79,23 @@ module.exports = {
 				"accordion-down": "accordion-down 0.2s ease-out",
 				"accordion-up": "accordion-up 0.2s ease-out",
 			},
+			typography: (theme) => ({
+				DEFAULT: {
+					css: {
+						a: {
+							textDecoration: "underline",
+							textDecorationColor: theme("colors.green.500"),
+							"&:hover": {
+								textDecorationColor: theme("colors.green.600"),
+							},
+						},
+					},
+				},
+			}),
 		},
 	},
 	plugins: [
+		require("@tailwindcss/nesting"),
 		require("tailwindcss-animate"),
 		require("@tailwindcss/typography"),
 		require("@nextui-org/react"),

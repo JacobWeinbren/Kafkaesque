@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import SignupForm from "@/components/SignupForm.astro";
 import { Image } from "astro:assets";
 import { getBlogPosts } from "@/lib/ghost";
 import { Button } from "@nextui-org/react";
@@ -84,5 +85,16 @@ const processedHtml = post.html.replace(/&nbsp;/g, " ");
 			class="prose max-w-4xl dark:prose-invert"
 			set:html={processedHtml}
 		/>
+
+		<div
+			style="min-height: 58px; max-width: 440px;width: 100%;position: absolute; left: 50%; top:50%; transform: translate(-50%, -50%);"
+		>
+			<script
+				src="https://cdn.jsdelivr.net/ghost/signup-form@~0.1/umd/signup-form.min.js"
+				data-button-color="#498042"
+				data-button-text-color="#FFFFFF"
+				data-site="https://kafkaesque.digitalpress.blog/"
+				async></script>
+		</div>
 	</article>
 </BaseLayout>

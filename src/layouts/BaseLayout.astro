@@ -5,21 +5,26 @@ import Footer from "@/components/Footer.astro";
 import { NextUIProvider } from "@nextui-org/react";
 
 const { title, description, image } = Astro.props;
+const currentUrl = new URL(Astro.request.url, import.meta.url).pathname;
 ---
 
 <html lang="en" class="absolute w-full h-full !m-0 !p-0">
 	<Head title={title} description={description} image={image} />
 	<body class="absolute w-full h-full !m-0 !p-0">
 		<NextUIProvider client:only="react">
-			<nav class="max-w-[1400px] h-16 px-2 mx-auto">
-				<Navbar client:only="react" />
+			<nav class="max-w-4xl h-16 px-4 mx-auto">
+				<Navbar currentUrl={currentUrl} client:only="react" />
+				<div
+					class="shrink-0 bg-green-500 h-[1px] max-w-[1024px] mb-8 mx-6"
+				>
+				</div>
 			</nav>
 
-			<main class="max-w-4xl py-6 lg:py-10 mx-auto px-8">
+			<main class="max-w-4xl py-6 mx-auto px-10">
 				<slot />
 			</main>
 
-			<footer class="max-w-[1040px] px-8 mx-auto">
+			<footer class="max-w-4xl px-10 mx-auto">
 				<Footer />
 			</footer>
 		</NextUIProvider>
