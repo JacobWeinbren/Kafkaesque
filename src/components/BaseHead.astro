@@ -2,7 +2,6 @@
 import "@/styles/globals.css";
 import { AstroFont } from "astro-font";
 import Logo from "@/img/logo_white.webp";
-import { ViewTransitions } from "astro:transitions";
 
 const permalink = `${Astro.url.origin}${Astro.url.pathname}`;
 
@@ -16,8 +15,6 @@ const { title, description, image } = Astro.props;
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<meta name="description" content={description} />
-
-	<ViewTransitions />
 
 	<!-- Favicon -->
 	<link
