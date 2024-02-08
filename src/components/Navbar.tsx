@@ -3,11 +3,10 @@ import {
 	Navbar,
 	NavbarContent,
 	NavbarItem,
-	Link,
 	NavbarMenu,
 	NavbarMenuToggle,
 	NavbarMenuItem,
-} from "@nextui-org/react";
+} from "@nextui-org/navbar";
 import { ModeToggle } from "@/components/ModeToggle";
 
 // Add a prop type for currentUrl
@@ -45,7 +44,7 @@ export default function App({ currentUrl }: NavbarProps) {
 				<div className="hidden sm:flex gap-8 mr-4">
 					{menuItems.map((item, index) => (
 						<NavbarItem key={`${item.name}-${index}`}>
-							<Link
+							<a
 								href={item.link}
 								className={`text-sm font-normal ${
 									currentUrl === item.link ||
@@ -56,7 +55,7 @@ export default function App({ currentUrl }: NavbarProps) {
 								}`}
 							>
 								{item.name}
-							</Link>
+							</a>
 						</NavbarItem>
 					))}
 				</div>
@@ -67,7 +66,7 @@ export default function App({ currentUrl }: NavbarProps) {
 			<NavbarMenu>
 				{menuItems.map((item, index) => (
 					<NavbarMenuItem key={`${item.name}-${index}`}>
-						<Link
+						<a
 							color={
 								index === 2
 									? "primary"
@@ -77,10 +76,9 @@ export default function App({ currentUrl }: NavbarProps) {
 							}
 							className="w-full"
 							href={item.link}
-							size="lg"
 						>
 							{item.name}
-						</Link>
+						</a>
 					</NavbarMenuItem>
 				))}
 			</NavbarMenu>
