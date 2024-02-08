@@ -26,7 +26,7 @@ export default function App({ currentUrl }: NavbarProps) {
 	];
 
 	return (
-		<Navbar onMenuOpenChange={setIsMenuOpen}>
+		<Navbar onMenuOpenChange={setIsMenuOpen} className="[&>header]:p-4">
 			<NavbarContent justify="start">
 				<NavbarMenuToggle
 					aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -35,9 +35,7 @@ export default function App({ currentUrl }: NavbarProps) {
 				<NavbarItem>
 					<a
 						href="/"
-						className={`mr-6 font-medium leading-5 ${
-							currentUrl === "/" ? "font-bold" : ""
-						}`}
+						className="mr-6 font-medium leading-5 no-underline"
 					>
 						Jacob Weinbren
 					</a>

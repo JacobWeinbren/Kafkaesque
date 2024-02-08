@@ -1,3 +1,5 @@
+const plugin = require("tailwindcss/plugin");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 	darkMode: ["class"],
@@ -88,6 +90,7 @@ module.exports = {
 							"&:hover": {
 								textDecorationColor: theme("colors.green.600"),
 							},
+							fontWeight: 600,
 						},
 					},
 				},
@@ -98,5 +101,17 @@ module.exports = {
 		require("tailwindcss-animate"),
 		require("@tailwindcss/typography"),
 		require("@nextui-org/react"),
+		plugin(function ({ addBase, theme }) {
+			addBase({
+				a: {
+					textDecoration: "underline",
+					textDecorationColor: theme("colors.green.500"),
+					"&:hover": {
+						textDecorationColor: theme("colors.green.600"),
+					},
+					fontWeight: 600,
+				},
+			});
+		}),
 	],
 };
