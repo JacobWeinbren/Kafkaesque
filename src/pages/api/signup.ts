@@ -9,9 +9,10 @@ const api = new TSGhostAdminAPI(
 export const POST = async ({ request }) => {
 	const formData = await request.formData();
 	const email = formData.get("email");
+	console.log(email);
 	if (
 		!email ||
-		!email.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+		!email.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/)
 	) {
 		return new Response(
 			JSON.stringify({ message: "Invalid email address" }),
@@ -21,6 +22,7 @@ export const POST = async ({ request }) => {
 
 	try {
 		const response = await api.members.add({ email }, { send_email: true });
+		console.log(response);
 		if (!response.success) {
 			const errorResponse = response as {
 				success: false;
