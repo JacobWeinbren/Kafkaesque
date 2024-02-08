@@ -21,7 +21,16 @@ export const POST = async ({ request }) => {
 
 	try {
 		const response = await api.members.add({ email }, { send_email: true });
-		console.log("Member created:", response);
+		if (!response.success) {
+			const errorResponse = response as {
+				success: false;
+				errors: { message: string; type: string; context?: string }[];
+			};
+			return new Response(
+				JSON.stringify({ message: errorResponse.errors[0].message }),
+				{ status: 400 }
+			);
+		}
 		return new Response(
 			JSON.stringify({ message: "Member created successfully" }),
 			{ status: 200 }
