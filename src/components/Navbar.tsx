@@ -46,7 +46,7 @@ export default function App({ currentUrl }: NavbarProps) {
 						<NavbarItem key={`${item.name}-${index}`}>
 							<a
 								href={item.link}
-								className={`text-sm font-normal ${
+								className={`text-sm font-normal no-underline ${
 									currentUrl === item.link ||
 									(item.link !== "/" &&
 										currentUrl.startsWith(item.link))
