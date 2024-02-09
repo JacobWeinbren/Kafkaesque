@@ -35,6 +35,9 @@ dependencies:
   '@ts-ghost/content-api':
     specifier: ^4.0.11
     version: 4.0.11
+  '@vercel/speed-insights':
+    specifier: ^1.0.9
+    version: 1.0.9(react@18.2.0)
   astro:
     specifier: ^4.2.5
     version: 4.3.5
@@ -3387,6 +3390,33 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
+    dev: false
+
+  /@vercel/speed-insights@1.0.9(react@18.2.0):
+    resolution: {integrity: sha512-f+XFP0O+aZ4Olj9h+BitkB1b4NJQaxtyCb69wWuDxytJHY6Pa4QtZPdBUftHOcajUCHRVeq062fk3MKXKtjNVQ==}
+    requiresBuild: true
+    peerDependencies:
+      '@sveltejs/kit': ^1 || ^2
+      next: '>= 13'
+      react: ^18 || ^19
+      svelte: ^4
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /@vitejs/plugin-react@4.2.1(vite@5.1.1):
