@@ -10,7 +10,38 @@ export const POST = async ({ request }) => {
 	const formData = await request.formData();
 	const email = formData.get("email");
 	console.log(email);
-	return new Response(JSON.stringify({ message: "This is a post" }), {
-		status: 200,
-	});
+	if (
+		!email ||
+		!email.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/)
+	) {
+		return new Response(
+			JSON.stringify({ message: "Invalid email address" }),
+			{ status: 400 }
+		);
+	}
+
+	try {
+		const response = await api.members.add({ email }, { send_email: true });
+		console.log(response);
+		if (!response.success) {
+			const errorResponse = response as {
+				success: false;
+				errors: { message: string; type: string; context?: string }[];
+			};
+			return new Response(
+				JSON.stringify({ message: errorResponse.errors[0].message }),
+				{ status: 400 }
+			);
+		}
+		return new Response(
+			JSON.stringify({ message: "Member created successfully" }),
+			{ status: 200 }
+		);
+	} catch (error) {
+		console.error(error);
+		return new Response(
+			JSON.stringify({ message: "Error creating member" }),
+			{ status: 500 }
+		);
+	}
 };
