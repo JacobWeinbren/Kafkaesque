@@ -44,5 +44,7 @@ export default defineConfig({
 	redirects: {
 		"/blog": "/blog/1",
 	},
-	adapter: vercel(),
+	adapter: vercel({
+		webAnalytics: true,
+	}),
 });

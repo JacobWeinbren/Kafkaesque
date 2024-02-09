@@ -2,6 +2,7 @@
 import Head from "@/components/BaseHead.astro";
 import Navbar from "@/components/Navbar.tsx";
 import Footer from "@/components/Footer.astro";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const { title, description, image } = Astro.props;
 const currentUrl = new URL(Astro.request.url, import.meta.url).pathname;
@@ -23,5 +24,6 @@ const currentUrl = new URL(Astro.request.url, import.meta.url).pathname;
 		<footer class="max-w-4xl px-4 mx-auto mt-8">
 			<Footer />
 		</footer>
+		<SpeedInsights />
 	</body>
 </html>
