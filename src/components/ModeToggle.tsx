@@ -92,7 +92,7 @@ export function ModeToggle() {
 			</DropdownTrigger>
 			<DropdownMenu
 				aria-label="Theme Selection"
-				className="z-20 w-20 bg-white border rounded shadow dark:bg-black"
+				className="z-20 w-24 bg-white border rounded shadow dark:bg-black"
 			>
 				<DropdownItem
 					key="light"
