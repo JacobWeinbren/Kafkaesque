@@ -18,7 +18,8 @@ module.exports = {
 		},
 		extend: {
 			fontFamily: {
-				sans: ["Inter", "sans-serif"],
+				kafka: ["Kafka", "sans-serif"],
+				sans: ["Inter", "serif", "system-ui"],
 			},
 			fontWeight: {
 				normal: 400,

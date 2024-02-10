@@ -1,5 +1,6 @@
 ---
 import "@/styles/globals.css";
+import { join } from "node:path";
 import { AstroFont } from "astro-font";
 import Logo from "@/img/logo_white.webp";
 
@@ -72,6 +73,34 @@ const { title, description, image } = Astro.props;
 				fallback: "sans-serif",
 				googleFontsURL:
 					"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
+			},
+			{
+				name: "Kafka",
+				src: [
+					{
+						style: "normal",
+						weight: "400",
+						path: join(
+							process.cwd(),
+							"public",
+							"fonts",
+							"Kafka-webfont.woff2"
+						),
+					},
+					{
+						style: "normal",
+						weight: "400",
+						path: join(
+							process.cwd(),
+							"public",
+							"fonts",
+							"Kafka-webfont.woff"
+						),
+					},
+				],
+				preload: true,
+				display: "swap",
+				fallback: "sans-serif",
 			},
 		]}
 	/>

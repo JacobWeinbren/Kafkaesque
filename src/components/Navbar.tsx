@@ -18,7 +18,7 @@ export default function App({ currentUrl }: NavbarProps) {
 	const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
 	const menuItems = [
-		{ name: "About Me", link: "/" },
+		{ name: "About Me", link: "/about" },
 		{ name: "Projects", link: "/projects" },
 		{ name: "Blog", link: "/blog" },
 		{ name: "Search", link: "/search" },
@@ -41,15 +41,14 @@ export default function App({ currentUrl }: NavbarProps) {
 				</NavbarItem>
 			</NavbarContent>
 			<NavbarContent justify="end">
-				<div className="hidden sm:flex gap-8 mr-4">
+				<div className="hidden gap-8 mr-4 sm:flex">
 					{menuItems.map((item, index) => (
 						<NavbarItem key={`${item.name}-${index}`}>
 							<a
 								href={item.link}
 								className={`text-sm no-underline ${
 									currentUrl === item.link ||
-									(item.link !== "/" &&
-										currentUrl.startsWith(item.link))
+									currentUrl.startsWith(item.link)
 										? "font-bold"
 										: "font-normal"
 								}`}
