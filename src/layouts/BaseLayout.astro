@@ -6,7 +6,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const { title, description, image } = Astro.props;
 const currentUrl = new URL(Astro.request.url, import.meta.url).pathname;
-const isIndexPage = currentUrl === "/";
 ---
 
 <html lang="en" class="absolute w-screen h-full !m-0 !p-0">
@@ -18,11 +17,7 @@ const isIndexPage = currentUrl === "/";
 			</div>
 		</nav>
 
-		<main
-			class={`flex-grow px-4 py-6 mx-auto ${
-				isIndexPage ? "flex justify-center" : "max-w-[900px]"
-			}`}
-		>
+		<main class="flex flex-grow py-10 mx-auto">
 			<slot />
 		</main>
 

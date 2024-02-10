@@ -41,50 +41,55 @@ const processedHtml = post.html.replace(/&nbsp;/g, " ");
 	description={post.excerpt}
 	image={post.feature_image}
 >
-	<article class="relative max-w-4xl">
-		<a href="/blog">
-			<Button
-				variant="ghost"
-				className="absolute left-[-200px] hidden xl:inline-flex text-sm font-medium"
-			>
-				<ChevronLeft className="mr-2 h-4 w-4" />See recent posts
-			</Button>
-		</a>
+	<div class="max-w-4xl px-4">
+		<article class="relative max-w-4xl">
+			<a href="/blog">
+				<Button
+					variant="ghost"
+					className="absolute left-[-200px] hidden xl:inline-flex text-sm font-medium"
+				>
+					<ChevronLeft className="mr-2 h-4 w-4" />See recent posts
+				</Button>
+			</a>
 
-		<div>
-			<p class="text-sm text-muted-foreground">
-				Published on {
-					new Date(post.published_at).toLocaleDateString("en-UK", {
-						year: "numeric",
-						month: "long",
-						day: "numeric",
-					})
-				}
-			</p>
+			<div>
+				<p class="text-sm text-muted-foreground">
+					Published on {
+						new Date(post.published_at).toLocaleDateString(
+							"en-UK",
+							{
+								year: "numeric",
+								month: "long",
+								day: "numeric",
+							}
+						)
+					}
+				</p>
 
-			<h1
-				class="inline-block mt-2 text-4xl leading-tight font-heading lg:text-5xl"
-			>
-				{post.title}
-			</h1>
-		</div>
+				<h1
+					class="inline-block mt-2 text-4xl leading-tight font-heading lg:text-5xl"
+				>
+					{post.title}
+				</h1>
+			</div>
 
-		<Image
-			src={post.feature_image}
-			alt={post.title}
-			width={800}
-			height={400}
-			class="mt-8 mb-2 rounded-md border bg-muted object-cover w-[800px] h-[400px]"
-		/>
-		<div
-			class="min-w-full mb-8 text-sm prose text-center text-muted-foreground dark:prose-invert"
-			set:html={post.feature_image_caption}
-		/>
+			<Image
+				src={post.feature_image}
+				alt={post.title}
+				width={800}
+				height={400}
+				class="mt-8 mb-2 rounded-md border bg-muted object-cover w-[800px] h-[400px]"
+			/>
+			<div
+				class="min-w-full mb-8 text-sm prose text-center text-muted-foreground dark:prose-invert"
+				set:html={post.feature_image_caption}
+			/>
 
-		<div
-			class="max-w-4xl prose dark:prose-invert"
-			set:html={processedHtml}
-		/>
-		<SignupForm />
-	</article>
+			<div
+				class="max-w-4xl prose dark:prose-invert"
+				set:html={processedHtml}
+			/>
+			<SignupForm />
+		</article>
+	</div>
 </BaseLayout>

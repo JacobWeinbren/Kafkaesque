@@ -20,9 +20,11 @@ const posts = await getBlogPosts(
 	title="Kafkaesque Blog"
 	description="Discussion on Kafka, and personal home for projects"
 >
-	<h1 class="text-4xl">Projects</h1>
-	<p class="text-2xl text-muted-foreground my-3 mb-8">
-		What I've been working on recently.
-	</p>
-	<PostList posts={posts} />
+	<div class="max-w-4xl px-4">
+		<h1 class="text-4xl">Projects</h1>
+		<p class="my-3 mb-8 text-2xl text-muted-foreground">
+			What I've been working on recently.
+		</p>
+		<PostList posts={posts} />
+	</div>
 </BaseLayout>

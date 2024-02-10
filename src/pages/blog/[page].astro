@@ -32,43 +32,49 @@ const { page } = Astro.props as PageData;
 	title="Archive"
 	description="Archive of all posts on Kafkaesque Blog"
 >
-	<h1 class="text-4xl">Blog</h1>
-	<p class="mt-3 mb-8 text-2xl text-muted-foreground">
-		All my writing in one place.
-	</p>
-	<PostList posts={page.data} />
-	<nav aria-label="Pagination" class="flex w-full mt-8">
-		{
-			page.url.prev ? (
-				<a href={page.url.prev} class="pagination-previous" rel="prev">
-					<Button
-						variant="bordered"
-						className="border no-underline rounded shadow p-2"
+	<div class="max-w-4xl px-4">
+		<h1 class="text-4xl">Blog</h1>
+		<p class="mt-3 mb-8 text-2xl text-muted-foreground">
+			All my writing in one place.
+		</p>
+		<PostList posts={page.data} />
+		<nav aria-label="Pagination" class="flex w-full mt-8">
+			{
+				page.url.prev ? (
+					<a
+						href={page.url.prev}
+						class="pagination-previous"
+						rel="prev"
 					>
-						<ChevronLeft className="mr-2 h-4 w-4" />
-						Previous Page
-					</Button>
-				</a>
-			) : (
-				<span class="flex-grow" />
-			)
-		}
-		{
-			page.url.next && (
-				<a
-					href={page.url.next}
-					class="ml-auto pagination-next"
-					rel="next"
-				>
-					<Button
-						variant="bordered"
-						className="border no-underline rounded shadow p-2"
+						<Button
+							variant="bordered"
+							className="border no-underline rounded shadow p-2"
+						>
+							<ChevronLeft className="mr-2 h-4 w-4" />
+							Previous Page
+						</Button>
+					</a>
+				) : (
+					<span class="flex-grow" />
+				)
+			}
+			{
+				page.url.next && (
+					<a
+						href={page.url.next}
+						class="ml-auto pagination-next"
+						rel="next"
 					>
-						Next Page
-						<ChevronRight className="ml-2 h-4 w-4" />
-					</Button>
-				</a>
-			)
-		}
-	</nav>
+						<Button
+							variant="bordered"
+							className="border no-underline rounded shadow p-2"
+						>
+							Next Page
+							<ChevronRight className="ml-2 h-4 w-4" />
+						</Button>
+					</a>
+				)
+			}
+		</nav>
+	</div>
 </BaseLayout>
