@@ -1,5 +1,4 @@
 ---
-import SignupForm from "@/components/SignupForm.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { Sparkle } from "lucide-react";
 ---
@@ -7,11 +6,7 @@ import { Sparkle } from "lucide-react";
 <BaseLayout title="Jacob Weinbren" description="An introduction to Jacob">
 	<script src="https://cdn.lordicon.com/lordicon.js"></script>
 	<div class="flex flex-col gap-7 items-center justify-center">
-		<h1
-			class="text-[2.75rem] -mb-4 lg:-mb-6 sm:text-6xl md:text-7xl lg:text-8xl font-kafka"
-		>
-			Jacob Weinbren
-		</h1>
+		<h1 class="mt-8 -mb-4 fluid-5xl font-kafka">Jacob Weinbren</h1>
 		<Sparkle className="lg:invisible" strokeWidth={1.5} />
 		<div
 			class="grid grid-cols-1 lg:grid-cols-3 gap-7 text-center justify-items-center w-full"
@@ -21,7 +16,7 @@ import { Sparkle } from "lucide-react";
 					className="mt-2 mb-6 hidden lg:block"
 					strokeWidth={1.5}
 				/>
-				<p class="w-64 text-center sm:w-80 md:w-96 lg:w-72">
+				<p class="text-center w-80 fluid-lg">
 					Jacob Weinbren is a coder, blogger, and data storyteller
 					from Milton Keynes.
 				</p>
@@ -31,7 +26,7 @@ import { Sparkle } from "lucide-react";
 					className="mt-2 mb-6 hidden lg:block"
 					strokeWidth={1.5}
 				/>
-				<p class="w-64 text-center sm:w-80 md:w-96 lg:w-72">
+				<p class="w-80 text-center fluid-lg">
 					Jacob is passionate about combining data and technology to
 					create meaningful digital experiences.
 				</p>
@@ -45,9 +40,7 @@ import { Sparkle } from "lucide-react";
 					class="w-40 h-40 -mb-4 -mt-7 lg:-mb-6 lg:-mt-10 lg:w-52 lg:h-52"
 				>
 				</lord-icon>
-				<p class="w-64 text-center sm:w-80 md:w-96 lg:w-72">
-					(Jacob loves turtles)
-				</p>
+				<p class="w-96 text-center fluid-lg">(Jacob loves turtles)</p>
 			</div>
 		</div>
 	</div>
