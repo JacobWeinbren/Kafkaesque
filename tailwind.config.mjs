@@ -111,7 +111,6 @@ module.exports = {
 		require("tailwindcss-animate"),
 		require("@tailwindcss/typography"),
 		require("@nextui-org/react"),
-		require("tailwind-fluid-typography"),
 		plugin(function ({ addBase, theme }) {
 			addBase({
 				a: {
