@@ -32,10 +32,7 @@ export default function App({ currentUrl }: NavbarProps) {
 					className="sm:hidden"
 				/>
 				<NavbarItem>
-					<a
-						href="/"
-						className="mr-6 font-medium leading-5 no-underline"
-					>
+					<a href="/" className="mr-6 text-xl leading-5 no-underline">
 						Jacob Weinbren
 					</a>
 				</NavbarItem>
@@ -46,7 +43,7 @@ export default function App({ currentUrl }: NavbarProps) {
 						<NavbarItem key={`${item.name}-${index}`}>
 							<a
 								href={item.link}
-								className={`text-sm no-underline ${
+								className={`text-lg no-underline ${
 									currentUrl === item.link ||
 									currentUrl.startsWith(item.link)
 										? "font-bold"

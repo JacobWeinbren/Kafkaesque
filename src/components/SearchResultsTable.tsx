@@ -14,26 +14,26 @@ interface SearchResultsTableProps {
 
 const SearchResultsTable: React.FC<SearchResultsTableProps> = ({ results }) => {
 	return (
-		<div className="grid gap-4 md:grid-cols-2 mt-8">
+		<div className="grid gap-4 mt-8 md:grid-cols-2">
 			{results.map((result) => (
 				<a
 					href={`/post/${result.slug}`}
-					className="group"
+					className="no-underline group"
 					key={result.slug}
 					style={{ display: "grid" }}
 				>
-					<div className="flex border rounded p-4 items-center">
+					<div className="flex items-center p-4 border rounded">
 						<img
 							src={result.feature_image}
 							alt={`Featured for ${result.title}`}
-							width={80}
-							height={80}
-							className="min-w-20 w-20 h-20 min-h-20 rounded-md object-cover mr-4"
+							width={100}
+							height={100}
+							className="object-cover h-48 mr-6 rounded-md w-36 min-w-36 min-h-48"
 						/>
 						<div className="flex flex-col justify-between gap-1">
-							<p className="text-sm">{result.title}</p>
-							<p className="text-xs">{result.excerpt}</p>
-							<p className="text-xs text-muted-foreground">
+							<p>{result.title}</p>
+							<p className="font-normal">{result.excerpt}</p>
+							<p className="text-muted-foreground">
 								{new Date(
 									result.published_at
 								).toLocaleDateString("en-UK", {

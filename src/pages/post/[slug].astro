@@ -46,14 +46,14 @@ const processedHtml = post.html.replace(/&nbsp;/g, " ");
 			<a href="/blog">
 				<Button
 					variant="ghost"
-					className="absolute left-[-200px] hidden xl:inline-flex text-sm font-medium"
+					className="absolute left-[-200px] hidden xl:inline-flex font-medium"
 				>
 					<ChevronLeft className="mr-2 h-4 w-4" />See recent posts
 				</Button>
 			</a>
 
 			<div>
-				<p class="text-sm text-muted-foreground">
+				<p class="text-muted-foreground">
 					Published on {
 						new Date(post.published_at).toLocaleDateString(
 							"en-UK",
@@ -81,7 +81,7 @@ const processedHtml = post.html.replace(/&nbsp;/g, " ");
 				class="mt-8 mb-2 rounded-md border bg-muted object-cover w-[800px] h-[400px]"
 			/>
 			<div
-				class="min-w-full mb-8 text-sm prose text-center text-muted-foreground dark:prose-invert"
+				class="min-w-full mb-8 prose text-center text-muted-foreground dark:prose-invert"
 				set:html={post.feature_image_caption}
 			/>
 

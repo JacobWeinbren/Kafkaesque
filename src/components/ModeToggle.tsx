@@ -92,12 +92,11 @@ export function ModeToggle() {
 			</DropdownTrigger>
 			<DropdownMenu
 				aria-label="Theme Selection"
-				className="border shadow rounded z-20 w-20 bg-white dark:bg-black"
+				className="z-20 w-20 bg-white border rounded shadow dark:bg-black"
 			>
 				<DropdownItem
 					key="light"
 					textValue="Light"
-					className="text-sm"
 					onClick={() => setThemeState("light")}
 				>
 					Light
@@ -105,7 +104,6 @@ export function ModeToggle() {
 				<DropdownItem
 					key="dark"
 					textValue="Dark"
-					className="text-sm"
 					onClick={() => setThemeState("dark")}
 				>
 					Dark
@@ -113,7 +111,6 @@ export function ModeToggle() {
 				<DropdownItem
 					key="system"
 					textValue="System"
-					className="text-sm"
 					onClick={() => setThemeState("system")}
 				>
 					System
