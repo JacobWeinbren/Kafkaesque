@@ -8,14 +8,14 @@ const { posts } = Astro.props;
 		posts?.map((post) => (
 			<a href={`/post/${post.slug}`} class="font-normal no-underline">
 				<article class="relative flex flex-col space-y-2">
-					<div class="overflow-hidden border rounded-md bg-muted">
+					<div class="overflow-hidden w-[400px] h-[300px] border rounded-md bg-muted group">
 						{post.feature_image && (
 							<Image
 								src={post.feature_image}
 								alt={post.title}
 								width={600}
 								height={300}
-								class="object-cover w-[600px] h-[300px] transition-transform duration-300 ease-in-out group-hover:scale-110"
+								class="object-cover w-full h-full transition-transform duration-300 ease-in-out group-hover:scale-110"
 							/>
 						)}
 					</div>
