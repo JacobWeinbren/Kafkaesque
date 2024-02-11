@@ -37,15 +37,3 @@ const { posts } = Astro.props;
 		))
 	}
 </div>
-
-<script type="module">
-	const postListContainer = document.getElementById("postList");
-
-	window.appendPosts = (newPosts) => {
-		if (!newPosts || !Array.isArray(newPosts)) return;
-		newPosts.forEach((post) => {
-			const postElement = document.createElement("div");
-			postListContainer.appendChild(postElement);
-		});
-	};
-</script>
