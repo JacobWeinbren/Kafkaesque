@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import SignupForm from "@/components/SignupForm.astro";
 import { Image } from "astro:assets";
 import { getBlogPosts } from "@/lib/ghost";
 import { Button } from "@nextui-org/react";
@@ -89,7 +88,6 @@ const processedHtml = post.html.replace(/&nbsp;/g, " ");
 				class="max-w-4xl prose dark:prose-invert"
 				set:html={processedHtml}
 			/>
-			<SignupForm />
 		</article>
 	</div>
 </BaseLayout>

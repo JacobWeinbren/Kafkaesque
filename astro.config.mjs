@@ -2,7 +2,7 @@ import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import react from "@astrojs/react";
-import vercel from "@astrojs/vercel/serverless";
+import cloudflare from "@astrojs/cloudflare";
 
 export default defineConfig({
 	site: "https://kafkaesque.blog/",
@@ -24,7 +24,5 @@ export default defineConfig({
 	redirects: {
 		"/blog": "/blog/1",
 	},
-	adapter: vercel({
-		webAnalytics: true,
-	}),
+	adapter: cloudflare(),
 });
