@@ -24,5 +24,7 @@ export default defineConfig({
 	redirects: {
 		"/blog": "/blog/1",
 	},
-	adapter: cloudflare(),
+	adapter: cloudflare({
+		imageService: "cloudflare",
+	}),
 });
