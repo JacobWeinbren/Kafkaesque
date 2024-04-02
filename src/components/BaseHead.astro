@@ -81,8 +81,7 @@ const { title, description, image } = Astro.props;
 						style: "normal",
 						weight: "400",
 						path: join(
-							process.cwd(),
-							"public",
+							import.meta.env.ASSETS,
 							"fonts",
 							"Kafka-webfont.woff2"
 						),
@@ -91,8 +90,7 @@ const { title, description, image } = Astro.props;
 						style: "normal",
 						weight: "400",
 						path: join(
-							process.cwd(),
-							"public",
+							import.meta.env.ASSETS,
 							"fonts",
 							"Kafka-webfont.woff"
 						),
