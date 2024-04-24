@@ -22,7 +22,7 @@ async function fetchPosts(options: any) {
 
 export async function getBlogPosts(
 	fields = {},
-	limit?: number,
+	limit: number | "all" = "all",
 	tagFilter?: string
 ) {
 	let options: any = {
