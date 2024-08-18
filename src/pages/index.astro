@@ -1,64 +1,39 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { Sparkle } from "lucide-react";
 ---
 
 <BaseLayout
 	title="Jacob Weinbren"
 	description="Jacob Weinbren's personal website"
 >
-	<script src="https://cdn.lordicon.com/lordicon.js"></script>
-	<div class="flex flex-col items-center justify-center gap-4 py-4">
-		<h1
-			class="mx-4 mt-8 -mb-4 font-bold leading-[1.3] text-center text-7xl lg:text-9xl font-kafka"
-		>
-			Jacob Weinbren
-		</h1>
-		<Sparkle className="lg:invisible" strokeWidth={1.5} />
-		<div
-			class="grid w-full grid-cols-1 text-center lg:grid-cols-3 gap-4 justify-items-center"
-		>
-			<div class="flex flex-col items-center lg:order-1">
-				<Sparkle
-					className="mt-2 mb-6 hidden lg:block"
-					strokeWidth={1.5}
-				/>
-				<p
-					class="text-center w-[min(100vw,20rem)] mx-4 xxs:text-base xs:text-xl"
-				>
-					I'm a <strong>coder</strong>, <strong>blogger</strong>, and <strong
-						>data storyteller</strong
+	<div
+		class="flex flex-col items-center justify-center px-7 bg-green-500 w-full"
+	>
+		<div class="max-w-screen-lg">
+			<script src="https://cdn.lordicon.com/lordicon.js"></script>
+
+			<div class="flex flex-col md:flex-row gap-7 max-w-4xl w-full">
+				<div class="flex flex-col md:w-1/2">
+					<h1 class="text-white font-bold text-6xl">Hello!</h1>
+					<p class="text-white font-medium mt-10">
+						This is my personal site. Here you can find out more
+						about what I'm up to. I'm a coder, blogger, and data
+						storyteller from Milton Keynes, a city just north of
+						London. I work to combine data and tech to create digital
+						experiences. I also love turtles!
+					</p>
+				</div>
+
+				<div class="flex items-center justify-center md:w-1/2">
+					<lord-icon
+						src="https://cdn.lordicon.com/cfkyvikj.json"
+						trigger="loop"
+						stroke="light"
+						colors="primary:#ffffff,secondary:#ffffff"
+						class="h-60 w-60 -m-16"
 					>
-					from Milton Keynes.
-				</p>
-			</div>
-			<div class="flex flex-col items-center lg:order-3">
-				<Sparkle
-					className="mt-2 mb-6 hidden lg:block"
-					strokeWidth={1.5}
-				/>
-				<p
-					class="w-[min(100vw,20rem)] mx-4 text-center xxs:text-base xs:text-xl"
-				>
-					I'm passionate about <strong
-						>combining data and technology</strong
-					> to create meaningful digital experiences.
-				</p>
-			</div>
-			<div class="lg:order-2">
-				<lord-icon
-					src="https://cdn.lordicon.com/cfkyvikj.json"
-					trigger="loop"
-					stroke="light"
-					colors="primary:#10B981,secondary:#10B981"
-					class="w-40 h-40 -mb-4 -mt-7 lg:-mb-6 lg:-mt-10 lg:w-52 lg:h-52"
-				>
-				</lord-icon>
-				<p
-					class="w-[min(100vw,20rem)] mx-4 text-center xxs:text-base xs:text-xl"
-				>
-					(Jacob loves turtles)
-				</p>
+					</lord-icon>
+				</div>
 			</div>
 		</div>
 	</div>

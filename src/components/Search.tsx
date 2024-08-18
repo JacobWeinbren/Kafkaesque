@@ -35,14 +35,14 @@ const Search = () => {
 	};
 
 	return (
-		<div>
+		<div className="flex flex-col items-center">
 			<Input
 				type="text"
 				id="search-input"
 				variant="bordered"
 				value={query}
 				onChange={handleInputChange}
-				className="w-full border rounded"
+				className="w-64 border rounded"
 				placeholder="Search for a blog post"
 			/>
 			<SearchResultsTable results={results} />

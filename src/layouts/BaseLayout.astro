@@ -1,27 +1,18 @@
 ---
 import Head from "@/components/BaseHead.astro";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/Navbar.svelte";
 import Footer from "@/components/Footer.astro";
 
 const { title, description, image } = Astro.props;
-const currentUrl = new URL(Astro.request.url, import.meta.url).pathname;
 ---
 
-<html lang="en" class="absolute w-screen h-full !m-0 !p-0">
+<html lang="en" class="h-full">
 	<Head title={title} description={description} image={image} />
-	<body class="flex flex-col min-h-screen !m-0 !p-0">
-		<nav class="w-full h-16 max-w-4xl mx-auto">
-			<Navbar currentUrl={currentUrl} client:only="react" />
-			<div class="shrink-0 bg-green-500 h-[1px] max-w-[1024px] mb-8 mx-4">
-			</div>
-		</nav>
-
-		<main class="flex flex-grow mx-auto">
+	<body class="flex flex-col min-h-full">
+		<Navbar client:load />
+		<main class="flex flex-grow">
 			<slot />
 		</main>
-
-		<footer class="max-w-4xl px-4 mx-auto">
-			<Footer />
-		</footer>
+		<Footer />
 	</body>
 </html>

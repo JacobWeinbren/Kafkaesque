@@ -15,7 +15,7 @@ export async function getStaticPaths({ paginate }) {
 		excerpt: true,
 		published_at: true,
 	});
-	const pageSize = 4;
+	const pageSize = 6;
 
 	return paginate(allPosts, { pageSize });
 }
@@ -32,49 +32,53 @@ const { page } = Astro.props as PageData;
 	title="Archive"
 	description="Archive of all posts on Kafkaesque Blog"
 >
-	<div class="max-w-4xl px-4 py-20">
-		<h1 class="font-bold text-7xl">Blog</h1>
-		<p class="my-3 mb-8 text-2xl font-semibold text-muted-foreground">
-			All my writing in one place.
-		</p>
-		<PostList posts={page.data} />
-		<nav aria-label="Pagination" class="flex w-full mt-8">
-			{
-				page.url.prev ? (
-					<a
-						href={page.url.prev}
-						class="pagination-previous"
-						rel="prev"
-					>
-						<Button
-							variant="bordered"
-							className="border no-underline rounded shadow p-3 text-lg"
+	<div class="flex flex-col w-full dark:bg-gray-800 dark:text-white">
+		<div
+			class="flex flex-col items-center max-w-screen-lg px-4 py-20 mx-auto"
+		>
+			<h1 class="font-bold text-7xl">Blog</h1>
+			<p class="my-3 mb-8 text-2xl font-semibold text-muted-foreground">
+				All my writing in one place.
+			</p>
+			<PostList posts={page.data} />
+			<nav aria-label="Pagination" class="flex w-full mt-8">
+				{
+					page.url.prev ? (
+						<a
+							href={page.url.prev}
+							class="pagination-previous"
+							rel="prev"
 						>
-							<ChevronLeft className="mr-2 h-4 w-4" />
-							Previous Page
-						</Button>
-					</a>
-				) : (
-					<span class="flex-grow" />
-				)
-			}
-			{
-				page.url.next && (
-					<a
-						href={page.url.next}
-						class="ml-auto pagination-next"
-						rel="next"
-					>
-						<Button
-							variant="bordered"
-							className="border no-underline rounded shadow p-3 text-lg"
+							<Button
+								variant="bordered"
+								className="border no-underline rounded shadow p-3 text-lg"
+							>
+								<ChevronLeft className="mr-2 h-4 w-4" />
+								Previous Page
+							</Button>
+						</a>
+					) : (
+						<span class="flex-grow" />
+					)
+				}
+				{
+					page.url.next && (
+						<a
+							href={page.url.next}
+							class="ml-auto pagination-next"
+							rel="next"
 						>
-							Next Page
-							<ChevronRight className="ml-2 h-4 w-4" />
-						</Button>
-					</a>
-				)
-			}
-		</nav>
+							<Button
+								variant="bordered"
+								className="border no-underline rounded shadow p-3 text-lg"
+							>
+								Next Page
+								<ChevronRight className="ml-2 h-4 w-4" />
+							</Button>
+						</a>
+					)
+				}
+			</nav>
+		</div>
 	</div>
 </BaseLayout>

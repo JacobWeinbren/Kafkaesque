@@ -3,7 +3,9 @@ import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import react from "@astrojs/react";
 import cloudflare from "@astrojs/cloudflare";
+import svelte from "@astrojs/svelte";
 
+// https://astro.build/config
 export default defineConfig({
 	site: "https://kafkaesque.blog/",
 	output: "server",
@@ -13,6 +15,7 @@ export default defineConfig({
 		}),
 		sitemap(),
 		react(),
+		svelte(),
 	],
 	vite: {
 		resolve: {
