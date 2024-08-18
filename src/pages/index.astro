@@ -2,39 +2,30 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 ---
 
-<BaseLayout
-	title="Jacob Weinbren"
-	description="Jacob Weinbren's personal website"
->
-	<div
-		class="flex flex-col items-center justify-center px-7 bg-green-500 w-full"
-	>
-		<div class="max-w-screen-lg">
-			<script src="https://cdn.lordicon.com/lordicon.js"></script>
-
-			<div class="flex flex-col md:flex-row gap-7 max-w-4xl w-full">
-				<div class="flex flex-col md:w-1/2">
-					<h1 class="text-white font-bold text-6xl">Hello!</h1>
-					<p class="text-white font-medium mt-10">
-						This is my personal site. Here you can find out more
-						about what I'm up to. I'm a coder, blogger, and data
-						storyteller from Milton Keynes, a city just north of
-						London. I work to combine data and tech to create digital
-						experiences. I also love turtles!
-					</p>
-				</div>
-
-				<div class="flex items-center justify-center md:w-1/2">
-					<lord-icon
-						src="https://cdn.lordicon.com/cfkyvikj.json"
-						trigger="loop"
-						stroke="light"
-						colors="primary:#ffffff,secondary:#ffffff"
-						class="h-60 w-60 -m-16"
-					>
-					</lord-icon>
-				</div>
-			</div>
-		</div>
-	</div>
+<BaseLayout title="Jacob Weinbren" description="Jacob Weinbren's personal website">
+	<main class="bg-green-500 h-full flex items-center justify-center p-4"> <!-- Removed flex-col and min-h-screen, changed padding -->
+	  <div class="max-w-4xl w-full">
+		<div class="flex flex-col md:flex-row gap-8 items-center">
+          <div class="md:w-1/2">
+            <h1 class="text-white font-bold text-5xl sm:text-6xl mb-6">Hello!</h1>
+            <p class="text-white text-lg">
+              I'm Jacob, a coder, blogger, and data storyteller from Milton Keynes. I combine data and tech to create digital experiences. Oh, and I love turtles!
+            </p>
+          </div>
+          <div class="md:w-1/2 flex justify-center">
+            <lord-icon
+              src="https://cdn.lordicon.com/cfkyvikj.json"
+              trigger="loop"
+              colors="primary:#ffffff,secondary:#ffffff"
+              style="width:300px;height:300px;"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </BaseLayout>
+
+<script>
+  import "https://cdn.lordicon.com/lordicon.js";
+</script>

@@ -8,9 +8,9 @@ const { title, description, image } = Astro.props;
 
 <html lang="en" class="h-full">
 	<Head title={title} description={description} image={image} />
-	<body class="flex flex-col min-h-full">
+	<body class="flex flex-col h-screen">
 		<Navbar client:load />
-		<main class="flex flex-grow">
+		<main class="flex-grow">
 			<slot />
 		</main>
 		<Footer />
