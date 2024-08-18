@@ -2,7 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PostList from "@/components/PostList.astro";
 import { getBlogPosts } from "@/lib/ghost";
-import { Button } from "@nextui-org/react";
+import Button from "@/components/Button.svelte";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export const prerender = true;
@@ -37,45 +37,31 @@ const { page } = Astro.props as PageData;
 			class="flex flex-col items-center max-w-screen-lg px-4 py-20 mx-auto"
 		>
 			<h1 class="font-bold text-7xl">Blog</h1>
-			<p class="my-3 mb-8 text-2xl font-semibold text-muted-foreground">
+			<p class="my-3 mb-8 text-2xl font-semibold text-gray-500">
 				All my writing in one place.
 			</p>
 			<PostList posts={page.data} />
 			<nav aria-label="Pagination" class="flex w-full mt-8">
 				{
 					page.url.prev ? (
-						<a
-							href={page.url.prev}
-							class="pagination-previous"
-							rel="prev"
-						>
-							<Button
-								variant="bordered"
-								className="border no-underline rounded shadow p-3 text-lg"
-							>
-								<ChevronLeft className="mr-2 h-4 w-4" />
-								Previous Page
-							</Button>
-						</a>
+						<Button href={page.url.prev} color="#10B981">
+							<ChevronLeft className="mr-2 h-4 w-4" />
+							Previous Page
+						</Button>
 					) : (
 						<span class="flex-grow" />
 					)
 				}
 				{
 					page.url.next && (
-						<a
+						<Button
 							href={page.url.next}
-							class="ml-auto pagination-next"
-							rel="next"
+							color="#10B981"
+							className="ml-auto"
 						>
-							<Button
-								variant="bordered"
-								className="border no-underline rounded shadow p-3 text-lg"
-							>
-								Next Page
-								<ChevronRight className="ml-2 h-4 w-4" />
-							</Button>
-						</a>
+							Next Page
+							<ChevronRight className="ml-2 h-4 w-4" />
+						</Button>
 					)
 				}
 			</nav>

@@ -50,7 +50,7 @@ const processedHtml = post.html.replace(/&nbsp;/g, " ");
 						{post.title}
 					</h1>
 
-					<p class="my-2 text-muted-foreground">
+					<p class="my-2 text-gray-500">
 						Published on {
 							new Date(post.published_at).toLocaleDateString(
 								"en-UK",
@@ -72,12 +72,12 @@ const processedHtml = post.html.replace(/&nbsp;/g, " ");
 					class="mt-8 mb-2 rounded-md border bg-muted object-cover w-full h-[400px]"
 				/>
 				<div
-					class="min-w-full mb-8 prose text-center text-muted-foreground dark:prose-invert"
+					class="min-w-full mb-8 prose text-center text-gray-500 dark:prose-invert"
 					set:html={post.feature_image_caption}
 				/>
 
 				<div
-					class="prose dark:prose-invert"
+					class="prose prose-slate dark:prose-invert"
 					set:html={processedHtml}
 				/>
 			</article>
