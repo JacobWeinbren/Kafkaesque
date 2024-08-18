@@ -45,12 +45,12 @@ const processedHtml = post.html.replace(/&nbsp;/g, " ");
 			<article class="px-2">
 				<div>
 					<h1
-						class="inline-block mt-2 text-6xl font-bold leading-tight lg:text-5xl"
+						class="inline-block text-6xl font-bold leading-tight lg:text-5xl"
 					>
 						{post.title}
 					</h1>
 
-					<p class="mt-6 mb-4 text-muted-foreground">
+					<p class="my-2 text-muted-foreground">
 						Published on {
 							new Date(post.published_at).toLocaleDateString(
 								"en-UK",
