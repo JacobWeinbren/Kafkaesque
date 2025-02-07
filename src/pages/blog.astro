@@ -31,36 +31,32 @@ const {
 						<a
 							href={`/post/${post.slug}`}
 							class="block bg-white rounded-xl overflow-hidden border border-gray-100 
-                   hover:border-green-500 transition-all duration-150 hover:shadow-md"
+                     hover:border-green-500 transition-all duration-150 hover:shadow-md"
 						>
-							<div class="md:flex h-48">
+							<div class="flex flex-col md:flex-row">
 								{post.coverImage && (
-									<div class="md:w-1/3 relative overflow-hidden">
-										<div class="h-48 md:h-full">
-											<img
-												src={post.coverImage}
-												alt={post.title}
-												class="w-full h-full object-cover transform group-hover:scale-105 
-                             transition-transform duration-150"
-											/>
-										</div>
+									<div class="md:w-1/3 relative overflow-hidden h-48 md:h-auto">
+										<img
+											src={post.coverImage}
+											alt={post.title}
+											class="w-full h-full object-cover transform group-hover:scale-105 
+                           transition-transform duration-150"
+										/>
 									</div>
 								)}
 								<div class="p-4 md:w-2/3 flex flex-col">
-									<div>
-										<time class="text-sm text-green-600 font-medium">
-											{formatDate(post.publishedAt)}
-										</time>
-										<h2
-											class="text-lg font-bold mt-1 mb-2 group-hover:text-green-600 
-                             transition-colors duration-150"
-										>
-											{post.title}
-										</h2>
-										<p class="text-gray-600 text-sm line-clamp-2">
-											{post.subtitle}
-										</p>
-									</div>
+									<time class="text-sm text-green-600 font-medium">
+										{formatDate(post.publishedAt)}
+									</time>
+									<h2
+										class="text-lg font-bold mt-1 mb-2 group-hover:text-green-600 
+                           transition-colors duration-150"
+									>
+										{post.title}
+									</h2>
+									<p class="text-gray-600 text-sm line-clamp-2">
+										{post.subtitle}
+									</p>
 								</div>
 							</div>
 						</a>
@@ -108,45 +104,41 @@ const {
 		article.className = "group";
 
 		article.innerHTML = `
-      <a
-        href="/post/${post.slug}"
-        class="block bg-white rounded-xl overflow-hidden border border-gray-100 
-               hover:border-green-500 transition-all duration-150 hover:shadow-md"
-      >
-        <div class="md:flex h-48">
-          ${
-				post.coverImage
-					? `
-            <div class="md:w-1/3 relative overflow-hidden">
-              <div class="h-48 md:h-full">
-                <img
-                  src="${post.coverImage}"
-                  alt="${post.title}"
-                  class="w-full h-full object-cover transform group-hover:scale-105 
-                         transition-transform duration-150"
-                />
-              </div>
+    <a
+      href="/post/${post.slug}"
+      class="block bg-white rounded-xl overflow-hidden border border-gray-100 
+             hover:border-green-500 transition-all duration-150 hover:shadow-md"
+    >
+      <div class="flex flex-col md:flex-row">
+        ${
+			post.coverImage
+				? `
+            <div class="md:w-1/3 relative overflow-hidden h-48 md:h-auto">
+              <img
+                src="${post.coverImage}"
+                alt="${post.title}"
+                class="w-full h-full object-cover transform group-hover:scale-105 
+                       transition-transform duration-150"
+              />
             </div>
           `
-					: ""
-			}
-          <div class="p-4 md:w-2/3 flex flex-col">
-            <div>
-              <time class="text-sm text-green-600 font-medium">
-                ${formatDate(post.publishedAt)}
-              </time>
-              <h2 class="text-lg font-bold mt-1 mb-2 group-hover:text-green-600 
-                         transition-colors duration-150">
-                ${post.title}
-              </h2>
-              <p class="text-gray-600 text-sm line-clamp-2">
-                ${post.subtitle || ""}
-              </p>
-            </div>
-          </div>
+				: ""
+		}
+        <div class="p-4 md:w-2/3 flex flex-col">
+          <time class="text-sm text-green-600 font-medium">
+            ${formatDate(post.publishedAt)}
+          </time>
+          <h2 class="text-lg font-bold mt-1 mb-2 group-hover:text-green-600 
+                     transition-colors duration-150">
+            ${post.title}
+          </h2>
+          <p class="text-gray-600 text-sm line-clamp-2">
+            ${post.subtitle || ""}
+          </p>
         </div>
-      </a>
-    `;
+      </div>
+    </a>
+  `;
 
 		return article;
 	}
