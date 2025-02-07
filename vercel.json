@@ -1,0 +1,11 @@
+{
+	"cleanUrls": true,
+	"trailingSlash": false,
+	"redirects": [
+		{
+			"source": "/blog/1",
+			"destination": "/blog",
+			"permanent": true
+		}
+	]
+}
