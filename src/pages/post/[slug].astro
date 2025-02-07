@@ -17,7 +17,11 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 ---
 
-<BaseLayout title={post.title} description={post.subtitle || ""}>
+<BaseLayout
+	title={post.title}
+	description={post.subtitle || ""}
+	image={post.coverImage || ""}
+>
 	<header class="relative">
 		{
 			post.coverImage && (
