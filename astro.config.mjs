@@ -12,7 +12,9 @@ export default defineConfig({
 		react(),
 	],
 	output: "server",
-	adapter: vercel(),
+	adapter: vercel({
+		analytics: true,
+	}),
 	vite: {
 		resolve: {
 			alias: {
