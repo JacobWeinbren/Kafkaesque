@@ -19,6 +19,7 @@
 		"@tailwindcss/typography": "^0.5.16",
 		"@ts-ghost/admin-api": "^4.2.1",
 		"@ts-ghost/content-api": "^4.1.0",
+		"@vercel/analytics": "^1.4.1",
 		"@vercel/speed-insights": "^1.1.0",
 		"astro": "^5.2.5",
 		"fuse.js": "^7.1.0",
