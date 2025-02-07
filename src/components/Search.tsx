@@ -1,6 +1,6 @@
 // src/components/Search.tsx
 import { useState, useEffect, useCallback } from "react";
-import { Search as SearchIcon } from "lucide-react";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import debounce from "lodash/debounce";
 import type { HashnodePost } from "@/types/hashnode";
 
@@ -11,7 +11,6 @@ export default function Search() {
 	const [hasSearched, setHasSearched] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	// Initialize search from URL params
 	useEffect(() => {
 		const params = new URLSearchParams(window.location.search);
 		const initialQuery = params.get("q") || "";
@@ -35,7 +34,7 @@ export default function Search() {
 
 			try {
 				const controller = new AbortController();
-				const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+				const timeoutId = setTimeout(() => controller.abort(), 5000);
 
 				const response = await fetch(
 					`/api/search?q=${encodeURIComponent(searchQuery)}`,
@@ -74,7 +73,6 @@ export default function Search() {
 		[]
 	);
 
-	// Cleanup on unmount
 	useEffect(() => {
 		return () => {
 			performSearch.cancel();
@@ -97,7 +95,7 @@ export default function Search() {
                      focus:outline-none transition-all duration-150"
 						placeholder="Search posts..."
 					/>
-					<SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+					<MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
 				</div>
 			</form>
 

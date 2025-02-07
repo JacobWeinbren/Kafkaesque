@@ -16,9 +16,10 @@ export default defineConfig({
 	adapter: vercel({
 		analytics: true,
 		imageService: true,
+		maxDuration: 60, // Add timeout configuration
 	}),
 	image: {
-		domains: ["cdn.hashnode.com"], // Add Hashnode's domain
+		domains: ["cdn.hashnode.com"],
 		remotePatterns: [
 			{
 				protocol: "https",
@@ -34,11 +35,22 @@ export default defineConfig({
 		build: {
 			cssMinify: true,
 			minify: true,
+			rollupOptions: {
+				output: {
+					manualChunks: {
+						"react-vendor": ["react", "react-dom"],
+						search: ["fuse.js", "lodash/debounce"],
+					},
+				},
+			},
 		},
 		resolve: {
 			alias: {
 				"@": "/src",
 			},
+		},
+		ssr: {
+			noExternal: ["@heroicons/react"],
 		},
 	},
 });
