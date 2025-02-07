@@ -49,15 +49,6 @@ const { post } = Astro.props;
 							<h1 class="text-4xl md:text-5xl font-bold text-white mt-2">
 								{post.title}
 							</h1>
-							{post.tags && post.tags.length > 0 && (
-								<div class="flex gap-2 mt-4">
-									{post.tags.map((tag) => (
-										<span class="bg-white/10 text-white px-2 py-1 rounded-full text-sm">
-											{tag.name}
-										</span>
-									))}
-								</div>
-							)}
 						</div>
 					</div>
 				</div>
