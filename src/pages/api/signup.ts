@@ -1,46 +1,70 @@
+// src/pages/api/signup.ts
+import type { APIRoute } from "astro";
 import { TSGhostAdminAPI } from "@ts-ghost/admin-api";
 
 const api = new TSGhostAdminAPI(
 	"https://kafkaesque.digitalpress.blog",
-	import.meta.env.PUBLIC_ADMIN_API_KEY || "",
+	import.meta.env.GHOST_ADMIN_API_KEY || "",
 	"v5.47.0"
 );
 
-export const POST = async ({ request }) => {
-	const formData = await request.formData();
-	const email = formData.get("email");
-	console.log(email);
-	if (
-		!email ||
-		!email.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/)
-	) {
+interface ErrorResponse {
+	success: false;
+	errors: Array<{ message: string; type: string; context?: string }>;
+}
+
+export const POST: APIRoute = async ({ request }) => {
+	const data = await request.formData();
+	const email = data.get("email")?.toString();
+	const name = data.get("name")?.toString() || "";
+
+	if (!email) {
 		return new Response(
-			JSON.stringify({ message: "Invalid email address" }),
+			JSON.stringify({
+				success: false,
+				message: "Email is required",
+			}),
 			{ status: 400 }
 		);
 	}
 
 	try {
-		const response = await api.members.add({ email }, { send_email: true });
-		console.log(response);
-		if (!response.success) {
-			const errorResponse = response as {
-				success: false;
-				errors: { message: string; type: string; context?: string }[];
-			};
+		const response = await api.members.add({
+			email,
+			name,
+			subscribed: true,
+		});
+
+		const result = await response;
+
+		// Type guard to check if it's an error response
+		if (!result.success) {
+			const errorResponse = result as ErrorResponse;
 			return new Response(
-				JSON.stringify({ message: errorResponse.errors[0].message }),
+				JSON.stringify({
+					success: false,
+					message:
+						errorResponse.errors[0]?.message ||
+						"Failed to subscribe",
+				}),
 				{ status: 400 }
 			);
 		}
+
 		return new Response(
-			JSON.stringify({ message: "Member created successfully" }),
+			JSON.stringify({
+				success: true,
+				message: "Successfully subscribed!",
+			}),
 			{ status: 200 }
 		);
 	} catch (error) {
-		console.error(error);
+		console.error("Subscription error:", error);
 		return new Response(
-			JSON.stringify({ message: "Error creating member" }),
+			JSON.stringify({
+				success: false,
+				message: "An error occurred",
+			}),
 			{ status: 500 }
 		);
 	}

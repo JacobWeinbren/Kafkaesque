@@ -1,28 +1,44 @@
-import { getBlogPosts } from "@/lib/ghost";
+// src/pages/api/search.ts
+import type { APIRoute } from "astro";
+import { getPosts } from "@/lib/ghost";
 import Fuse from "fuse.js";
 
-const allPosts = await getBlogPosts({
-	title: true,
-	slug: true,
-	excerpt: true,
-	published_at: true,
-	feature_image: true,
-});
+let fuse: Fuse<any> | null = null;
 
-const fuse = new Fuse(allPosts, {
-	keys: ["title", "html"],
-	threshold: 0.4,
-});
+export const GET: APIRoute = async ({ url }) => {
+	const query = url.searchParams.get("q");
 
-export const GET = async ({ request }) => {
-	const url = new URL(request.url);
-	const query = url.searchParams.get("query");
+	if (!query) {
+		return new Response(JSON.stringify([]), {
+			status: 200,
+			headers: { "Content-Type": "application/json" },
+		});
+	}
 
-	const results = fuse.search(query).map((result) => result.item);
+	try {
+		if (!fuse) {
+			const posts = await getPosts();
+			fuse = new Fuse(posts, {
+				keys: ["title", "excerpt", "html"],
+				threshold: 0.3,
+				includeScore: true,
+			});
+		}
 
-	return new Response(JSON.stringify(results), {
-		headers: {
-			"Content-Type": "application/json",
-		},
-	});
+		const results = fuse
+			.search(query)
+			.filter((result) => result.score && result.score < 0.7)
+			.map((result) => result.item);
+
+		return new Response(JSON.stringify(results.slice(0, 9)), {
+			status: 200,
+			headers: { "Content-Type": "application/json" },
+		});
+	} catch (error) {
+		console.error("Search error:", error);
+		return new Response(JSON.stringify({ error: "Search failed" }), {
+			status: 500,
+			headers: { "Content-Type": "application/json" },
+		});
+	}
 };

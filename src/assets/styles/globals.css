@@ -1,0 +1,24 @@
+:root {
+	--primary: #10b981; /* Green */
+	--secondary: #a16207; /* Brown */
+	--accent: #facc15; /* Yellow */
+	--text: #1f2937;
+	--background: #ffffff;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: "Nunito", sans-serif;
+	color: var(--text);
+	background: var(--background);
+}
+
+.dark {
+	--text: #f9fafb;
+	--background: #111827;
+}

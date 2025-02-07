@@ -1,63 +1,111 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
-
-const sections = [
-  {
-    title: "Crafting the Future Together",
-    content: [
-      "Hi - I'm Jacob Weinbren. I'm a keen developer, writer, and data storyteller. My professional journey covers a range of skills, locations and firms, both large and small. I have a keen eye on creating accessible, high-quality, and performance-driven digital experiences. Dive into <a href='/projects' class='font-bold hover:text-green-500 transition-colors duration-300'>my portfolio</a>, read my writings at <a href='https://www.thesocialreview.co.uk/author/jacobweinbren/' class='font-bold hover:text-green-500 transition-colors duration-300'>The Social Review</a>, or explore my thoughts on <a href='/blog' class='font-bold hover:text-green-500 transition-colors duration-300'>my blog</a>.",
-      "Reach out via email at <a href='mailto:jacobweinbren@gmail.com' class='font-bold hover:text-green-500 transition-colors duration-300'>jacobweinbren@gmail.com</a>. Let's connect on <a href='https://github.com/JacobWeinbren' class='font-bold hover:text-green-500 transition-colors duration-300'>GitHub</a> too!"
-    ],
-    green: false
-  },
-  {
-    title: "My Toolbox",
-    content: [
-      "My experience covers an extensive array of technologies such as Git, PHP, HTML, CSS, JavaScript, React, Svelte, Next.js, WordPress, alongside Python and Java for the backend. I've always been keen to leverage the latest in technology to ensure projects meet the latest standards - be it in mobile responsiveness, accessibility or SEO. I have a keen focus in security, having worked on a large scale project which required specialist knowledge. My expertise doesn't stop there; I'm also proficient in Docker, AWS, MySQL, and Google Analytics, with a passion for bringing data to life through visualisation. I am constantly learning and excited to take on what is needed for the task."
-    ],
-    green: true
-  },
-  {
-    title: "Projects That Make a Difference",
-    content: [
-      "Whether breaking barriers with the Hebrew Transliteration and Duolingo Flashcards project or shedding light on sociopolitical trends through the Israeli Elections visualisation, my projects aim to inform, engage, and inspire."
-    ],
-    green: false
-  },
-  {
-    title: "Education as a Foundation",
-    content: [
-      "With a BA in English from Exeter University, my academic background enriches my technical skills with an appreciation for narrative, culture, and communication, enabling me to approach projects with a unique perspective."
-    ],
-    green: true
-  },
-  {
-    title: "Let's Innovate Together",
-    content: [
-      "Whether you're looking to bring a groundbreaking application to life, enhance your digital presence with a state-of-the-art website, or unlock new insights through data visualisation, I can help. My code is not just about functionality; it's about future-proofing, performance, and pushing the boundaries of what's possible.",
-      "Have you got an idea or a challenge that fits the bill? I'm all ears. Let's collaborate.",
-      "Get in touch: <a href='mailto:jacobweinbren@gmail.com' class='font-bold hover:text-green-500 transition-colors duration-300'>jacobweinbren@gmail.com</a>"
-    ],
-    green: false
-  }
-];
+import BaseLayout from '@/layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="Jacob Weinbren" description="An introduction to Jacob">
-  <div class="flex justify-center w-full dark:bg-gray-800 dark:text-white">
-    <div class="flex flex-col max-w-screen-lg py-12 mx-auto">
-      {sections.map((section, index) => (
-        <div class={`py-8 ${section.green ? 'bg-green-500 text-white rounded-2xl' : ''} ${index === 0 ? 'mb-8' : 'mb-4'}`}>
-          <div class="flex flex-col max-w-3xl gap-3 px-6 mx-auto">
-            <h2 class={`${index === 0 ? 'text-5xl -ml-1' : 'text-3xl'} font-bold mb-2`}>
-              {section.title}
-            </h2>
-            {section.content.map((paragraph) => (
-              <p class="text-lg" set:html={paragraph} />
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
+<BaseLayout
+	title="About - Jacob Weinbren"
+	description="Web Developer, GIS Specialist, and Researcher based in Exeter"
+>
+	<div class="max-w-4xl mx-auto px-4 py-16">
+		<h1 class="text-4xl font-bold mb-8">About Me</h1>
+
+		<div class="prose prose-lg max-w-none space-y-6">
+			<section>
+				<h2 class="text-2xl font-bold text-green-600">
+					Professional Overview
+				</h2>
+				<p>
+					I'm a Full Stack Web Developer currently pursuing an MSc in
+					Geographic Information Science at the University of Exeter.
+					My expertise spans modern web technologies including
+					Next.js, React, Svelte, and Astro, complemented by strong
+					capabilities in data visualisation and geospatial analysis.
+				</p>
+			</section>
+
+			<section>
+				<h2 class="text-2xl font-bold text-green-600">
+					Technical Expertise
+				</h2>
+				<p>
+					My development journey encompasses both front-end and
+					back-end technologies, with particular focus on creating
+					accessible, high-performance web applications. I'm
+					proficient in:
+				</p>
+				<ul>
+					<li>Modern frameworks (Next.js, React, Svelte, Astro)</li>
+					<li>Cloud services (AWS Certified)</li>
+					<li>Database management (MySQL, Redis)</li>
+					<li>GIS and data visualisation</li>
+					<li>CI/CD and DevOps practices</li>
+				</ul>
+			</section>
+
+			<section>
+				<h2 class="text-2xl font-bold text-green-600">
+					Notable Projects
+				</h2>
+				<p>
+					I've led several significant projects that demonstrate my
+					commitment to innovative solutions:
+				</p>
+				<ul>
+					<li>
+						<strong
+							>Hebrew Transliteration + Duolingo Flashcards:</strong
+						> Led a global team in developing a neural network-powered
+						transliteration system and creating over 4,000 interactive
+						flashcards.
+					</li>
+					<li>
+						<strong>Electoral Visualisations:</strong> Developed comprehensive
+						mapping solutions for Israeli elections and UK voting patterns,
+						receiving recognition from prominent political analysts and
+						academics.
+					</li>
+					<li>
+						<strong>Canadian Census 2021:</strong> Created sophisticated
+						geospatial visualisations handling millions of data points
+						using Redis map server technology.
+					</li>
+				</ul>
+			</section>
+
+			<section>
+				<h2 class="text-2xl font-bold text-green-600">
+					Community Engagement
+				</h2>
+				<p>
+					Beyond development, I'm actively involved in academic and
+					community activities. I serve as treasurer of the
+					Postgraduate Society at Exeter University and engage with
+					the local Jewish university society. I maintain a blog
+					discussing literature, programming, and politics, reflecting
+					my commitment to continuous learning and knowledge sharing.
+				</p>
+			</section>
+
+			<section>
+				<h2 class="text-2xl font-bold text-green-600">Get in Touch</h2>
+				<p>
+					I'm always interested in new opportunities and
+					collaborations. Whether you're looking to discuss a project,
+					share ideas, or just connect, feel free to reach out via
+					<a
+						href="mailto:jacobweinbren@gmail.com"
+						class="text-green-600 hover:text-green-700"
+					>
+						email
+					</a> or find me on
+					<a
+						href="https://github.com/JacobWeinbren"
+						class="text-green-600 hover:text-green-700"
+					>
+						GitHub
+					</a>.
+				</p>
+			</section>
+		</div>
+	</div>
 </BaseLayout>

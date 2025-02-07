@@ -1,77 +1,76 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { Image } from "astro:assets";
-import { getBlogPosts } from "@/lib/ghost";
-import { Button } from "@nextui-org/react";
-import { ChevronLeft } from "lucide-react";
+import { getPosts } from "@/lib/ghost";
+import type { Post } from "@ts-ghost/content-api";
+import SignupForm from "@/components/SignupForm.astro";
 
 export const prerender = true;
-
-export async function getStaticPaths() {
-	const posts = await getBlogPosts({
-		title: true,
-		slug: true,
-		id: true,
-		reading_time: true,
-		feature_image: true,
-		html: true,
-		excerpt: true,
-		published_at: true,
-		feature_image_caption: true,
-	});
-	return posts.map((post) => {
-		return {
-			params: {
-				slug: post.slug,
-			},
-			props: {
-				post: post,
-			},
-		};
-	});
+interface Props {
+	post: Post;
 }
-
+export async function getStaticPaths() {
+	const posts = await getPosts();
+	return posts.map((post) => ({
+		params: { slug: post.slug },
+		props: { post },
+	}));
+}
 const { post } = Astro.props;
-const processedHtml = post.html.replace(/&nbsp;/g, " ");
 ---
 
-<BaseLayout
-	title={`Kafkaesque Blog - ${post.title}`}
-	description={post.excerpt}
-	image={post.feature_image}
->
-	<div class="w-full">
-		<div class="relative h-[60vh] w-full"> 
-			<Image
-				src={post.feature_image}
-				alt={post.title}
-				width={1920}
-				height={1080}
-				class="absolute inset-0 object-cover w-full h-full"
-			/>
-			<div class="absolute inset-0 bg-black opacity-50"></div>
-			<div class="absolute inset-0 flex items-center justify-center">
-				<div class="text-white text-center max-w-4xl px-4">
-					<p class="mb-2 text-sm text-gray-200 uppercase tracking-wider">
-						{new Date(post.published_at).toLocaleDateString("en-UK", {
-							year: "numeric",
-							month: "long",
-							day: "numeric",
-						})}
-					</p>
-					<h1 class="text-5xl font-bold leading-tight mb-2">
-						{post.title}
-					</h1>
+<BaseLayout title={post.title} description={post.excerpt || ""}>
+	<!-- Post Header -->
+	<header class="relative">
+		{
+			post.feature_image && (
+				<div class="h-[70vh] relative">
+					<Image
+						src={post.feature_image}
+						alt={post.title}
+						width={1920}
+						height={1080}
+						class="absolute inset-0 w-full h-full object-cover"
+					/>
+					<div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+					<div class="absolute bottom-0 left-0 right-0 p-8">
+						<div class="max-w-4xl mx-auto">
+							<time class="text-white/80 text-sm">
+								{new Date(post.published_at).toLocaleDateString(
+									"en-GB",
+									{
+										day: "numeric",
+										month: "long",
+										year: "numeric",
+									}
+								)}
+							</time>
+							<h1 class="text-4xl md:text-5xl font-bold text-white mt-2">
+								{post.title}
+							</h1>
+						</div>
+					</div>
 				</div>
-			</div>
+			)
+		}
+	</header>
+
+	<!-- Post Content -->
+	<article class="max-w-4xl mx-auto px-4 py-16">
+		<div class="prose prose-lg max-w-none">
+			<Fragment set:html={post.html || ""} />
 		</div>
-		<div class="bg-white dark:bg-gray-800 py-16">
-			<div class="max-w-screen-lg mx-auto px-4">
-				<div
-					class="prose prose-lg prose-slate dark:prose-invert mx-auto"
-					set:html={processedHtml}
-				/>
-			</div>
+
+		<!-- Add signup form -->
+		<SignupForm location="post" />
+
+		<div class="mt-8">
+			<a
+				href="/blog"
+				class="inline-flex items-center text-green-600 hover:text-green-700"
+			>
+				← Back to Blog
+			</a>
 		</div>
-	</div>
+	</article>
 </BaseLayout>

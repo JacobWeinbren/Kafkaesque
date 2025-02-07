@@ -1,3 +1,4 @@
+// src/lib/ghost.ts
 import { TSGhostContentAPI } from "@ts-ghost/content-api";
 
 const api = new TSGhostContentAPI(
@@ -6,48 +7,75 @@ const api = new TSGhostContentAPI(
 	"v5.47.0"
 );
 
-async function fetchPosts(options: any) {
-	const response = await api.posts.browse(options).fetch();
+export async function getPosts(options = {}) {
+	try {
+		const response = await api.posts
+			.browse({
+				limit: "all",
+				...options,
+			})
+			.fetch();
 
-	if (!response.success) {
-		const errorResponse = response as {
-			success: false;
-			errors: { message: string; type: string }[];
-		};
-		console.error(errorResponse.errors.map((e) => e.message).join(", "));
-		return { data: [], error: true };
+		if (!response.success) {
+			const errorResponse = response as {
+				success: false;
+				errors: Array<{ message: string; type: string }>;
+			};
+			console.error(
+				"Ghost API Error:",
+				errorResponse.errors.map((e) => e.message).join(", ")
+			);
+			return [];
+		}
+
+		return response.data as GhostPost[];
+	} catch (error) {
+		console.error("Failed to fetch posts:", error);
+		return [];
 	}
-	return { data: response.data, error: false };
 }
 
-export async function getBlogPosts(
-	fields = {},
-	limit: number | "all" = "all",
-	tagFilter?: string
-) {
-	let options: any = {
-		limit,
-		fields,
-		...(tagFilter && { filter: `tags:${tagFilter}` }),
-	};
+export async function getPost(slug: string) {
+	try {
+		const response = await api.posts
+			.read({
+				slug,
+			})
+			.fetch();
 
-	const { data, error } = await fetchPosts(options);
-	return error ? [] : data;
+		if (!response.success) {
+			// Type guard to handle the error case
+			const errorResponse = response as {
+				success: false;
+				errors: Array<{ message: string; type: string }>;
+			};
+			console.error(
+				"Ghost API Error:",
+				errorResponse.errors.map((e) => e.message).join(", ")
+			);
+			return null;
+		}
+
+		return response.data;
+	} catch (error) {
+		console.error("Failed to fetch post:", error);
+		return null;
+	}
 }
 
-export async function loadMorePosts(
-	page: number,
-	limit: number = 10,
-	fields = {},
-	tagFilter?: string
-) {
-	let options: any = {
-		limit,
-		fields,
-		page,
-		...(tagFilter && { filter: `tags:${tagFilter}` }),
-	};
+// Add TypeScript interfaces for better type safety
+export interface GhostPost {
+	id: string;
+	slug: string;
+	title: string;
+	html: string;
+	excerpt: string;
+	feature_image?: string;
+	published_at: string;
+	// Add other fields as needed
+}
 
-	const { data, error } = await fetchPosts(options);
-	return { posts: data, error };
+export interface GhostError {
+	message: string;
+	type: string;
 }

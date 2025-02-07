@@ -1,0 +1,74 @@
+---
+const links = [
+	{ href: "/", text: "Home" },
+	{ href: "/about", text: "About" },
+	{ href: "/blog", text: "Blog" },
+	{ href: "/search", text: "Search" },
+];
+---
+
+<nav class="bg-green-500 text-white">
+	<div class="max-w-7xl mx-auto px-4">
+		<div class="flex items-center justify-between h-16">
+			<!-- Logo -->
+			<a href="/" class="font-bold text-xl">Jacob W</a>
+
+			<!-- Desktop Navigation -->
+			<div class="hidden md:flex space-x-8">
+				{
+					links.map((link) => (
+						<a
+							href={link.href}
+							class="font-medium hover:bg-green-600 px-3 py-2 rounded-md snap"
+						>
+							{link.text}
+						</a>
+					))
+				}
+			</div>
+
+			<!-- Mobile Menu Button -->
+			<button
+				id="menuButton"
+				class="md:hidden p-2 hover:bg-green-600 rounded-md"
+				aria-label="Menu"
+			>
+				<svg
+					class="w-6 h-6"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M4 6h16M4 12h16M4 18h16"></path>
+				</svg>
+			</button>
+		</div>
+
+		<!-- Mobile Menu -->
+		<div id="mobileMenu" class="hidden md:hidden pb-4">
+			{
+				links.map((link) => (
+					<a
+						href={link.href}
+						class="block px-3 py-2 rounded-md hover:bg-green-600 snap"
+					>
+						{link.text}
+					</a>
+				))
+			}
+		</div>
+	</div>
+</nav>
+
+<script>
+	const menuButton = document.getElementById("menuButton");
+	const mobileMenu = document.getElementById("mobileMenu");
+
+	menuButton?.addEventListener("click", () => {
+		mobileMenu?.classList.toggle("hidden");
+	});
+</script>

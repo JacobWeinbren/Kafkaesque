@@ -1,97 +1,29 @@
 ---
-import "@/styles/globals.css";
-import { join } from "node:path";
-import { AstroFont } from "astro-font";
-import Logo from "@/img/logo_white.webp";
-
-const permalink = `${Astro.url.origin}${Astro.url.pathname}`;
-
+import "@/assets/styles/globals.css";
+import "@/assets/styles/animations.css";
 const { title, description, image } = Astro.props;
+const permalink = `${Astro.url.origin}${Astro.url.pathname}`;
 ---
 
 <head>
-	<title>{title}</title>
-
-	<!-- Meta details -->
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>{title}</title>
 	<meta name="description" content={description} />
 
 	<!-- Favicon -->
-	<link
-		rel="apple-touch-icon"
-		sizes="180x180"
-		href="/favicon/apple-touch-icon.png"
-	/>
-	<link
-		rel="icon"
-		type="image/png"
-		sizes="32x32"
-		href="/favicon/favicon-32x32.png"
-	/>
-	<link
-		rel="icon"
-		type="image/png"
-		sizes="16x16"
-		href="/favicon/favicon-16x16.png"
-	/>
-	<link rel="icon" type="image/x-icon" href="/favicon/favicon.ico" />
-	<link rel="manifest" href="/favicon/site.webmanifest" />
+	<link rel="icon" type="image/png" href="/favicon.png" />
 
-	<!-- Open Graph Tags (Facebook) -->
+	<!-- Open Graph -->
 	<meta property="og:type" content="website" />
+	<meta property="og:url" content={permalink} />
 	<meta property="og:title" content={title} />
-	{permalink && <meta property="og:url" content={permalink} />}
-	{description && <meta property="og:description" content={description} />}
-	<meta
-		property="og:image"
-		content={image || `${Astro.url.origin}${Logo.src}`}
-	/>
-
-	<!-- Twitter -->
-	<meta property="twitter:card" content="summary_large_image" />
-	<meta property="twitter:title" content={title} />
-	{permalink && <meta property="twitter:url" content={permalink} />}
-	{
-		description && (
-			<meta property="twitter:description" content={description} />
-		)
-	}
-	<meta
-		property="twitter:image"
-		content={image || `${Astro.url.origin}${Logo.src}`}
-	/>
+	<meta property="og:description" content={description} />
+	<meta property="og:image" content={image} />
 
 	<!-- Font -->
-	<AstroFont
-		config={[
-			{
-				src: [],
-				name: "Nunito",
-				display: "swap",
-				selector: "html",
-				fallback: "sans-serif",
-				googleFontsURL:
-					"https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap",
-			},
-			{
-				name: "Kafka",
-				src: [
-					{
-						style: "normal",
-						weight: "400",
-						path: "fonts/Kafka-webfont.woff2",
-					},
-					{
-						style: "normal",
-						weight: "400",
-						path: "fonts/Kafka-webfont.woff",
-					},
-				],
-				preload: true,
-				display: "swap",
-				fallback: "sans-serif",
-			},
-		]}
+	<link
+		href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap"
+		rel="stylesheet"
 	/>
 </head>

@@ -1,31 +1,71 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
+import turtleImage from "@/assets/images/turtle.png";
+import { getPosts } from "@/lib/ghost";
+const latestPosts = await getPosts({ limit: 6 });
 ---
 
-<BaseLayout title="Jacob Weinbren" description="Jacob Weinbren's personal website">
-	<main class="bg-green-500 h-full flex items-center justify-center p-4"> <!-- Removed flex-col and min-h-screen, changed padding -->
-	  <div class="max-w-4xl w-full">
-		<div class="flex flex-col md:flex-row gap-8 items-center">
-          <div class="md:w-1/2">
-            <h1 class="text-white font-bold text-5xl sm:text-6xl mb-6">Hello!</h1>
-            <p class="text-white text-lg">
-              I'm Jacob, a coder, blogger, and data storyteller from Milton Keynes. I combine data and tech to create digital experiences. Oh, and I love turtles!
-            </p>
-          </div>
-          <div class="md:w-1/2 flex justify-center -m-10">
-            <lord-icon
-              src="https://cdn.lordicon.com/cfkyvikj.json"
-              trigger="loop"
-              colors="primary:#ffffff,secondary:#ffffff"
-              style="width:300px;height:300px;"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-</BaseLayout>
+<BaseLayout title="Jacob Weinbren" description="Developer and writer">
+	<div
+		class="bg-green-500 min-h-[80vh] md:min-h-0 md:py-24 flex items-center"
+	>
+		<div class="max-w-4xl mx-auto px-4 py-12 md:py-0">
+			<div
+				class="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12"
+			>
+				<div class="text-white text-center md:text-left">
+					<h1 class="text-5xl md:text-6xl font-bold mb-6">Hello!</h1>
+					<p class="text-lg md:text-xl text-white/90 max-w-xl">
+						I'm Jacob, a developer and writer. I build things with
+						code and tell stories with data.
+					</p>
+				</div>
+				<div class="flex justify-center">
+					<Image
+						src={turtleImage}
+						alt="Turtle Logo"
+						width={200}
+						height={200}
+						class="w-40 h-40 md:w-48 md:h-48 float"
+					/>
+				</div>
+			</div>
+		</div>
+	</div>
 
-<script>
-  import "https://cdn.lordicon.com/lordicon.js";
-</script>
+	<div class="max-w-4xl mx-auto px-4 py-12 md:py-16">
+		<h2 class="text-2xl md:text-3xl font-bold mb-6 md:mb-8">
+			Latest Posts
+		</h2>
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+			{
+				latestPosts.map((post) => (
+					<a href={`/post/${post.slug}`} class="group">
+						<article class="h-full bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+							{post.feature_image && (
+								<div class="aspect-video">
+									<Image
+										src={post.feature_image}
+										alt={post.title}
+										width={400}
+										height={225}
+										class="w-full h-full object-cover"
+									/>
+								</div>
+							)}
+							<div class="p-4 md:p-6">
+								<h3 class="font-bold text-lg md:text-xl mb-2 group-hover:text-green-600">
+									{post.title}
+								</h3>
+								<p class="text-gray-600 text-sm md:text-base line-clamp-3">
+									{post.excerpt}
+								</p>
+							</div>
+						</article>
+					</a>
+				))
+			}
+		</div>
+	</div>
+</BaseLayout>
