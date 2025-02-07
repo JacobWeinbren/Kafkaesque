@@ -1,22 +1,9 @@
 // src/pages/api/signup.ts
 import type { APIRoute } from "astro";
-import { TSGhostAdminAPI } from "@ts-ghost/admin-api";
-
-const api = new TSGhostAdminAPI(
-	"https://kafkaesque.digitalpress.blog",
-	import.meta.env.GHOST_ADMIN_API_KEY || "",
-	"v5.47.0"
-);
-
-interface ErrorResponse {
-	success: false;
-	errors: Array<{ message: string; type: string; context?: string }>;
-}
 
 export const POST: APIRoute = async ({ request }) => {
 	const data = await request.formData();
 	const email = data.get("email")?.toString();
-	const name = data.get("name")?.toString() || "";
 
 	if (!email) {
 		return new Response(
@@ -29,23 +16,41 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 
 	try {
-		const response = await api.members.add({
-			email,
-			name,
-			subscribed: true,
+		const mutation = `
+      mutation SubscribeToNewsletter($input: SubscribeToNewsletterInput!) {
+        subscribeToNewsletter(input: $input) {
+          status
+        }
+      }
+    `;
+
+		const response = await fetch("https://gql.hashnode.com", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${
+					import.meta.env.HASHNODE_ACCESS_TOKEN
+				}`,
+			},
+			body: JSON.stringify({
+				query: mutation,
+				variables: {
+					input: {
+						publicationId: import.meta.env.HASHNODE_PUBLICATION_ID,
+						email,
+					},
+				},
+			}),
 		});
 
-		const result = await response;
+		const result = await response.json();
 
-		// Type guard to check if it's an error response
-		if (!result.success) {
-			const errorResponse = result as ErrorResponse;
+		if (result.errors) {
+			console.error("Newsletter subscription error:", result.errors);
 			return new Response(
 				JSON.stringify({
 					success: false,
-					message:
-						errorResponse.errors[0]?.message ||
-						"Failed to subscribe",
+					message: result.errors[0].message || "Failed to subscribe",
 				}),
 				{ status: 400 }
 			);

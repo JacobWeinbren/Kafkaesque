@@ -1,6 +1,6 @@
 // src/pages/api/search.ts
 import type { APIRoute } from "astro";
-import { getPosts } from "@/lib/ghost";
+import { getPosts } from "@/lib/hashnode";
 import Fuse from "fuse.js";
 
 let fuse: Fuse<any> | null = null;
@@ -19,7 +19,7 @@ export const GET: APIRoute = async ({ url }) => {
 		if (!fuse) {
 			const posts = await getPosts();
 			fuse = new Fuse(posts, {
-				keys: ["title", "excerpt", "html"],
+				keys: ["title", "brief", "content"],
 				threshold: 0.3,
 				includeScore: true,
 			});

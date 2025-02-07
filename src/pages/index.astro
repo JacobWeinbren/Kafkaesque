@@ -2,7 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { Image } from "astro:assets";
 import turtleImage from "@/assets/images/turtle.png";
-import { getPosts } from "@/lib/ghost";
+import { getPosts } from "@/lib/hashnode";
 const latestPosts = await getPosts({ limit: 6 });
 ---
 
@@ -43,10 +43,10 @@ const latestPosts = await getPosts({ limit: 6 });
 				latestPosts.map((post) => (
 					<a href={`/post/${post.slug}`} class="group">
 						<article class="h-full bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-							{post.feature_image && (
+							{post.coverImage && (
 								<div class="aspect-video">
 									<Image
-										src={post.feature_image}
+										src={post.coverImage}
 										alt={post.title}
 										width={400}
 										height={225}
@@ -59,7 +59,7 @@ const latestPosts = await getPosts({ limit: 6 });
 									{post.title}
 								</h3>
 								<p class="text-gray-600 text-sm md:text-base line-clamp-3">
-									{post.excerpt}
+									{post.brief}
 								</p>
 							</div>
 						</article>

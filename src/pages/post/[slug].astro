@@ -1,14 +1,11 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { Image } from "astro:assets";
-import { getPosts } from "@/lib/ghost";
-import type { Post } from "@ts-ghost/content-api";
+import { getPosts } from "@/lib/hashnode";
 import SignupForm from "@/components/SignupForm.astro";
 
 export const prerender = true;
-interface Props {
-	post: Post;
-}
+
 export async function getStaticPaths() {
 	const posts = await getPosts();
 	return posts.map((post) => ({
@@ -16,17 +13,17 @@ export async function getStaticPaths() {
 		props: { post },
 	}));
 }
+
 const { post } = Astro.props;
 ---
 
-<BaseLayout title={post.title} description={post.excerpt || ""}>
-	<!-- Post Header -->
+<BaseLayout title={post.title} description={post.brief || ""}>
 	<header class="relative">
 		{
-			post.feature_image && (
+			post.coverImage && (
 				<div class="h-[70vh] relative">
 					<Image
-						src={post.feature_image}
+						src={post.coverImage}
 						alt={post.title}
 						width={1920}
 						height={1080}
@@ -36,7 +33,7 @@ const { post } = Astro.props;
 					<div class="absolute bottom-0 left-0 right-0 p-8">
 						<div class="max-w-4xl mx-auto">
 							<time class="text-white/80 text-sm">
-								{new Date(post.published_at).toLocaleDateString(
+								{new Date(post.publishedAt).toLocaleDateString(
 									"en-GB",
 									{
 										day: "numeric",
@@ -48,6 +45,15 @@ const { post } = Astro.props;
 							<h1 class="text-4xl md:text-5xl font-bold text-white mt-2">
 								{post.title}
 							</h1>
+							{post.tags && post.tags.length > 0 && (
+								<div class="flex gap-2 mt-4">
+									{post.tags.map((tag) => (
+										<span class="bg-white/10 text-white px-2 py-1 rounded-full text-sm">
+											{tag.name}
+										</span>
+									))}
+								</div>
+							)}
 						</div>
 					</div>
 				</div>
@@ -55,13 +61,11 @@ const { post } = Astro.props;
 		}
 	</header>
 
-	<!-- Post Content -->
 	<article class="max-w-4xl mx-auto px-4 py-16">
 		<div class="prose prose-lg max-w-none">
-			<Fragment set:html={post.html || ""} />
+			<Fragment set:html={post.content || ""} />
 		</div>
 
-		<!-- Add signup form -->
 		<SignupForm location="post" />
 
 		<div class="mt-8">
