@@ -11,19 +11,21 @@ const { posts: latestPosts } = await getPosts({ limit: 3 });
 	<section
 		class="relative overflow-hidden bg-gradient-to-br from-green-400 to-green-600"
 	>
-		<div class="max-w-7xl mx-auto px-6 py-24 md:py-32">
-			<div class="grid md:grid-cols-2 gap-12 items-center">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20 lg:py-32">
+			<div class="grid lg:grid-cols-2 gap-12 items-center">
 				<div class="text-white space-y-6">
-					<h1 class="text-5xl md:text-7xl font-bold tracking-tight">
+					<h1
+						class="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight"
+					>
 						Hi, I'm Jacob
 					</h1>
 					<p
-						class="text-xl md:text-2xl text-white/90 leading-relaxed"
+						class="text-lg sm:text-xl lg:text-2xl text-white/90 leading-relaxed max-w-2xl"
 					>
 						Developer, writer, and data storyteller building digital
 						experiences.
 					</p>
-					<div class="flex gap-4 pt-4">
+					<div class="flex flex-wrap gap-4 pt-4">
 						<a
 							href="/blog"
 							class="inline-flex items-center px-6 py-3 rounded-lg bg-white text-green-600 font-medium hover:bg-green-50 transition-colors duration-150"
@@ -42,10 +44,12 @@ const { posts: latestPosts } = await getPosts({ limit: 3 });
 		</div>
 	</section>
 
-	<section class="py-24 bg-gray-50">
-		<div class="max-w-7xl mx-auto px-6">
-			<h2 class="text-3xl font-bold mb-12">Latest Posts</h2>
-			<div class="grid md:grid-cols-3 gap-8">
+	<section class="py-16 sm:py-20 lg:py-24 bg-gray-50">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6">
+			<h2 class="text-2xl sm:text-3xl font-bold mb-8 sm:mb-12">
+				Latest Posts
+			</h2>
+			<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
 				{
 					latestPosts.map((post) => (
 						<a
@@ -63,14 +67,14 @@ const { posts: latestPosts } = await getPosts({ limit: 3 });
 									/>
 								</div>
 							)}
-							<div class="p-6">
+							<div class="p-4 sm:p-6">
 								<time class="text-sm text-green-600">
 									{formatDate(post.publishedAt)}
 								</time>
-								<h3 class="text-xl font-bold mt-2 group-hover:text-green-600 transition-colors duration-150">
+								<h3 class="text-lg sm:text-xl font-bold mt-2 group-hover:text-green-600 transition-colors duration-150">
 									{post.title}
 								</h3>
-								<p class="mt-2 text-gray-600 line-clamp-2">
+								<p class="mt-2 text-gray-600 line-clamp-2 text-sm sm:text-base">
 									{post.subtitle}
 								</p>
 							</div>
