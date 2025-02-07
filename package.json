@@ -12,31 +12,25 @@
 		"start": "astro dev"
 	},
 	"dependencies": {
-		"@astrojs/react": "^3.0.10",
-		"@astrojs/sitemap": "^3.0.5",
-		"@astrojs/tailwind": "^5.1.0",
-		"@astrojs/vercel": "^7.8.2",
-		"@tailwindcss/typography": "^0.5.10",
-		"@ts-ghost/admin-api": "^4.0.1",
-		"@ts-ghost/content-api": "^4.0.11",
-		"@vercel/speed-insights": "^1.0.9",
-		"astro": "^4.2.5",
-		"framer-motion": "^11.0.3",
-		"fuse.js": "^7.0.0",
+		"@astrojs/react": "^4.2.0",
+		"@astrojs/sitemap": "^3.2.1",
+		"@astrojs/tailwind": "^6.0.0",
+		"@tailwindcss/typography": "^0.5.16",
+		"@ts-ghost/admin-api": "^4.2.1",
+		"@ts-ghost/content-api": "^4.1.0",
+		"@vercel/speed-insights": "^1.1.0",
+		"astro": "^5.2.5",
+		"fuse.js": "^7.1.0",
 		"lodash": "^4.17.21",
-		"lucide-react": "^0.323.0",
-		"next": "^14.1.0",
+		"lucide-react": "^0.475.0",
+		"next": "^15.1.6",
 		"node-fetch": "^3.3.2",
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
-		"tailwind-fluid-typography": "^1.3.0",
-		"tailwind-merge": "^2.2.1",
-		"tailwindcss": "^3.4.1",
-		"tailwindcss-animate": "^1.0.7",
-		"typescript": "^5.5.4"
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"typescript": "^5.7.3"
 	},
 	"devDependencies": {
-		"@types/react": "^18.2.55",
-		"@types/react-dom": "^18.2.19"
+		"@types/react": "^19.0.8",
+		"@types/react-dom": "^19.0.3"
 	}
 }
