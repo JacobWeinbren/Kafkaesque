@@ -7,19 +7,22 @@ const links = [
 ];
 ---
 
-<nav class="bg-green-500 text-white">
-	<div class="max-w-7xl mx-auto px-4">
+<nav class="bg-green-500/95 backdrop-blur-sm text-white sticky top-0 z-50">
+	<div class="max-w-7xl mx-auto px-6">
 		<div class="flex items-center justify-between h-16">
-			<!-- Logo -->
-			<a href="/" class="font-bold text-xl">Jacob W</a>
+			<a
+				href="/"
+				class="font-bold text-xl hover:text-white/90 transition-colors"
+			>
+				Jacob W
+			</a>
 
-			<!-- Desktop Navigation -->
 			<div class="hidden md:flex space-x-8">
 				{
 					links.map((link) => (
 						<a
 							href={link.href}
-							class="font-medium hover:bg-green-600 px-3 py-2 rounded-md snap"
+							class="font-medium hover:bg-green-600/80 px-4 py-2 rounded-lg transition-colors duration-200"
 						>
 							{link.text}
 						</a>
@@ -27,10 +30,9 @@ const links = [
 				}
 			</div>
 
-			<!-- Mobile Menu Button -->
 			<button
 				id="menuButton"
-				class="md:hidden p-2 hover:bg-green-600 rounded-md"
+				class="md:hidden p-2 hover:bg-green-600/80 rounded-lg transition-colors"
 				aria-label="Menu"
 			>
 				<svg

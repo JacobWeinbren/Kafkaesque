@@ -1,7 +1,4 @@
 :root {
-	--primary: #10b981; /* Green */
-	--secondary: #a16207; /* Brown */
-	--accent: #facc15; /* Yellow */
 	--text: #1f2937;
 	--background: #ffffff;
 }
@@ -21,4 +18,12 @@ body {
 .dark {
 	--text: #f9fafb;
 	--background: #111827;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	@apply bg-gray-50;
 }
