@@ -15,6 +15,7 @@
 		"@astrojs/react": "^4.2.0",
 		"@astrojs/sitemap": "^3.2.1",
 		"@astrojs/tailwind": "^6.0.0",
+		"@astrojs/vercel": "^8.0.5",
 		"@tailwindcss/typography": "^0.5.16",
 		"@ts-ghost/admin-api": "^4.2.1",
 		"@ts-ghost/content-api": "^4.1.0",
