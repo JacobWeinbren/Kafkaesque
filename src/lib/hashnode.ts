@@ -5,6 +5,7 @@ interface HashnodePost {
 	id: string;
 	slug: string;
 	title: string;
+	subtitle: string;
 	content: string;
 	brief: string;
 	coverImage: string | null;
@@ -17,24 +18,23 @@ const getHeaders = () => ({
 	Authorization: `Bearer ${import.meta.env.HASHNODE_ACCESS_TOKEN}`,
 });
 
-// src/lib/hashnode.ts
 export async function getPosts(options: { limit?: number } = {}) {
 	try {
 		// First, let's get your publication ID
 		const publicationQuery = `
-		query GetPublication {
-		  me {
-			publications(first: 1) {
-			  edges {
-				node {
-				  id
-				  title
-				}
-			  }
-			}
-		  }
-		}
-	  `;
+      query GetPublication {
+        me {
+          publications(first: 1) {
+            edges {
+              node {
+                id
+                title
+              }
+            }
+          }
+        }
+      }
+    `;
 
 		const pubResponse = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
@@ -59,32 +59,33 @@ export async function getPosts(options: { limit?: number } = {}) {
 
 		// Now let's get the posts using the publication ID
 		const postsQuery = `
-		query GetPosts($publicationId: ObjectId!, $first: Int!) {
-		  publication(id: $publicationId) {
-			posts(first: $first) {
-			  edges {
-				node {
-				  id
-				  title
-				  brief
-				  slug
-				  coverImage {
-					url
-				  }
-				  publishedAt
-				  content {
-					html
-				  }
-				  tags {
-					name
-					slug
-				  }
-				}
-			  }
-			}
-		  }
-		}
-	  `;
+      query GetPosts($publicationId: ObjectId!, $first: Int!) {
+        publication(id: $publicationId) {
+          posts(first: $first) {
+            edges {
+              node {
+                id
+                title
+                subtitle
+                brief
+                slug
+                coverImage {
+                  url
+                }
+                publishedAt
+                content {
+                  html
+                }
+                tags {
+                  name
+                  slug
+                }
+              }
+            }
+          }
+        }
+      }
+    `;
 
 		const response = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
@@ -111,6 +112,7 @@ export async function getPosts(options: { limit?: number } = {}) {
 				id: edge.node.id,
 				slug: edge.node.slug,
 				title: edge.node.title,
+				subtitle: edge.node.subtitle || "",
 				content: edge.node.content.html,
 				brief: edge.node.brief,
 				coverImage: edge.node.coverImage?.url || null,
@@ -133,6 +135,7 @@ export async function getPost(slug: string) {
           post(slug: $slug) {
             id
             title
+            subtitle
             content {
               html
             }
@@ -175,6 +178,7 @@ export async function getPost(slug: string) {
 			id: post.id,
 			slug: post.slug,
 			title: post.title,
+			subtitle: post.subtitle || "",
 			content: post.content.html,
 			brief: post.brief,
 			coverImage: post.coverImage?.url || null,
