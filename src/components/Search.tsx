@@ -9,7 +9,9 @@ export default function Search() {
 	const [results, setResults] = useState<HashnodePost[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasSearched, setHasSearched] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 
+	// Initialize search from URL params
 	useEffect(() => {
 		const params = new URLSearchParams(window.location.search);
 		const initialQuery = params.get("q") || "";
@@ -23,6 +25,7 @@ export default function Search() {
 		debounce(async (searchQuery: string) => {
 			setIsLoading(true);
 			setHasSearched(true);
+			setError(null);
 
 			if (!searchQuery.trim()) {
 				setResults([]);
@@ -31,19 +34,52 @@ export default function Search() {
 			}
 
 			try {
+				const controller = new AbortController();
+				const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
 				const response = await fetch(
-					`/api/search?q=${encodeURIComponent(searchQuery)}`
+					`/api/search?q=${encodeURIComponent(searchQuery)}`,
+					{
+						signal: controller.signal,
+						headers: {
+							"Cache-Control": "no-cache",
+						},
+					}
 				);
+
+				clearTimeout(timeoutId);
+
+				if (!response.ok) {
+					throw new Error(`Search failed: ${response.statusText}`);
+				}
+
 				const data = await response.json();
+				if (data.error) {
+					throw new Error(data.message || "Search failed");
+				}
+
 				setResults(data);
 			} catch (error) {
 				console.error("Search error:", error);
+				setError(
+					error instanceof Error
+						? error.message
+						: "An unexpected error occurred"
+				);
+				setResults([]);
 			} finally {
 				setIsLoading(false);
 			}
 		}, 300),
 		[]
 	);
+
+	// Cleanup on unmount
+	useEffect(() => {
+		return () => {
+			performSearch.cancel();
+		};
+	}, [performSearch]);
 
 	return (
 		<div className="w-full max-w-4xl mx-auto px-4">
@@ -66,6 +102,12 @@ export default function Search() {
 			</form>
 
 			<div className="min-h-[200px]">
+				{error && (
+					<div className="text-center py-4 text-red-500">
+						<p>{error}</p>
+					</div>
+				)}
+
 				{isLoading ? (
 					<div className="flex justify-center py-8">
 						<div className="animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-green-500"></div>
@@ -82,7 +124,7 @@ export default function Search() {
 								<div className="p-6">
 									<h2
 										className="font-bold text-xl mb-2 group-hover:text-green-600 
-                                transition-colors duration-150"
+                              transition-colors duration-150"
 									>
 										{post.title}
 									</h2>
@@ -102,11 +144,14 @@ export default function Search() {
 							</a>
 						))}
 					</div>
-				) : hasSearched && query ? (
-					<div className="text-center py-8 text-gray-500">
-						No results found
-					</div>
-				) : null}
+				) : (
+					hasSearched &&
+					query && (
+						<div className="text-center py-8 text-gray-500">
+							No results found
+						</div>
+					)
+				)}
 			</div>
 		</div>
 	);
