@@ -6,41 +6,41 @@ interface Props {
 const { location = "standalone" } = Astro.props;
 ---
 
+<!-- src/components/SignupForm.astro -->
 <div
-	class={`
-    ${location === "post" ? "border-t border-gray-200 pt-8 mt-8" : "bg-white rounded-lg shadow-sm p-6"}
-    max-w-xl mx-auto
-`}
+	class:list={[
+		"max-w-xl mx-auto backdrop-blur-sm",
+		location === "post"
+			? "border-t border-gray-200 pt-8 mt-8"
+			: "bg-white/80 rounded-xl shadow-sm p-8",
+	]}
 >
-	<div class="text-center mb-6">
-		<h3 class="text-2xl font-bold mb-2">Subscribe to my blog</h3>
+	<div class="text-center mb-8">
+		<h3 class="text-2xl font-bold text-gray-900 mb-3">Stay Updated</h3>
 		<p class="text-gray-600">
-			Get notified when I publish new posts about development, data, and
-			more.
+			Get notified about new posts on development, data science, and more.
 		</p>
 	</div>
 
 	<form id="subscribeForm" class="space-y-4">
-		<div>
-			<label
-				for="email"
-				class="block text-sm font-medium text-gray-700 mb-1"
-			>
-				Email address
-			</label>
+		<div class="relative">
 			<input
 				type="email"
 				id="email"
 				name="email"
 				required
-				class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+				class="w-full px-4 py-3 pl-5 border-2 border-gray-200 rounded-lg
+               focus:border-green-500 focus:ring-2 focus:ring-green-500/20 focus:outline-none
+               transition-all duration-150"
 				placeholder="you@example.com"
 			/>
 		</div>
 
 		<button
 			type="submit"
-			class="w-full bg-green-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+			class="w-full bg-green-500 text-white py-3 px-6 rounded-lg font-medium
+             hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500
+             focus:ring-offset-2 transition-all duration-150"
 		>
 			Subscribe
 		</button>
@@ -59,9 +59,14 @@ const { location = "standalone" } = Astro.props;
 			const submitButton = form.querySelector("button");
 			if (!submitButton) return;
 
-			// Update button state
 			submitButton.disabled = true;
-			submitButton.textContent = "Subscribing...";
+			submitButton.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Subscribing...
+      `;
 
 			try {
 				const formData = new FormData(form);
@@ -72,21 +77,19 @@ const { location = "standalone" } = Astro.props;
 
 				const data = await response.json();
 
-				// Show message
 				messageEl.textContent = data.message;
 				messageEl.className = `text-sm text-center mt-4 ${
 					response.ok ? "text-green-600" : "text-red-600"
 				}`;
 				messageEl.classList.remove("hidden");
 
-				// Reset form if successful
 				if (response.ok) {
 					form.reset();
-					submitButton.textContent = "Subscribed!";
+					submitButton.innerHTML = "✓ Subscribed!";
 					submitButton.className =
-						"w-full bg-green-600 text-white py-2 px-4 rounded-lg font-medium cursor-not-allowed";
+						"w-full bg-green-600 text-white py-3 px-6 rounded-lg font-medium cursor-not-allowed";
 				} else {
-					submitButton.textContent = "Subscribe";
+					submitButton.innerHTML = "Subscribe";
 					submitButton.disabled = false;
 				}
 			} catch (error) {
@@ -95,7 +98,7 @@ const { location = "standalone" } = Astro.props;
 				messageEl.className = "text-sm text-center mt-4 text-red-600";
 				messageEl.classList.remove("hidden");
 
-				submitButton.textContent = "Subscribe";
+				submitButton.innerHTML = "Subscribe";
 				submitButton.disabled = false;
 			}
 		});

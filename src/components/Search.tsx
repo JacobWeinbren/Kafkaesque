@@ -2,11 +2,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { Search as SearchIcon } from "lucide-react";
 import debounce from "lodash/debounce";
-import type { Post } from "@ts-ghost/content-api";
+import type { HashnodePost } from "@/types/hashnode";
 
 export default function Search() {
 	const [query, setQuery] = useState("");
-	const [results, setResults] = useState<Post[]>([]);
+	const [results, setResults] = useState<HashnodePost[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasSearched, setHasSearched] = useState(false);
 
@@ -45,17 +45,9 @@ export default function Search() {
 		[]
 	);
 
-	const handleSearch = (e: React.FormEvent) => {
-		e.preventDefault();
-		performSearch(query);
-		const newUrl = new URL(window.location.href);
-		newUrl.searchParams.set("q", query);
-		window.history.pushState({}, "", newUrl);
-	};
-
 	return (
 		<div className="w-full max-w-4xl mx-auto px-4">
-			<form onSubmit={handleSearch} className="mb-8">
+			<form onSubmit={(e) => e.preventDefault()} className="mb-8">
 				<div className="relative">
 					<input
 						type="text"
@@ -64,7 +56,9 @@ export default function Search() {
 							setQuery(e.target.value);
 							performSearch(e.target.value);
 						}}
-						className="w-full px-4 py-3 pl-12 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none"
+						className="w-full px-4 py-3 pl-12 border-2 border-gray-200 rounded-lg 
+                     focus:border-green-500 focus:ring-2 focus:ring-green-500/20 
+                     focus:outline-none transition-all duration-150"
 						placeholder="Search posts..."
 					/>
 					<SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -73,27 +67,31 @@ export default function Search() {
 
 			<div className="min-h-[200px]">
 				{isLoading ? (
-					<div className="text-center py-8 text-gray-500">
-						Searching...
+					<div className="flex justify-center py-8">
+						<div className="animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-green-500"></div>
 					</div>
 				) : results.length > 0 ? (
 					<div className="grid gap-6 md:grid-cols-2">
-						{results.map((result) => (
+						{results.map((post) => (
 							<a
-								key={result.slug}
-								href={`/post/${result.slug}`}
-								className="block bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:border-green-500"
+								key={post.id}
+								href={`/post/${post.slug}`}
+								className="group bg-white rounded-xl overflow-hidden border border-gray-100 
+                          hover:border-green-500 hover:shadow-md transition-all duration-150"
 							>
 								<div className="p-6">
-									<h2 className="font-bold text-xl mb-2">
-										{result.title}
+									<h2
+										className="font-bold text-xl mb-2 group-hover:text-green-600 
+                                transition-colors duration-150"
+									>
+										{post.title}
 									</h2>
 									<p className="text-gray-600 line-clamp-3">
-										{result.excerpt}
+										{post.subtitle || post.brief}
 									</p>
 									<time className="text-sm text-gray-500 mt-4 block">
 										{new Date(
-											result.published_at
+											post.publishedAt
 										).toLocaleDateString("en-GB", {
 											day: "numeric",
 											month: "long",

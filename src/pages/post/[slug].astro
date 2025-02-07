@@ -1,75 +1,129 @@
 ---
+// src/pages/post/[slug].astro
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { Image } from "astro:assets";
-import { getPosts } from "@/lib/hashnode";
 import SignupForm from "@/components/SignupForm.astro";
-
-export const prerender = true;
+import { getPosts, getPost } from "@/lib/hashnode";
+import { formatDate } from "@/utils/helpers";
 
 export async function getStaticPaths() {
-	const posts = await getPosts();
+	const { posts } = await getPosts();
 	return posts.map((post) => ({
 		params: { slug: post.slug },
-		props: { post },
 	}));
 }
 
-const { post } = Astro.props;
+const { slug } = Astro.params;
+const post = await getPost(slug);
+
+if (!post) {
+	return Astro.redirect("/404");
+}
 ---
 
-<BaseLayout
-	title={post.title}
-	description={post.subtitle || ""}
-	image={post.coverImage || ""}
->
-	<header class="relative">
+<BaseLayout title={post.title} description={post.subtitle}>
+	<article class="max-w-4xl mx-auto px-6 py-4">
 		{
 			post.coverImage && (
-				<div class="h-[70vh] relative">
-					<Image
+				<div class="mt-8 mb-12 rounded-2xl overflow-hidden">
+					<img
 						src={post.coverImage}
 						alt={post.title}
-						width={1920}
-						height={1080}
-						class="absolute inset-0 w-full h-full object-cover"
+						width="1200"
+						height="600"
+						class="w-full h-[60vh] object-cover"
 					/>
-					<div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-					<div class="absolute bottom-0 left-0 right-0 p-8">
-						<div class="max-w-4xl mx-auto">
-							<time class="text-white/80 text-sm">
-								{new Date(post.publishedAt).toLocaleDateString(
-									"en-GB",
-									{
-										day: "numeric",
-										month: "long",
-										year: "numeric",
-									}
-								)}
-							</time>
-							<h1 class="text-4xl md:text-5xl font-bold text-white mt-2">
-								{post.title}
-							</h1>
-						</div>
-					</div>
 				</div>
 			)
 		}
-	</header>
 
-	<article class="max-w-4xl mx-auto px-4 py-16">
+		<header class="mb-12">
+			<time class="text-green-600 font-medium">
+				{formatDate(post.publishedAt)}
+			</time>
+			<h1 class="text-4xl md:text-5xl font-bold mt-4 mb-6">
+				{post.title}
+			</h1>
+			{
+				post.subtitle && (
+					<p class="text-xl text-gray-600">{post.subtitle}</p>
+				)
+			}
+		</header>
+
 		<div class="prose prose-lg max-w-none">
-			<Fragment set:html={post.content || ""} />
+			<Fragment set:html={post.content} />
 		</div>
 
-		<SignupForm location="post" />
+		<div class="mt-16">
+			<SignupForm location="post" />
+		</div>
 
-		<div class="mt-8">
+		<div class="mt-12 pt-8 border-t border-gray-100">
 			<a
 				href="/blog"
-				class="inline-flex items-center text-green-600 hover:text-green-700"
+				class="inline-flex items-center px-6 py-3 rounded-lg bg-green-50
+               text-green-600 hover:bg-green-100 transition-colors duration-150"
 			>
-				← Back to Blog
+				<svg
+					class="w-5 h-5 mr-2"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M15 19l-7-7 7-7"></path>
+				</svg>
+				Back to Blog
 			</a>
 		</div>
 	</article>
 </BaseLayout>
+
+<style>
+	.prose :global(ul) {
+		@apply list-disc pl-8 my-6; /* Updated styling */
+		list-style-position: outside; /* Forces bullets outside */
+	}
+
+	.prose :global(li) {
+		@apply my-2; /* Adds spacing between list items */
+		padding-left: 0.5em; /* Gives some space after the bullet */
+	}
+
+	/* Rest of your existing styles */
+	.prose :global(img) {
+		@apply rounded-xl shadow-lg;
+	}
+
+	.prose :global(pre) {
+		@apply rounded-xl shadow-md bg-gray-900 text-gray-100;
+	}
+
+	.prose :global(a) {
+		@apply text-green-600 hover:text-green-700 no-underline;
+	}
+
+	.prose :global(ol) {
+		@apply list-decimal pl-8 my-6;
+		list-style-position: outside;
+	}
+
+	.prose :global(blockquote) {
+		@apply border-l-4 border-green-500 pl-4 italic;
+	}
+
+	.prose :global(h2) {
+		@apply text-3xl font-bold mt-8 mb-4;
+	}
+
+	.prose :global(h3) {
+		@apply text-2xl font-bold mt-6 mb-3;
+	}
+
+	.prose :global(p) {
+		@apply mb-4;
+	}
+</style>

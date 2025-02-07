@@ -1,91 +1,55 @@
 // src/lib/hashnode.ts
-const HASHNODE_ENDPOINT = "https://gql.hashnode.com";
+import type {
+	HashnodePost,
+	GetPostsOptions,
+	PostsResponse,
+} from "@/types/hashnode";
 
-interface HashnodePost {
-	id: string;
-	slug: string;
-	title: string;
-	subtitle: string;
-	content: string;
-	brief: string;
-	coverImage: string | null;
-	publishedAt: string;
-	tags?: { name: string; slug: string }[];
-}
+const HASHNODE_ENDPOINT = "https://gql.hashnode.com";
 
 const getHeaders = () => ({
 	"Content-Type": "application/json",
 	Authorization: `Bearer ${import.meta.env.HASHNODE_ACCESS_TOKEN}`,
 });
 
-export async function getPosts(options: { limit?: number } = {}) {
+export async function getPosts(
+	options: GetPostsOptions = {}
+): Promise<PostsResponse> {
 	try {
-		// First, let's get your publication ID
-		const publicationQuery = `
-      query GetPublication {
-        me {
-          publications(first: 1) {
-            edges {
-              node {
-                id
-                title
-              }
-            }
-          }
-        }
-      }
-    `;
 
-		const pubResponse = await fetch(HASHNODE_ENDPOINT, {
-			method: "POST",
-			headers: getHeaders(),
-			body: JSON.stringify({ query: publicationQuery }),
-		});
-
-		const pubJson = await pubResponse.json();
-
-		if (pubJson.errors) {
-			console.error("Publication Query Errors:", pubJson.errors);
-			return [];
-		}
-
-		const publicationId =
-			pubJson.data?.me?.publications?.edges?.[0]?.node?.id;
-
-		if (!publicationId) {
-			console.error("No publication ID found");
-			return [];
-		}
-
-		// Now let's get the posts using the publication ID
 		const postsQuery = `
-      query GetPosts($publicationId: ObjectId!, $first: Int!) {
-        publication(id: $publicationId) {
-          posts(first: $first) {
-            edges {
-              node {
-                id
-                title
-                subtitle
-                brief
-                slug
-                coverImage {
-                  url
-                }
-                publishedAt
-                content {
-                  html
-                }
-                tags {
-                  name
-                  slug
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
+		query Publication($first: Int!, $after: String) {
+		  publication(host: "kafkaesque.hashnode.dev") {
+			posts(first: $first, after: $after) {
+			  edges {
+				cursor
+				node {
+				  id
+				  title
+				  subtitle
+				  brief
+				  slug
+				  coverImage {
+					url
+				  }
+				  publishedAt
+				  content {
+					html
+				  }
+				  tags {
+					name
+					slug
+				  }
+				}
+			  }
+			  pageInfo {
+				hasNextPage
+				endCursor
+			  }
+			}
+		  }
+		}
+	  `;
 
 		const response = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
@@ -93,8 +57,8 @@ export async function getPosts(options: { limit?: number } = {}) {
 			body: JSON.stringify({
 				query: postsQuery,
 				variables: {
-					publicationId,
-					first: options.limit || 20, // Use the limit from options or default to 20
+					first: options.limit || 6,
+					after: options.after || null,
 				},
 			}),
 		});
@@ -103,36 +67,42 @@ export async function getPosts(options: { limit?: number } = {}) {
 
 		if (json.errors) {
 			console.error("Posts Query Errors:", json.errors);
-			return [];
+			return { posts: [], hasMore: false, endCursor: null };
 		}
 
-		// Transform the response to match our interface
-		const posts =
-			json.data?.publication?.posts?.edges?.map((edge: any) => ({
-				id: edge.node.id,
-				slug: edge.node.slug,
-				title: edge.node.title,
-				subtitle: edge.node.subtitle || "",
-				content: edge.node.content.html,
-				brief: edge.node.brief,
-				coverImage: edge.node.coverImage?.url || null,
-				publishedAt: edge.node.publishedAt,
-				tags: edge.node.tags,
-			})) || [];
+		const edges = json.data?.publication?.posts?.edges || [];
+		const pageInfo = json.data?.publication?.posts?.pageInfo;
 
-		return posts as HashnodePost[];
+		const posts = edges.map((edge: any) => ({
+			id: edge.node.id,
+			slug: edge.node.slug,
+			title: edge.node.title,
+			subtitle: edge.node.subtitle || "",
+			content: edge.node.content.html,
+			brief: edge.node.brief,
+			coverImage: edge.node.coverImage?.url || null,
+			publishedAt: edge.node.publishedAt,
+			tags: edge.node.tags,
+		}));
+
+		// Use pageInfo.endCursor instead of calculating it ourselves
+		return {
+			posts,
+			hasMore: pageInfo?.hasNextPage || false,
+			endCursor: pageInfo?.endCursor || null,
+		};
 	} catch (error) {
 		console.error("Failed to fetch posts:", error);
-		return [];
+		return { posts: [], hasMore: false, endCursor: null };
 	}
 }
 
-export async function getPost(slug: string) {
+export async function getPost(slug: string): Promise<HashnodePost | null> {
 	try {
 		const query = `
-      query GetPost($slug: String!) {
+      query {
         publication(host: "kafkaesque.hashnode.dev") {
-          post(slug: $slug) {
+          post(slug: "${slug}") {
             id
             title
             subtitle
@@ -156,10 +126,7 @@ export async function getPost(slug: string) {
 		const response = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
 			headers: getHeaders(),
-			body: JSON.stringify({
-				query,
-				variables: { slug },
-			}),
+			body: JSON.stringify({ query }),
 		});
 
 		const json = await response.json();
@@ -173,10 +140,9 @@ export async function getPost(slug: string) {
 
 		if (!post) return null;
 
-		// Transform the response to match our interface
 		return {
 			id: post.id,
-			slug: post.slug,
+			slug: slug,
 			title: post.title,
 			subtitle: post.subtitle || "",
 			content: post.content.html,
@@ -184,7 +150,7 @@ export async function getPost(slug: string) {
 			coverImage: post.coverImage?.url || null,
 			publishedAt: post.publishedAt,
 			tags: post.tags,
-		} as HashnodePost;
+		};
 	} catch (error) {
 		console.error("Failed to fetch post:", error);
 		return null;

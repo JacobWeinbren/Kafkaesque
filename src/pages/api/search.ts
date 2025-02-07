@@ -17,7 +17,7 @@ export const GET: APIRoute = async ({ url }) => {
 
 	try {
 		if (!fuse) {
-			const posts = await getPosts();
+			const { posts } = await getPosts();
 			fuse = new Fuse(posts, {
 				keys: ["title", "brief", "content"],
 				threshold: 0.3,

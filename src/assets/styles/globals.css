@@ -1,29 +1,42 @@
+/* globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
 	--text: #1f2937;
 	--background: #ffffff;
+	--primary: #22c55e;
+	--primary-dark: #16a34a;
 }
 
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+@layer base {
+	html {
+		scroll-behavior: smooth;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	body {
+		@apply antialiased text-gray-900 bg-gray-50;
+		font-feature-settings: "rlig" 1, "calt" 1;
+	}
 }
 
-body {
-	font-family: "Nunito", sans-serif;
-	color: var(--text);
-	background: var(--background);
+@layer components {
+	.btn {
+		@apply inline-flex items-center justify-center px-6 py-3 rounded-lg
+           font-medium transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-offset-2;
+	}
+
+	.btn-primary {
+		@apply bg-green-500 text-white hover:bg-green-600
+           focus:ring-green-500;
+	}
 }
 
-.dark {
-	--text: #f9fafb;
-	--background: #111827;
-}
-
-html {
-	scroll-behavior: smooth;
-}
-
-body {
-	@apply bg-gray-50;
+/* Add smooth transitions */
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: 0.5s;
 }

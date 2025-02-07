@@ -1,74 +1,246 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { Image } from "astro:assets";
 import { getPosts } from "@/lib/hashnode";
+import { formatDate } from "@/utils/helpers";
 
-const posts = await getPosts();
+const {
+	posts: initialPosts,
+	hasMore: initialHasMore,
+	endCursor: initialEndCursor,
+} = await getPosts({ limit: 6 });
 ---
 
 <BaseLayout
 	title="Blog - Jacob Weinbren"
 	description="Articles and thoughts on development, data, and more"
 >
-	<div class="bg-green-500 py-12 md:py-16">
-		<div class="max-w-4xl mx-auto px-4">
-			<h1 class="text-4xl md:text-5xl font-bold text-white">Blog</h1>
-			<p class="text-white/80 text-lg md:text-xl mt-4">
-				Thoughts on development, data, and more
+	<div class="bg-gradient-to-br from-green-400 to-green-600 py-20">
+		<div class="max-w-4xl mx-auto px-6">
+			<h1 class="text-5xl md:text-6xl font-bold text-white mb-4">Blog</h1>
+			<p class="text-xl md:text-2xl text-white/90">
+				Thoughts on development, data science, and more
 			</p>
 		</div>
 	</div>
 
-	<div class="max-w-4xl mx-auto px-4 py-12 md:py-16">
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+	<div class="max-w-4xl mx-auto px-6 py-16">
+		<div id="posts-container" class="grid gap-6">
 			{
-				posts.map((post) => (
-					<a href={`/post/${post.slug}`} class="group">
-						<article class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100 flex flex-col h-[400px]">
-							{post.coverImage && (
-								<div class="h-[200px]">
-									<Image
-										src={post.coverImage}
-										alt={post.title}
-										width={600}
-										height={300}
-										class="w-full h-full object-cover"
-									/>
+				initialPosts.map((post) => (
+					<article class="group">
+						<a
+							href={`/post/${post.slug}`}
+							class="block bg-white rounded-xl overflow-hidden border border-gray-100 
+                   hover:border-green-500 transition-all duration-150 hover:shadow-md"
+						>
+							<div class="md:flex h-48">
+								{post.coverImage && (
+									<div class="md:w-1/3 relative overflow-hidden">
+										<div class="h-48 md:h-full">
+											<img
+												src={post.coverImage}
+												alt={post.title}
+												class="w-full h-full object-cover transform group-hover:scale-105 
+                             transition-transform duration-150"
+											/>
+										</div>
+									</div>
+								)}
+								<div class="p-4 md:w-2/3 flex flex-col">
+									<div>
+										<time class="text-sm text-green-600 font-medium">
+											{formatDate(post.publishedAt)}
+										</time>
+										<h2
+											class="text-lg font-bold mt-1 mb-2 group-hover:text-green-600 
+                             transition-colors duration-150"
+										>
+											{post.title}
+										</h2>
+										<p class="text-gray-600 text-sm line-clamp-2">
+											{post.subtitle}
+										</p>
+									</div>
 								</div>
-							)}
-							<div class="p-4 flex flex-col flex-grow">
-								<time class="text-sm text-gray-500">
-									{new Date(
-										post.publishedAt
-									).toLocaleDateString("en-GB", {
-										day: "numeric",
-										month: "long",
-										year: "numeric",
-									})}
-								</time>
-								<h2 class="text-lg font-bold mt-2 mb-2 group-hover:text-green-600 line-clamp-2">
-									{post.title}
-								</h2>
-								<p class="text-gray-600 text-sm line-clamp-3">
-									{post.subtitle}
-								</p>
 							</div>
-						</article>
-					</a>
+						</a>
+					</article>
 				))
 			}
+		</div>
+
+		<div id="loading" class="hidden">
+			<div class="flex justify-center py-8">
+				<div
+					class="animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-green-500"
+				>
+				</div>
+			</div>
+		</div>
+
+		<div id="no-more-posts" class="hidden">
+			<div class="text-center py-8 text-gray-500">
+				No more posts to load
+			</div>
 		</div>
 	</div>
 </BaseLayout>
 
-<style>
-	/* Ensure consistent card heights */
-	article {
-		max-height: 370px;
+<script define:vars={{ initialHasMore, initialEndCursor }}>
+	let currentCursor = initialEndCursor;
+	let loading = false;
+	let hasMore = initialHasMore;
+
+	function formatDate(date) {
+		return new Date(date).toLocaleDateString("en-GB", {
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+		});
 	}
 
-	/* Ensure consistent image heights */
-	.h-[200px] {
-		height: 200px;
+	const postsContainer = document.getElementById("posts-container");
+	const loadingElement = document.getElementById("loading");
+	const noMorePostsElement = document.getElementById("no-more-posts");
+
+	function createPostElement(post) {
+		const article = document.createElement("article");
+		article.className = "group";
+
+		article.innerHTML = `
+      <a
+        href="/post/${post.slug}"
+        class="block bg-white rounded-xl overflow-hidden border border-gray-100 
+               hover:border-green-500 transition-all duration-150 hover:shadow-md"
+      >
+        <div class="md:flex h-48">
+          ${
+				post.coverImage
+					? `
+            <div class="md:w-1/3 relative overflow-hidden">
+              <div class="h-48 md:h-full">
+                <img
+                  src="${post.coverImage}"
+                  alt="${post.title}"
+                  class="w-full h-full object-cover transform group-hover:scale-105 
+                         transition-transform duration-150"
+                />
+              </div>
+            </div>
+          `
+					: ""
+			}
+          <div class="p-4 md:w-2/3 flex flex-col">
+            <div>
+              <time class="text-sm text-green-600 font-medium">
+                ${formatDate(post.publishedAt)}
+              </time>
+              <h2 class="text-lg font-bold mt-1 mb-2 group-hover:text-green-600 
+                         transition-colors duration-150">
+                ${post.title}
+              </h2>
+              <p class="text-gray-600 text-sm line-clamp-2">
+                ${post.subtitle || ""}
+              </p>
+            </div>
+          </div>
+        </div>
+      </a>
+    `;
+
+		return article;
+	}
+
+	async function loadMorePosts() {
+		if (loading || !hasMore) {
+			return;
+		}
+
+		loading = true;
+		loadingElement?.classList.remove("hidden");
+
+		try {
+			const url = `/api/posts?cursor=${encodeURIComponent(currentCursor || "")}`;
+
+			const response = await fetch(url);
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+
+			const data = await response.json();
+
+			if (!data.posts || data.posts.length === 0) {
+				hasMore = false;
+				noMorePostsElement?.classList.remove("hidden");
+				window.removeEventListener("scroll", handleScroll);
+				return;
+			}
+
+			data.posts.forEach((post) => {
+				const postElement = createPostElement(post);
+				postsContainer?.appendChild(postElement);
+			});
+
+			hasMore = data.hasMore;
+			currentCursor = data.endCursor;
+
+			if (!hasMore) {
+				noMorePostsElement?.classList.remove("hidden");
+				window.removeEventListener("scroll", handleScroll);
+			}
+		} catch (error) {
+			console.error("Error loading more posts:", error);
+			hasMore = false;
+			noMorePostsElement?.classList.remove("hidden");
+		} finally {
+			loading = false;
+			loadingElement?.classList.add("hidden");
+		}
+	}
+
+	function handleScroll() {
+		if (loading || !hasMore) return;
+
+		const scrollPosition = window.innerHeight + window.scrollY;
+		const documentHeight = document.documentElement.offsetHeight;
+		const threshold = 1000; // pixels from bottom
+
+		if (scrollPosition >= documentHeight - threshold) {
+			loadMorePosts();
+		}
+	}
+
+	// Use a debounced version of the scroll handler
+	let scrollTimeout;
+	window.addEventListener("scroll", () => {
+		if (scrollTimeout) {
+			clearTimeout(scrollTimeout);
+		}
+		scrollTimeout = setTimeout(handleScroll, 100);
+	});
+
+	// Cleanup
+	document.addEventListener("astro:beforeload", () => {
+		if (scrollTimeout) {
+			clearTimeout(scrollTimeout);
+		}
+		window.removeEventListener("scroll", handleScroll);
+	});
+</script>
+
+<style>
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	#posts-container > article {
+		animation: fadeIn 0.3s ease-out;
 	}
 </style>

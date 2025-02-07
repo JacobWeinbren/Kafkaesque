@@ -1,20 +1,32 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
 ---
 
 <BaseLayout
 	title="About - Jacob Weinbren"
 	description="Web Developer, GIS Specialist, and Researcher based in Exeter"
 >
-	<div class="max-w-4xl mx-auto px-4 py-16">
-		<h1 class="text-4xl font-bold mb-8">About Me</h1>
+	<div class="bg-gradient-to-br from-green-400 to-green-600 text-white">
+		<div class="max-w-4xl mx-auto px-6 py-24">
+			<h1 class="text-5xl md:text-6xl font-bold mb-6">About Me</h1>
+			<p class="text-xl md:text-2xl text-white/90 max-w-2xl">
+				Full Stack Developer, GIS Specialist, and Researcher passionate
+				about building innovative solutions at the intersection of
+				technology and geography.
+			</p>
+		</div>
+	</div>
 
-		<div class="prose prose-lg max-w-none space-y-6">
-			<section>
-				<h2 class="text-2xl font-bold text-green-600">
+	<div class="max-w-4xl mx-auto px-6 py-16">
+		<div class="prose prose-lg max-w-none space-y-12">
+			<section
+				class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100"
+			>
+				<h2 class="text-3xl font-bold text-green-600 mb-6">
 					Professional Overview
 				</h2>
-				<p>
+				<p class="text-gray-700">
 					I'm a Full Stack Web Developer currently pursuing an MSc in
 					Geographic Information Science at the University of Exeter.
 					My expertise spans modern web technologies including
@@ -23,60 +35,106 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 				</p>
 			</section>
 
-			<section>
-				<h2 class="text-2xl font-bold text-green-600">
+			<section
+				class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100"
+			>
+				<h2 class="text-3xl font-bold text-green-600 mb-6">
 					Technical Expertise
 				</h2>
-				<p>
-					My development journey encompasses both front-end and
-					back-end technologies, with particular focus on creating
-					accessible, high-performance web applications. I'm
-					proficient in:
-				</p>
-				<ul>
-					<li>Modern frameworks (Next.js, React, Svelte, Astro)</li>
-					<li>Cloud services (AWS Certified)</li>
-					<li>Database management (MySQL, Redis)</li>
-					<li>GIS and data visualisation</li>
-					<li>CI/CD and DevOps practices</li>
-				</ul>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+					<div>
+						<h3 class="text-xl font-semibold mb-4">Development</h3>
+						<ul class="space-y-2 text-gray-700">
+							<li class="flex items-center gap-2">
+								<span class="text-green-500">▹</span>
+								Modern frameworks (Next.js, React, Svelte)
+							</li>
+							<li class="flex items-center gap-2">
+								<span class="text-green-500">▹</span>
+								Cloud services (AWS Certified)
+							</li>
+							<li class="flex items-center gap-2">
+								<span class="text-green-500">▹</span>
+								Database management (MySQL, Redis)
+							</li>
+						</ul>
+					</div>
+					<div>
+						<h3 class="text-xl font-semibold mb-4">
+							Specializations
+						</h3>
+						<ul class="space-y-2 text-gray-700">
+							<li class="flex items-center gap-2">
+								<span class="text-green-500">▹</span>
+								GIS and data visualisation
+							</li>
+							<li class="flex items-center gap-2">
+								<span class="text-green-500">▹</span>
+								CI/CD and DevOps practices
+							</li>
+							<li class="flex items-center gap-2">
+								<span class="text-green-500">▹</span>
+								Geospatial analysis
+							</li>
+						</ul>
+					</div>
+				</div>
 			</section>
 
-			<section>
-				<h2 class="text-2xl font-bold text-green-600">
+			<section
+				class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100"
+			>
+				<h2 class="text-3xl font-bold text-green-600 mb-6">
 					Notable Projects
 				</h2>
-				<p>
-					I've led several significant projects that demonstrate my
-					commitment to innovative solutions:
-				</p>
-				<ul>
-					<li>
-						<strong
-							>Hebrew Transliteration + Duolingo Flashcards:</strong
-						> Led a global team in developing a neural network-powered
-						transliteration system and creating over 4,000 interactive
-						flashcards.
-					</li>
-					<li>
-						<strong>Electoral Visualisations:</strong> Developed comprehensive
-						mapping solutions for Israeli elections and UK voting patterns,
-						receiving recognition from prominent political analysts and
-						academics.
-					</li>
-					<li>
-						<strong>Canadian Census 2021:</strong> Created sophisticated
-						geospatial visualisations handling millions of data points
-						using Redis map server technology.
-					</li>
-				</ul>
+				<div class="grid gap-6">
+					<div
+						class="group hover:bg-gray-50 p-4 rounded-xl transition-colors"
+					>
+						<h3 class="text-xl font-semibold text-gray-900 mb-2">
+							Hebrew Transliteration + Duolingo Flashcards
+						</h3>
+						<p class="text-gray-700">
+							Led a global team in developing a neural
+							network-powered transliteration system and creating
+							over 4,000 interactive flashcards.
+						</p>
+					</div>
+					<div
+						class="group hover:bg-gray-50 p-4 rounded-xl transition-colors"
+					>
+						<h3 class="text-xl font-semibold text-gray-900 mb-2">
+							Electoral Visualisations
+						</h3>
+						<p class="text-gray-700">
+							Developed comprehensive mapping solutions for
+							Israeli elections and UK voting patterns, receiving
+							recognition from prominent political analysts and
+							academics.
+						</p>
+					</div>
+					<div
+						class="group hover:bg-gray-50 p-4 rounded-xl transition-colors"
+					>
+						<h3 class="text-xl font-semibold text-gray-900 mb-2">
+							Canadian Census 2021
+						</h3>
+						<p class="text-gray-700">
+							Created sophisticated geospatial visualisations
+							handling millions of data points using Redis map
+							server technology.
+						</p>
+					</div>
+				</div>
 			</section>
 
-			<section>
-				<h2 class="text-2xl font-bold text-green-600">
+			<section
+				class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100"
+			>
+				<h2 class="text-3xl font-bold text-green-600 mb-6">
 					Community Engagement
 				</h2>
-				<p>
+				<p class="text-gray-700">
 					Beyond development, I'm actively involved in academic and
 					community activities. I serve as treasurer of the
 					Postgraduate Society at Exeter University and engage with
@@ -86,25 +144,31 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 				</p>
 			</section>
 
-			<section>
-				<h2 class="text-2xl font-bold text-green-600">Get in Touch</h2>
-				<p>
+			<section
+				class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-8 text-white"
+			>
+				<h2 class="text-3xl font-bold mb-6">Get in Touch</h2>
+				<p class="text-white/90 mb-6">
 					I'm always interested in new opportunities and
 					collaborations. Whether you're looking to discuss a project,
-					share ideas, or just connect, feel free to reach out via
+					share ideas, or just connect, feel free to reach out.
+				</p>
+				<div class="flex gap-4">
 					<a
 						href="mailto:jacobweinbren@gmail.com"
-						class="text-green-600 hover:text-green-700"
+						class="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold
+                               hover:bg-green-50 transition-colors"
 					>
-						email
-					</a> or find me on
+						Email Me
+					</a>
 					<a
 						href="https://github.com/JacobWeinbren"
-						class="text-green-600 hover:text-green-700"
+						class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold
+                               hover:bg-green-700 transition-colors"
 					>
-						GitHub
-					</a>.
-				</p>
+						GitHub Profile
+					</a>
+				</div>
 			</section>
 		</div>
 	</div>

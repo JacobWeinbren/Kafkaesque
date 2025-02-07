@@ -1,22 +1,36 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import SearchBox from "@/components/Search";
+
+const popularTopics = [
+	"Development",
+	"Data Science",
+	"GIS",
+	"Web Technologies",
+	"Research",
+	"Machine Learning",
+];
 ---
 
+<!-- src/pages/search.astro -->
 <BaseLayout
 	title="Search - Jacob Weinbren"
 	description="Search through articles and projects"
 >
-	<div class="bg-green-500 text-white py-12">
-		<div class="max-w-4xl mx-auto px-4 text-center">
-			<h1 class="text-5xl font-bold mb-4">Search</h1>
-			<p class="text-xl text-white/80">
-				Find articles, projects, and more
+	<div class="bg-gradient-to-br from-green-400 to-green-600 py-20">
+		<div class="max-w-4xl mx-auto px-6 text-center">
+			<h1 class="text-5xl md:text-6xl font-bold text-white mb-4">
+				Search
+			</h1>
+			<p class="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto">
+				Find articles, projects, and research
 			</p>
 		</div>
 	</div>
 
-	<div class="max-w-4xl mx-auto px-4 py-8">
-		<SearchBox client:only="react" />
+	<div class="max-w-4xl mx-auto px-6 -mt-10 relative z-10">
+		<div class="bg-white rounded-xl shadow-lg p-6 md:p-8 backdrop-blur-sm">
+			<SearchBox client:load />
+		</div>
 	</div>
 </BaseLayout>
