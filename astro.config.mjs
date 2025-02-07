@@ -5,7 +5,9 @@ import react from "@astrojs/react";
 import vercel from "@astrojs/vercel";
 
 export default defineConfig({
-	prefetch: true,
+	prefetch: {
+		prefetchAll: true,
+	},
 	integrations: [
 		tailwind({
 			config: { applyBaseStyles: false },
