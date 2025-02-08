@@ -16,7 +16,6 @@ export async function getPosts(
 	options: GetPostsOptions = {}
 ): Promise<PostsResponse> {
 	try {
-
 		const postsQuery = `
 		query Publication($first: Int!, $after: String) {
 		  publication(host: "kafkaesque.hashnode.dev") {
@@ -155,4 +154,27 @@ export async function getPost(slug: string): Promise<HashnodePost | null> {
 		console.error("Failed to fetch post:", error);
 		return null;
 	}
+}
+
+export async function getAllPosts() {
+	let allPosts = [];
+	let hasMore = true;
+	let cursor = null;
+
+	while (hasMore) {
+		const {
+			posts,
+			hasMore: more,
+			endCursor,
+		} = await getPosts({
+			limit: 50, // Fetch maximum posts per request
+			after: cursor,
+		});
+
+		allPosts = [...allPosts, ...posts];
+		hasMore = more;
+		cursor = endCursor;
+	}
+
+	return allPosts;
 }

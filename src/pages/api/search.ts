@@ -1,14 +1,13 @@
 // src/pages/api/search.ts
 import type { APIRoute } from "astro";
-import { getPosts } from "@/lib/hashnode";
+import { getAllPosts } from "@/lib/hashnode";
 import Fuse from "fuse.js";
 
-// Use WeakMap for better memory management
 const fuseCache = new WeakMap();
 let postsCache: any = null;
 let lastUpdated = 0;
 
-const CACHE_DURATION = 1000 * 60 * 5; // 5 minutes
+const CACHE_DURATION = 1000 * 60 * 5;
 
 export const GET: APIRoute = async ({ url }) => {
 	const query = url.searchParams.get("q");
@@ -26,7 +25,7 @@ export const GET: APIRoute = async ({ url }) => {
 	try {
 		const now = Date.now();
 		if (!postsCache || now - lastUpdated > CACHE_DURATION) {
-			const { posts } = await getPosts();
+			const posts = await getAllPosts(); // Use getAllPosts instead of getPosts
 			postsCache = posts;
 			lastUpdated = now;
 
