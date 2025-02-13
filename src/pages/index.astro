@@ -1,18 +1,11 @@
 ---
 // src/pages/index.astro
 import BaseLayout from "@/components/layout/BaseLayout.astro";
-import { Image } from "astro:assets";
-import { getPosts } from "@/lib/hashnode";
-import { formatDate } from "@/utils/helpers";
 import {
-	ChevronRightIcon,
-	ArrowLongRightIcon,
 	DocumentIcon,
 	BriefcaseIcon,
 	RssIcon,
 } from "@heroicons/react/24/outline";
-
-const { posts: latestPosts } = await getPosts({ limit: 3 });
 ---
 
 <BaseLayout
@@ -21,7 +14,7 @@ const { posts: latestPosts } = await getPosts({ limit: 3 });
 >
 	<!-- Hero Section -->
 	<section
-		class="relative min-h-[20vh] flex items-center justify-center bg-gradient-to-br from-green-400 to-green-600 text-white py-20"
+		class="relative min-h-[30vh] sm:min-h-[20vh] flex items-center justify-center bg-gradient-to-br from-green-400 to-green-600 text-white py-16 sm:py-20"
 	>
 		<div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
 		<div class="relative text-center">
@@ -39,15 +32,18 @@ const { posts: latestPosts } = await getPosts({ limit: 3 });
 	</section>
 
 	<!-- Navigation Grid -->
-	<section class="bg-white py-16">
+	<section class="bg-white py-12 sm:py-16">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6">
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
 				<a
 					href="/Jacob Weinbren - Resume.pdf"
 					download="Jacob Weinbren - Resume.pdf"
-					class="group flex flex-col items-center justify-center p-8 bg-gray-50 rounded-xl hover:bg-green-50 transition-colors duration-300"
+					class="group flex flex-col items-center justify-center p-4 sm:p-8 bg-gray-50 rounded-xl hover:bg-green-50 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
 				>
-					<DocumentIcon className="h-12 w-12 text-green-600 mb-4" />
+					<DocumentIcon
+						aria-hidden="true"
+						className="h-12 w-12 text-green-600 mb-4"
+					/>
 					<h3
 						class="text-xl font-semibold text-gray-900 group-hover:text-green-600 transition-colors duration-300"
 					>
@@ -59,9 +55,12 @@ const { posts: latestPosts } = await getPosts({ limit: 3 });
 				</a>
 				<a
 					href="/portfolio"
-					class="group flex flex-col items-center justify-center p-8 bg-gray-50 rounded-xl hover:bg-green-50 transition-colors duration-300"
+					class="group flex flex-col items-center justify-center p-4 sm:p-8 bg-gray-50 rounded-xl hover:bg-green-50 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
 				>
-					<BriefcaseIcon className="h-12 w-12 text-green-600 mb-4" />
+					<BriefcaseIcon
+						aria-hidden="true"
+						className="h-12 w-12 text-green-600 mb-4"
+					/>
 					<h3
 						class="text-xl font-semibold text-gray-900 group-hover:text-green-600 transition-colors duration-300"
 					>
@@ -74,9 +73,12 @@ const { posts: latestPosts } = await getPosts({ limit: 3 });
 				</a>
 				<a
 					href="/blog"
-					class="group flex flex-col items-center justify-center p-8 bg-gray-50 rounded-xl hover:bg-green-50 transition-colors duration-300"
+					class="group flex flex-col items-center justify-center p-4 sm:p-8 bg-gray-50 rounded-xl hover:bg-green-50 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
 				>
-					<RssIcon className="h-12 w-12 text-green-600 mb-4" />
+					<RssIcon
+						aria-hidden="true"
+						className="h-12 w-12 text-green-600 mb-4"
+					/>
 					<h3
 						class="text-xl font-semibold text-gray-900 group-hover:text-green-600 transition-colors duration-300"
 					>
@@ -91,9 +93,9 @@ const { posts: latestPosts } = await getPosts({ limit: 3 });
 	</section>
 
 	<!-- Contact Section -->
-	<section class="py-20 bg-gray-100 text-center">
+	<section class="py-16 sm:py-20 bg-gray-100 text-center">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6">
-			<div class="text-center mb-12">
+			<div class="text-center mb-10 sm:mb-12">
 				<h2 class="text-3xl sm:text-4xl font-bold text-gray-900">
 					Let's Connect
 				</h2>
@@ -106,7 +108,7 @@ const { posts: latestPosts } = await getPosts({ limit: 3 });
 			<div class="mt-8">
 				<a
 					href="mailto:jacobweinbren@gmail.com"
-					class="inline-flex items-center px-6 py-3 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition-all duration-300"
+					class="inline-flex items-center px-6 py-3 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
 				>
 					Email me at jacobweinbren@gmail.com
 				</a>
