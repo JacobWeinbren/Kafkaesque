@@ -1,9 +1,14 @@
 ---
+import {
+	FaGithub as GithubIcon,
+	FaLinkedin as LinkedInIcon,
+} from "react-icons/fa";
+import { EnvelopeIcon } from "@heroicons/react/24/outline";
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="bg-white dark:bg-gray-800 py-8 px-4">
-	<div class="max-w-7xl mx-auto text-center">
+<footer class="bg-gray-200 py-8">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 text-center">
 		<p class="text-gray-600 dark:text-gray-300">
 			© {currentYear} Jacob Weinbren. Built with
 			<a
@@ -14,22 +19,36 @@ const currentYear = new Date().getFullYear();
 			>
 				Astro
 			</a>.
-			<div class="mt-4 space-x-6">
-				<a
-					href="https://github.com/JacobWeinbren"
-					class="text-gray-600 dark:text-gray-300 hover:text-green-500"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					GitHub
-				</a>
-				<a
-					href="/blog"
-					class="text-gray-600 dark:text-gray-300 hover:text-green-500"
-				>
-					Blog
-				</a>
-			</div>
 		</p>
+		<p class="text-gray-700 mb-4">
+			I'm always open to discussing new projects and opportunities.
+		</p>
+		<div class="flex justify-center space-x-6">
+			<a
+				href="mailto:jacobweinbren@gmail.com"
+				class="text-gray-700 hover:text-green-600 transition-colors duration-300"
+			>
+				<EnvelopeIcon className="h-7 w-7 inline-block align-middle" />
+				<span class="ml-1 align-middle">Email</span>
+			</a>
+			<a
+				href="https://github.com/JacobWeinbren"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="text-gray-700 hover:text-green-600 transition-colors duration-300"
+			>
+				<GithubIcon className="h-7 w-7 inline-block align-middle" />
+				<span class="ml-1 align-middle">GitHub</span>
+			</a>
+			<a
+				href="https://www.linkedin.com/in/jacob-weinbren/"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="text-gray-700 hover:text-green-600 transition-colors duration-300"
+			>
+				<LinkedInIcon className="h-7 w-7 inline-block align-middle" />
+				<span class="ml-1 align-middle">LinkedIn</span>
+			</a>
+		</div>
 	</div>
 </footer>

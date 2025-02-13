@@ -1,0 +1,162 @@
+---
+// src/pages/portfolio.astro
+import BaseLayout from "@/components/layout/BaseLayout.astro";
+import {
+	PresentationChartBarIcon, // For Canadian Census (Data focus)
+	BuildingOfficeIcon, // For MP Campaign Site (Website/Political)
+	ArrowTrendingUpIcon, // For UK Election Visualisation (Trends/Analysis)
+	BookOpenIcon, // For Hebrew Learning Platform (Learning/Education)
+	UserGroupIcon, // For Israeli Elections (Elections/Politics - BETTER ICON)
+	ComputerDesktopIcon, // For Portfolio Website (Website/Code)
+} from "@heroicons/react/24/outline";
+
+const projects = [
+	{
+		title: "UK General Election Visualisation",
+		description: [
+			"Ecological regression analysis and interactive maps revealing correlations between deprivation indices and voting patterns in the 2024 UK General Election.",
+			"Utilised Python for data analysis and Leaflet for map generation.",
+			"Recognised by FT Political Editor Stephen Bush and Professor Rob Ford.",
+		],
+		icon: ArrowTrendingUpIcon,
+		date: "2024-07", // YYYY-MM format for easy sorting
+		tags: [
+			"GIS",
+			"Data Analysis",
+			"Political Science",
+			"Mapping",
+			"Python",
+			"Leaflet",
+		],
+		link: "https://kafkaesque.blog/post/deprivation-and-the-2024-ge",
+	},
+	{
+		title: "Canadian Census 2021 Visualisation",
+		description: [
+			"Interactive web application visualising the Canadian Census 2021, covering 2.5 million buildings and 2,500 variables.",
+			"Built with Redis as a map server and JavaScript for front-end interactivity.",
+			"Acknowledged by MountainMath CEO Dr. Jens von Bergmann.",
+		],
+		icon: PresentationChartBarIcon,
+		date: "2024-06",
+		tags: ["GIS", "Data Visualisation", "Redis", "Mapping", "JavaScript"],
+		link: "https://github.com/JacobWeinbren/Canadian-Census",
+	},
+	{
+		title: "MP Campaign Site",
+		description: [
+			"Website developed for a UK parliamentary candidate for the 2024 General Election.",
+			"Built with Astro and Tailwind CSS, focusing on cross-device compatibility, SEO optimisation, and adherence to political party branding guidelines.",
+		],
+		icon: BuildingOfficeIcon,
+		date: "2024-06",
+		tags: ["Web Development", "Astro", "Tailwind CSS", "Political", "SEO"],
+		link: "https://github.com/JacobWeinbren/Emily4MK",
+	},
+	{
+		title: "Hebrew Learning Platform (Duolingo Flashcards)",
+		description: [
+			"Collaboratively developed Hebrew learning resources, including over 4,000 interactive flashcards optimised for Duolingo and Anki.",
+			"Employed neural networks for automated Hebrew transliteration to enhance accessibility.",
+			"Blog post available detailing the complete flashcard set.",
+		],
+		icon: BookOpenIcon,
+		date: "2024-01", // Changed to 2024-01 as it's ongoing but started earlier than Israeli Elections
+		tags: [
+			"Web Development",
+			"Machine Learning",
+			"Education",
+			"Anki",
+			"Python",
+		],
+		link: "https://kafkaesque.blog/post/complete-duolingo-hebrew-set",
+	},
+	{
+		title: "Israeli Elections Visualisation (Updated)",
+		description: [
+			"Interactive maps and analysis of Israeli election results, focusing on socio-political trends and regional voting patterns.",
+			"Updated with the most recent election data and enhanced visualisations.",
+			"Analysis published on personal blog.",
+		],
+		icon: UserGroupIcon, // Changed to UserGroupIcon
+		date: "2022-06", // Changed to 2022-06 to reflect when updated, original was earlier
+		tags: ["GIS", "Data Analysis", "Political Science", "Mapping", "Blog"],
+		link: "https://kafkaesque.blog/post/updated-israel-map",
+	},
+	{
+		title: "Personal Portfolio Website (v1 - Kafkaesque Blog)",
+		description: [
+			"The first iteration of my portfolio, originally built as a blog using Astro and Tailwind CSS.",
+			"Serves as a platform for writing on literature, programming, and politics, and as a showcase for my skills.",
+			"GitHub repository contains the source code for the blog and portfolio.",
+		],
+		icon: ComputerDesktopIcon,
+		date: "2022-05", // Adjusted date to be earlier
+		tags: ["Web Development", "Astro", "Tailwind CSS", "Portfolio", "Blog"],
+		link: "https://github.com/JacobWeinbren/Kafkaesque",
+	},
+];
+
+// Sort projects by date in descending order (newest first)
+projects.sort((a, b) => (a.date < b.date ? 1 : -1));
+---
+
+<BaseLayout
+	title="Portfolio - Jacob Weinbren"
+	description="Portfolio of Jacob Weinbren, showcasing web development and GIS projects"
+>
+	<div class="bg-white py-20">
+		<div class="max-w-7xl mx-auto px-6">
+			<header class="text-center mb-12">
+				<h1 class="text-4xl font-bold text-gray-900">
+					Project Portfolio
+				</h1>
+				<p class="text-xl mt-2 text-gray-700">
+					A selection of projects demonstrating my skills in web
+					development and GIS.
+				</p>
+			</header>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+				{
+					projects.map((project) => (
+						<div class="bg-gray-50 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+							<div class="flex items-center mb-4">
+								<project.icon className="h-8 w-8 text-green-600 mr-3" />
+								<h3 class="text-xl font-semibold text-gray-900">
+									<a
+										href={project.link}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="hover:text-green-700 transition-colors duration-200"
+									>
+										{project.title}
+									</a>
+								</h3>
+							</div>
+							<div class="mb-4">
+								{" "}
+								{/* Container for description paragraphs */}
+								{project.description.map((paragraph) => (
+									<p class="text-gray-700 mb-2">
+										{paragraph}
+									</p> // Added mb-2 for paragraph spacing
+								))}
+							</div>
+							<div class="flex flex-wrap gap-2 mb-4">
+								{project.tags.map((tag) => (
+									<span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-sm font-medium">
+										{tag}
+									</span>
+								))}
+							</div>
+							<p class="text-sm text-gray-500">
+								Date: {project.date}
+							</p>
+						</div>
+					))
+				}
+			</div>
+		</div>
+	</div>
+</BaseLayout>
