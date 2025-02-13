@@ -109,6 +109,31 @@ const currentPath = Astro.url.pathname;
 			transform: translateY(0);
 		}
 	}
+
+	@keyframes fadeOut {
+		from {
+			opacity: 1;
+		}
+		to {
+			opacity: 0;
+		}
+	}
+
+	#mobileMenu.hidden {
+		max-height: 0;
+		opacity: 0;
+		transition:
+			max-height 0.3s ease-out,
+			opacity 0.1s ease-out;
+	}
+
+	#mobileMenu:not(.hidden) {
+		max-height: 1000px;
+		opacity: 1;
+		transition:
+			max-height 0.3s ease-out,
+			opacity 0.1s ease-out;
+	}
 </style>
 
 <script>
@@ -123,18 +148,10 @@ const currentPath = Astro.url.pathname;
 
 			if (isExpanded) {
 				// Closing animation
-				mobileMenu.style.maxHeight = "0px";
-				mobileMenu.style.opacity = "0";
-				setTimeout(() => {
-					mobileMenu.classList.add("hidden");
-				}, 300);
+				mobileMenu.classList.add("hidden");
 			} else {
 				// Opening animation
 				mobileMenu.classList.remove("hidden");
-				requestAnimationFrame(() => {
-					mobileMenu.style.maxHeight = `${mobileMenu.scrollHeight}px`;
-					mobileMenu.style.opacity = "1";
-				});
 			}
 		});
 	}
