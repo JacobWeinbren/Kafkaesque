@@ -2,12 +2,12 @@
 // src/pages/about.astro
 import BaseLayout from "@/components/layout/BaseLayout.astro";
 import {
+	AcademicCapIcon,
 	ChevronRightIcon,
 	EnvelopeIcon,
-	CodeBracketIcon,
-	GlobeAltIcon,
-	DocumentChartBarIcon,
-	AcademicCapIcon,
+	ChartBarIcon,
+	MapIcon,
+	LanguageIcon,
 } from "@heroicons/react/24/outline";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 
@@ -29,19 +29,19 @@ const skills = {
 			title: "Canadian Census 2021 Visualisation",
 			description:
 				"Analysed and visualised census data covering 2,500 variables using Redis map server technology, recognised by MountainMath CEO.",
-			icon: DocumentChartBarIcon,
+			icon: ChartBarIcon, // Changed to ChartBarIcon for data visualization
 		},
 		{
 			title: "UK Electoral Analysis",
 			description:
 				"Developed visualisation revealing correlations between deprivation and voting patterns, acclaimed by FT Political Editor and academic experts.",
-			icon: GlobeAltIcon,
+			icon: MapIcon, // Changed to MapIcon for geographical analysis
 		},
 		{
 			title: "Hebrew Learning Platform",
 			description:
 				"Led global team implementing neural networks for Hebrew transliteration and created 4,000+ interactive flashcards.",
-			icon: CodeBracketIcon,
+			icon: LanguageIcon, // Changed to LanguageIcon for language learning
 		},
 	],
 	education: {
