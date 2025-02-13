@@ -1,218 +1,216 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
-import { ChevronRightIcon } from "@heroicons/react/20/solid";
+// src/pages/about.astro
+import BaseLayout from "@/components/layout/BaseLayout.astro";
+import {
+	ChevronRightIcon,
+	EnvelopeIcon,
+	CodeBracketIcon,
+	GlobeAltIcon,
+	DocumentChartBarIcon,
+	AcademicCapIcon,
+} from "@heroicons/react/24/outline";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
+
+const skills = {
+	development: [
+		"Modern Web Frameworks (Next.js, React, Svelte, Astro)",
+		"Cloud Services (AWS Certified)",
+		"Full Stack Development & WordPress",
+		"Docker & Database Management",
+	],
+	specialisations: [
+		"Geographic Information Systems",
+		"Spatial Data Science",
+		"Environmental Remote Sensing",
+		"Open Source GIS Solutions",
+	],
+	projects: [
+		{
+			title: "Canadian Census 2021 Visualisation",
+			description:
+				"Analysed and visualised census data covering 2,500 variables using Redis map server technology, recognised by MountainMath CEO.",
+			icon: DocumentChartBarIcon,
+		},
+		{
+			title: "UK Electoral Analysis",
+			description:
+				"Developed visualisation revealing correlations between deprivation and voting patterns, acclaimed by FT Political Editor and academic experts.",
+			icon: GlobeAltIcon,
+		},
+		{
+			title: "Hebrew Learning Platform",
+			description:
+				"Led global team implementing neural networks for Hebrew transliteration and created 4,000+ interactive flashcards.",
+			icon: CodeBracketIcon,
+		},
+	],
+	education: {
+		current: "MSc Geographic Information Science - University of Exeter",
+		certification: "AWS Certified Cloud Practitioner",
+		focus: "Drone Analysis, Geo-Visualisations, and Spatial Data Science",
+	},
+};
 ---
 
 <BaseLayout
 	title="About - Jacob Weinbren"
-	description="Full Stack Developer, GIS Specialist, and AWS Certified Professional based in Exeter"
+	description="GIS Specialist & Full Stack Developer | AWS Certified"
 >
-	<div class="bg-gradient-to-br from-green-400 to-green-600 text-white">
-		<div class="max-w-4xl mx-auto px-6 py-24">
-			<h1 class="text-5xl md:text-6xl font-bold mb-6">About Me</h1>
+	<!-- Hero Section -->
+	<div class="relative overflow-hidden">
+		<div
+			class="absolute inset-0 bg-gradient-to-br from-green-400 to-green-600"
+		>
+		</div>
+		<div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
+
+		<div class="relative max-w-4xl mx-auto px-6 py-24 animate-slide-up">
+			<h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
+				About Me
+			</h1>
 			<p class="text-xl md:text-2xl text-white/90 max-w-2xl">
-				AWS Certified Full Stack Developer and GIS Specialist, combining
-				technical expertise with academic research to create innovative
-				geospatial solutions.
+				Combining GIS expertise with Full Stack Development to create
+				innovative spatial data solutions and impactful visualisations.
 			</p>
 		</div>
 	</div>
 
+	<!-- Main Content -->
 	<div class="max-w-4xl mx-auto px-6 py-16">
-		<div class="prose prose-lg max-w-none space-y-12">
+		<div class="space-y-12">
+			<!-- Education Section -->
 			<section
 				class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100"
 			>
-				<h2 class="text-3xl font-bold text-green-600 mb-6">
-					Professional Overview
-				</h2>
-				<p class="text-gray-700">
-					I'm an AWS Certified Full Stack Developer currently pursuing
-					an MSc in Geographic Information Science at the University
-					of Exeter. With workplace experience, I've developed
-					expertise in modern web technologies and geospatial
-					analysis. My unique background combines technical
-					proficiency with academic research, allowing me to deliver
-					solutions at the intersection of technology and geography.
-				</p>
-			</section>
-
-			<section
-				class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100"
-			>
-				<h2 class="text-3xl font-bold text-green-600 mb-6">
-					Technical Expertise
-				</h2>
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-					<div>
-						<h3 class="text-xl font-semibold mb-4">Development</h3>
-						<ul class="space-y-2 text-gray-700">
-							<li class="flex items-center gap-2">
-								<ChevronRightIcon
-									className="w-5 h-5 text-green-500"
-								/>
-								Modern frameworks (Next.js, React, Svelte)
-							</li>
-							<li class="flex items-center gap-2">
-								<ChevronRightIcon
-									className="w-5 h-5 text-green-500"
-								/>
-								AWS Cloud Services & DevOps
-							</li>
-							<li class="flex items-center gap-2">
-								<ChevronRightIcon
-									className="w-5 h-5 text-green-500"
-								/>
-								Full Stack Development (Laravel, WordPress)
-							</li>
-							<li class="flex items-center gap-2">
-								<ChevronRightIcon
-									className="w-5 h-5 text-green-500"
-								/>
-								Database Management (MySQL, Redis)
-							</li>
-						</ul>
-					</div>
-					<div>
-						<h3 class="text-xl font-semibold mb-4">
-							Specialisations
-						</h3>
-						<ul class="space-y-2 text-gray-700">
-							<li class="flex items-center gap-2">
-								<ChevronRightIcon
-									className="w-5 h-5 text-green-500"
-								/>
-								GIS & Spatial Analysis
-							</li>
-							<li class="flex items-center gap-2">
-								<ChevronRightIcon
-									className="w-5 h-5 text-green-500"
-								/>
-								Data Visualisation
-							</li>
-							<li class="flex items-center gap-2">
-								<ChevronRightIcon
-									className="w-5 h-5 text-green-500"
-								/>
-								Analytics Implementation
-							</li>
-							<li class="flex items-center gap-2">
-								<ChevronRightIcon
-									className="w-5 h-5 text-green-500"
-								/>
-								Machine Learning Applications
-							</li>
-						</ul>
-					</div>
+				<div class="flex items-center gap-3 mb-6">
+					<AcademicCapIcon className="w-8 h-8 text-green-500" />
+					<h2 class="text-3xl font-bold text-gray-900">
+						Current Focus
+					</h2>
+				</div>
+				<div class="space-y-4">
+					<p class="text-xl font-semibold text-green-600">
+						{skills.education.current}
+					</p>
+					<p class="text-gray-700">{skills.education.focus}</p>
+					<p class="text-gray-700 font-medium">
+						{skills.education.certification}
+					</p>
 				</div>
 			</section>
 
+			<!-- Skills Grid -->
+			<section class="grid md:grid-cols-2 gap-8">
+				<div
+					class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100
+          transform hover:shadow-md transition-all duration-300"
+				>
+					<h3 class="text-xl font-bold mb-6">Development</h3>
+					<ul class="space-y-3">
+						{
+							skills.development.map((skill) => (
+								<li class="flex items-center gap-2 text-gray-700">
+									<ChevronRightIcon className="w-5 h-5 text-green-500" />
+									{skill}
+								</li>
+							))
+						}
+					</ul>
+				</div>
+
+				<div
+					class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100
+          transform hover:shadow-md transition-all duration-300"
+				>
+					<h3 class="text-xl font-bold mb-6">GIS Expertise</h3>
+					<ul class="space-y-3">
+						{
+							skills.specialisations.map((skill) => (
+								<li class="flex items-center gap-2 text-gray-700">
+									<ChevronRightIcon className="w-5 h-5 text-green-500" />
+									{skill}
+								</li>
+							))
+						}
+					</ul>
+				</div>
+			</section>
+
+			<!-- Projects -->
 			<section
 				class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100"
 			>
 				<h2 class="text-3xl font-bold text-green-600 mb-6">
-					Notable Projects
+					Featured Projects
 				</h2>
 				<div class="grid gap-6">
-					<div
-						class="group hover:bg-gray-50 p-4 rounded-xl transition-colors"
-					>
-						<h3 class="text-xl font-semibold text-gray-900 mb-2">
-							Hebrew Transliteration & Learning Tools
-						</h3>
-						<p class="text-gray-700">
-							Led an international team in developing a Hebrew
-							transliteration system and created over 4,000
-							interactive flashcards, making language learning
-							more accessible globally.
-						</p>
-					</div>
-					<div
-						class="group hover:bg-gray-50 p-4 rounded-xl transition-colors"
-					>
-						<h3 class="text-xl font-semibold text-gray-900 mb-2">
-							Electoral Visualisations
-						</h3>
-						<p class="text-gray-700">
-							Developed comprehensive mapping solutions for
-							Israeli elections and UK voting patterns, receiving
-							recognition from prominent political analysts
-							including the FT Political Editor and leading
-							academics.
-						</p>
-					</div>
-					<div
-						class="group hover:bg-gray-50 p-4 rounded-xl transition-colors"
-					>
-						<h3 class="text-xl font-semibold text-gray-900 mb-2">
-							Canadian Census 2021
-						</h3>
-						<p class="text-gray-700">
-							Created sophisticated geospatial visualisations
-							handling millions of data points across 2,500
-							variables using Redis map server technology, earning
-							praise from industry experts.
-						</p>
-					</div>
+					{
+						skills.projects.map((project) => {
+							const Icon = project.icon;
+							return (
+								<div
+									class="group p-6 rounded-xl border border-gray-100 hover:border-green-500 
+                    hover:shadow-md transition-all duration-300"
+								>
+									<div class="flex items-start gap-4">
+										<Icon className="w-6 h-6 text-green-500 flex-shrink-0" />
+										<div>
+											<h3
+												class="text-xl font-bold text-gray-900 group-hover:text-green-600 
+                           transition-colors duration-300"
+											>
+												{project.title}
+											</h3>
+											<p class="mt-2 text-gray-700">
+												{project.description}
+											</p>
+										</div>
+									</div>
+								</div>
+							);
+						})
+					}
 				</div>
 			</section>
 
-			<section
-				class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100"
-			>
-				<h2 class="text-3xl font-bold text-green-600 mb-6">
-					Academic & Professional Development
-				</h2>
-				<p class="text-gray-700">
-					Currently pursuing an MSc in Geographic Information Science,
-					specialising in Drone Analysis, Geo-Visualisations, and
-					Spatial Data Science. My academic journey, combined with AWS
-					certification and professional experience, enables me to
-					approach problems with both theoretical depth and practical
-					expertise.
-				</p>
-			</section>
-
-			<section
-				class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100"
-			>
-				<h2 class="text-3xl font-bold text-green-600 mb-6">
-					Community Leadership
-				</h2>
-				<p class="text-gray-700">
-					As treasurer of the Postgraduate Society at Exeter
-					University, I manage financial responsibilities while
-					fostering community engagement. I'm also active in the local
-					Jewish university society and maintain a technical blog
-					discussing literature, programming, and politics. My
-					experience at The National Museum of Computing has instilled
-					a passion for technology education and public engagement.
-				</p>
-			</section>
-
+			<!-- Contact Section -->
 			<section
 				class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-8 text-white"
 			>
 				<h2 class="text-3xl font-bold mb-6">Get in Touch</h2>
-				<p class="text-white/90 mb-6">
-					I'm always interested in new opportunities and
-					collaborations. Whether you're looking to discuss a project,
-					share ideas, or just connect, feel free to reach out.
+				<p class="text-white/90 mb-8 text-lg">
+					Looking to collaborate on GIS projects or web development?
+					I'm interested in opportunities that combine spatial
+					analysis with modern web technologies.
 				</p>
-				<div class="flex gap-4">
+				<div class="flex flex-wrap gap-4">
 					<a
 						href="mailto:jacobweinbren@gmail.com"
-						class="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold
-                        hover:bg-green-50 transition-colors"
+						class="inline-flex items-center px-6 py-3 rounded-lg bg-white text-green-600
+             font-medium hover:bg-green-50 transition-all duration-300"
 					>
+						<EnvelopeIcon className="w-5 h-5 mr-2" />
 						Email Me
 					</a>
 					<a
 						href="https://github.com/JacobWeinbren"
-						class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold
-                        hover:bg-green-700 transition-colors"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="inline-flex items-center px-6 py-3 rounded-lg bg-white/10 text-white
+             font-medium hover:bg-white/20 transition-all duration-300"
 					>
-						GitHub Profile
+						<FaGithub className="w-5 h-5 mr-2" />
+						GitHub
+					</a>
+					<a
+						href="https://www.linkedin.com/in/jacob-weinbren/"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="inline-flex items-center px-6 py-3 rounded-lg bg-white/10 text-white
+             font-medium hover:bg-white/20 transition-all duration-300"
+					>
+						<FaLinkedin className="w-5 h-5 mr-2" />
+						LinkedIn
 					</a>
 				</div>
 			</section>

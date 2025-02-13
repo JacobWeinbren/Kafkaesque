@@ -1,5 +1,5 @@
-// src/components/Search.tsx
-import { useState, useEffect, useCallback } from "react";
+// src/components/search/Search.tsx
+import { useState, useEffect, useCallback, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import debounce from "lodash/debounce";
 import type { HashnodePost } from "@/types/hashnode";
@@ -10,6 +10,7 @@ export default function Search() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasSearched, setHasSearched] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const abortController = useRef<AbortController | null>(null);
 
 	useEffect(() => {
 		const params = new URLSearchParams(window.location.search);
@@ -18,10 +19,20 @@ export default function Search() {
 		if (initialQuery) {
 			performSearch(initialQuery);
 		}
+
+		return () => {
+			if (abortController.current) {
+				abortController.current.abort();
+			}
+		};
 	}, []);
 
 	const performSearch = useCallback(
 		debounce(async (searchQuery: string) => {
+			if (abortController.current) {
+				abortController.current.abort();
+			}
+
 			setIsLoading(true);
 			setHasSearched(true);
 			setError(null);
@@ -33,13 +44,17 @@ export default function Search() {
 			}
 
 			try {
-				const controller = new AbortController();
-				const timeoutId = setTimeout(() => controller.abort(), 5000);
+				abortController.current = new AbortController();
+				const timeoutId = setTimeout(() => {
+					if (abortController.current) {
+						abortController.current.abort();
+					}
+				}, 5000);
 
 				const response = await fetch(
 					`/api/search?q=${encodeURIComponent(searchQuery)}`,
 					{
-						signal: controller.signal,
+						signal: abortController.current.signal,
 						headers: {
 							"Cache-Control": "no-cache",
 						},
@@ -59,6 +74,9 @@ export default function Search() {
 
 				setResults(data);
 			} catch (error) {
+				if (error.name === "AbortError") {
+					return;
+				}
 				console.error("Search error:", error);
 				setError(
 					error instanceof Error
@@ -72,12 +90,6 @@ export default function Search() {
 		}, 300),
 		[]
 	);
-
-	useEffect(() => {
-		return () => {
-			performSearch.cancel();
-		};
-	}, [performSearch]);
 
 	return (
 		<div className="w-full max-w-4xl mx-auto px-4">
@@ -94,6 +106,7 @@ export default function Search() {
                      focus:border-green-500 focus:ring-2 focus:ring-green-500/20 
                      focus:outline-none transition-all duration-150"
 						placeholder="Search posts..."
+						aria-label="Search posts"
 					/>
 					<MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
 				</div>
@@ -101,14 +114,14 @@ export default function Search() {
 
 			<div className="min-h-[200px]">
 				{error && (
-					<div className="text-center py-4 text-red-500">
+					<div className="text-center py-4 text-red-500" role="alert">
 						<p>{error}</p>
 					</div>
 				)}
 
 				{isLoading ? (
 					<div className="flex justify-center py-8">
-						<div className="animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-green-500"></div>
+						<div className="animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-green-500" />
 					</div>
 				) : results.length > 0 ? (
 					<div className="grid gap-6 md:grid-cols-2">

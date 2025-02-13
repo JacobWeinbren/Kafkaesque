@@ -1,48 +1,69 @@
+// astro.config.mjs
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
 import vercel from "@astrojs/vercel";
 import compress from "astro-compress";
-import critters from "astro-critters";
+import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
+	site: "https://kafkaesque.blog",
 	integrations: [
-		tailwind(),
+		tailwind({
+			config: { applyBaseStyles: false },
+		}),
 		react(),
 		compress({
 			css: true,
 			html: true,
-			js: true,
 			img: true,
+			js: true,
 			svg: true,
 		}),
-		critters({
-			preload: "media",
-			inlineFonts: true,
-		}),
+		sitemap(),
 	],
 	output: "server",
 	adapter: vercel({
 		analytics: true,
 		imageService: true,
-		isr: true,
+		maxDuration: 60,
+		edgeMiddleware: true,
 	}),
 	image: {
-		service: {
-			entrypoint: "astro/assets/services/sharp",
-			config: {
-				limitInputPixels: false,
+		domains: ["cdn.hashnode.com"],
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "cdn.hashnode.com",
 			},
-		},
+		],
+		format: ["avif", "webp"],
+		serviceEntryPoint: "@astrojs/image/sharp",
+	},
+	prefetch: {
+		prefetchAll: true,
+		defaultStrategy: "viewport",
 	},
 	vite: {
 		build: {
-			cssCodeSplit: true,
-			sourcemap: true,
-			minify: "terser",
+			cssMinify: "lightningcss",
+			minify: true,
+			rollupOptions: {
+				output: {
+					manualChunks: {
+						"react-vendor": ["react", "react-dom"],
+						search: ["fuse.js", "lodash/debounce"],
+					},
+				},
+			},
 		},
-		optimizeDeps: {
-			include: ["react", "react-dom", "@heroicons/react"],
+		ssr: {
+			noExternal: ["@heroicons/react"],
+		},
+		resolve: {
+			alias: {
+				"@": "/src",
+			},
 		},
 	},
 });

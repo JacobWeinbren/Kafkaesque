@@ -1,62 +1,83 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
+// src/pages/blog.astro
+import BaseLayout from "@/components/layout/BaseLayout.astro";
 import { getPosts } from "@/lib/hashnode";
-import { formatDate } from "@/utils/helpers";
+import { Image } from "astro:assets";
+import { ChevronRightIcon } from "@heroicons/react/24/outline";
 
 const {
 	posts: initialPosts,
 	hasMore: initialHasMore,
 	endCursor: initialEndCursor,
-} = await getPosts({ limit: 6 });
+} = await getPosts({ limit: 9 });
 ---
 
 <BaseLayout
 	title="Blog - Jacob Weinbren"
-	description="Articles and thoughts on literature, data, and more"
+	description="Articles and thoughts on literature, data science, and development"
 >
-	<div class="bg-gradient-to-br from-green-400 to-green-600 py-20">
-		<div class="max-w-4xl mx-auto px-6">
-			<h1 class="text-5xl md:text-6xl font-bold text-white mb-4">Blog</h1>
-			<p class="text-xl md:text-2xl text-white/90">
-				Thoughts on literature, data science, and more
+	<!-- Hero Section -->
+	<div class="relative overflow-hidden">
+		<div
+			class="absolute inset-0 bg-gradient-to-br from-green-400 to-green-600"
+		>
+		</div>
+		<div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
+
+		<div class="relative max-w-7xl mx-auto px-6 py-24 animate-slide-up">
+			<h1 class="text-5xl md:text-6xl font-bold text-white mb-6">Blog</h1>
+			<p class="text-xl md:text-2xl text-white/90 max-w-2xl">
+				Exploring ideas through code, data, and words.
 			</p>
 		</div>
 	</div>
 
-	<div class="max-w-4xl mx-auto px-6 py-16">
-		<div id="posts-container" class="grid gap-6">
+	<!-- Main Content -->
+	<div class="max-w-7xl mx-auto px-6 py-12">
+		<!-- Posts Grid -->
+		<div
+			id="posts-container"
+			class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
+		>
 			{
-				initialPosts.map((post) => (
-					<article class="group">
-						<a
-							href={`/post/${post.slug}`}
-							class="block bg-white rounded-xl overflow-hidden border border-gray-100 
-                     hover:border-green-500 transition-all duration-150 hover:shadow-md"
-						>
-							<div class="flex flex-col md:flex-row">
-								{post.coverImage && (
-									<div class="md:w-1/3 relative overflow-hidden h-48 md:h-auto">
-										<img
-											src={post.coverImage}
-											alt={post.title}
-											class="w-full h-full object-cover transform group-hover:scale-105 
-                           transition-transform duration-150"
-										/>
-									</div>
-								)}
-								<div class="p-4 md:w-2/3 flex flex-col">
-									<time class="text-sm text-green-600 font-medium">
-										{formatDate(post.publishedAt)}
-									</time>
-									<h2
-										class="text-lg font-bold mt-1 mb-2 group-hover:text-green-600 
-                           transition-colors duration-150"
+				initialPosts.map((post, index) => (
+					<article class="opacity-0 group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-green-500 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+						<a href={`/post/${post.slug}`} class="block h-full">
+							{post.coverImage && (
+								<div class="relative h-48 overflow-hidden">
+									<Image
+										src={post.coverImage}
+										alt=""
+										width={400}
+										height={200}
+										class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+									/>
+								</div>
+							)}
+							<div class="p-6">
+								<div class="flex items-center gap-4 mb-4">
+									<time
+										class="text-sm text-green-600 font-medium"
+										datetime={post.publishedAt}
 									>
-										{post.title}
-									</h2>
-									<p class="text-gray-600 text-sm line-clamp-2">
-										{post.subtitle}
-									</p>
+										{new Date(
+											post.publishedAt
+										).toLocaleDateString("en-GB", {
+											day: "numeric",
+											month: "long",
+											year: "numeric",
+										})}
+									</time>
+								</div>
+								<h2 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors duration-300 line-clamp-2">
+									{post.title}
+								</h2>
+								<p class="text-gray-600 line-clamp-2 mb-4">
+									{post.subtitle}
+								</p>
+								<div class="flex items-center text-green-600 text-sm font-medium">
+									Read more
+									<ChevronRightIcon className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
 								</div>
 							</div>
 						</a>
@@ -65,8 +86,9 @@ const {
 			}
 		</div>
 
+		<!-- Loading State -->
 		<div id="loading" class="hidden">
-			<div class="flex justify-center py-8">
+			<div class="flex justify-center py-12">
 				<div
 					class="animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-green-500"
 				>
@@ -74,148 +96,167 @@ const {
 			</div>
 		</div>
 
+		<!-- Load More Trigger -->
+		<div id="load-more-trigger" class="h-10 mt-8"></div>
+
+		<!-- No More Posts Message -->
 		<div id="no-more-posts" class="hidden">
-			<div class="text-center py-8 text-gray-500">
+			<div class="text-center py-12 text-gray-500">
 				No more posts to load
 			</div>
 		</div>
 	</div>
 </BaseLayout>
 
-<script define:vars={{ initialHasMore, initialEndCursor }}>
-	let currentCursor = initialEndCursor;
-	let loading = false;
-	let hasMore = initialHasMore;
+<style>
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
 
-	function formatDate(date) {
-		return new Date(date).toLocaleDateString("en-GB", {
-			year: "numeric",
-			month: "long",
-			day: "numeric",
+	.fade-in-up {
+		animation: fadeInUp 0.6s ease-out forwards;
+	}
+</style>
+
+<script>
+	let currentCursor = null;
+	let loading = false;
+	let hasMore = true;
+
+	// Initial animation for existing posts
+	function animateInitialPosts() {
+		const articles = document.querySelectorAll("#posts-container article");
+		articles.forEach((article, index) => {
+			setTimeout(() => {
+				(article as HTMLElement).style.animation =
+					`fadeInUp 0.6s ease-out forwards`;
+			}, index * 100);
 		});
 	}
 
-	const postsContainer = document.getElementById("posts-container");
-	const loadingElement = document.getElementById("loading");
-	const noMorePostsElement = document.getElementById("no-more-posts");
+	// Run initial animation after page load
+	document.addEventListener("DOMContentLoaded", animateInitialPosts);
 
-	function createPostElement(post) {
+	// Function to create post element
+	function createPostElement(post: any, index: number) {
 		const article = document.createElement("article");
-		article.className = "group";
+		article.className =
+			"opacity-0 group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-green-500 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1";
+
+		const formattedDate = new Date(post.publishedAt).toLocaleDateString(
+			"en-GB",
+			{
+				day: "numeric",
+				month: "long",
+				year: "numeric",
+			}
+		);
 
 		article.innerHTML = `
-    <a
-      href="/post/${post.slug}"
-      class="block bg-white rounded-xl overflow-hidden border border-gray-100 
-             hover:border-green-500 transition-all duration-150 hover:shadow-md"
-    >
-      <div class="flex flex-col md:flex-row">
-        ${
-			post.coverImage
-				? `
-            <div class="md:w-1/3 relative overflow-hidden h-48 md:h-auto">
-              <img
-                src="${post.coverImage}"
-                alt="${post.title}"
-                class="w-full h-full object-cover transform group-hover:scale-105 
-                       transition-transform duration-150"
-              />
-            </div>
-          `
-				: ""
-		}
-        <div class="p-4 md:w-2/3 flex flex-col">
-          <time class="text-sm text-green-600 font-medium">
-            ${formatDate(post.publishedAt)}
-          </time>
-          <h2 class="text-lg font-bold mt-1 mb-2 group-hover:text-green-600 
-                     transition-colors duration-150">
+		<a href="/post/${post.slug}" class="block h-full">
+		  ${
+				post.coverImage
+					? `
+			<div class="relative h-48 overflow-hidden">
+			  <img
+				src="${post.coverImage}"
+				alt=""
+				class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+			  />
+			</div>
+		  `
+					: ""
+			}
+		  <div class="p-6">
+          <div class="flex items-center gap-4 mb-4">
+            <time class="text-sm text-green-600 font-medium">${formattedDate}</time>
+          </div>
+          <h2 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors duration-300 line-clamp-2">
             ${post.title}
           </h2>
-          <p class="text-gray-600 text-sm line-clamp-2">
-            ${post.subtitle || ""}
-          </p>
+          <p class="text-gray-600 line-clamp-2 mb-4">${post.subtitle}</p>
+          <div class="flex items-center text-green-600 text-sm font-medium">
+            Read more
+            <span class="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform">
+              <ChevronRightIcon />
+            </span>
+          </div>
         </div>
-      </div>
-    </a>
-  `;
+		</a>
+	  `;
+
+		// Add animation with delay based on index
+		setTimeout(() => {
+			(article as HTMLElement).style.animation =
+				`fadeInUp 0.6s ease-out forwards`;
+		}, index * 100);
 
 		return article;
 	}
 
+	// Function to load more posts
 	async function loadMorePosts() {
-		if (loading || !hasMore) {
-			return;
-		}
+		if (loading || !hasMore) return;
 
 		loading = true;
-		loadingElement?.classList.remove("hidden");
+		const loadingEl = document.getElementById("loading");
+		loadingEl?.classList.remove("hidden");
 
 		try {
-			const url = `/api/posts?cursor=${encodeURIComponent(currentCursor || "")}`;
-
-			const response = await fetch(url);
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
+			const response = await fetch(
+				`/api/posts?cursor=${encodeURIComponent(currentCursor || "")}`
+			);
+			if (!response.ok) throw new Error("Network response was not ok");
 
 			const data = await response.json();
 
-			if (!data.posts || data.posts.length === 0) {
-				hasMore = false;
-				noMorePostsElement?.classList.remove("hidden");
-				window.removeEventListener("scroll", handleScroll);
-				return;
+			if (data.posts.length > 0) {
+				const postsContainer =
+					document.getElementById("posts-container");
+				data.posts.forEach((post, index) => {
+					const article = createPostElement(post, index);
+					postsContainer?.appendChild(article);
+				});
+
+				currentCursor = data.endCursor;
+				hasMore = data.hasMore;
 			}
-
-			data.posts.forEach((post) => {
-				const postElement = createPostElement(post);
-				postsContainer?.appendChild(postElement);
-			});
-
-			hasMore = data.hasMore;
-			currentCursor = data.endCursor;
 
 			if (!hasMore) {
-				noMorePostsElement?.classList.remove("hidden");
-				window.removeEventListener("scroll", handleScroll);
+				document
+					.getElementById("no-more-posts")
+					?.classList.remove("hidden");
 			}
 		} catch (error) {
-			console.error("Error loading more posts:", error);
-			hasMore = false;
-			noMorePostsElement?.classList.remove("hidden");
+			console.error("Error loading posts:", error);
 		} finally {
 			loading = false;
-			loadingElement?.classList.add("hidden");
+			loadingEl?.classList.add("hidden");
 		}
 	}
 
-	function handleScroll() {
-		if (loading || !hasMore) return;
+	// Set up Intersection Observer
+	const observer = new IntersectionObserver(
+		(entries) => {
+			entries.forEach((entry) => {
+				if (entry.isIntersecting && hasMore && !loading) {
+					loadMorePosts();
+				}
+			});
+		},
+		{ rootMargin: "100px" }
+	);
 
-		const scrollPosition = window.innerHeight + window.scrollY;
-		const documentHeight = document.documentElement.offsetHeight;
-		const threshold = 1000; // pixels from bottom
-
-		if (scrollPosition >= documentHeight - threshold) {
-			loadMorePosts();
-		}
+	// Start observing the load more trigger
+	const loadMoreTrigger = document.getElementById("load-more-trigger");
+	if (loadMoreTrigger) {
+		observer.observe(loadMoreTrigger);
 	}
-
-	// Use a debounced version of the scroll handler
-	let scrollTimeout;
-	window.addEventListener("scroll", () => {
-		if (scrollTimeout) {
-			clearTimeout(scrollTimeout);
-		}
-		scrollTimeout = setTimeout(handleScroll, 100);
-	});
-
-	// Cleanup
-	document.addEventListener("astro:beforeload", () => {
-		if (scrollTimeout) {
-			clearTimeout(scrollTimeout);
-		}
-		window.removeEventListener("scroll", handleScroll);
-	});
 </script>

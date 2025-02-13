@@ -1,26 +1,37 @@
 ---
 // src/pages/search.astro
-import BaseLayout from "@/layouts/BaseLayout.astro";
-import SearchBox from "@/components/Search";
+import BaseLayout from "@/components/layout/BaseLayout.astro";
+import SearchBox from "@/components/search/Search";
 ---
 
 <BaseLayout
 	title="Search - Jacob Weinbren"
-	description="Search through articles and projects"
+	description="Search through articles, projects, and research"
 >
-	<div class="bg-gradient-to-br from-green-400 to-green-600 py-20">
-		<div class="max-w-4xl mx-auto px-6 text-center">
-			<h1 class="text-5xl md:text-6xl font-bold text-white mb-4">
+	<!-- Hero Section -->
+	<div class="relative overflow-hidden">
+		<div
+			class="absolute inset-0 bg-gradient-to-br from-green-400 to-green-600"
+		>
+		</div>
+		<div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
+
+		<div
+			class="relative max-w-4xl mx-auto px-6 py-24 text-center animate-slide-up"
+		>
+			<h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
 				Search
 			</h1>
 			<p class="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto">
-				Find articles, projects, and research
+				Find articles, projects, and research across all topics.
 			</p>
 		</div>
 	</div>
 
-	<div class="max-w-4xl mx-auto px-6 -mt-10 relative z-10">
-		<div class="bg-white rounded-xl shadow-lg p-6 md:p-8 backdrop-blur-sm">
+	<!-- Search Container -->
+	<div class="max-w-4xl mx-auto px-6 -mt-16 relative z-10 mb-20">
+		<div class="bg-white rounded-xl shadow-xl p-6 md:p-8 backdrop-blur-sm">
+			<!-- Search Box -->
 			<SearchBox client:load />
 		</div>
 	</div>

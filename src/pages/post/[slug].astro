@@ -1,9 +1,10 @@
 ---
 // src/pages/post/[slug].astro
-import BaseLayout from "@/layouts/BaseLayout.astro";
-import SignupForm from "@/components/SignupForm.astro";
+import BaseLayout from "@/components/layout/BaseLayout.astro";
+import SignupForm from "@/components/blog/SignupForm.astro";
 import { getPosts, getPost } from "@/lib/hashnode";
 import { formatDate } from "@/utils/helpers";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 export async function getStaticPaths() {
 	const { posts } = await getPosts();
@@ -61,21 +62,9 @@ if (!post) {
 		<div class="mt-12 pt-8 border-t border-gray-100">
 			<a
 				href="/blog"
-				class="inline-flex items-center px-6 py-3 rounded-lg bg-green-50
-               text-green-600 hover:bg-green-100 transition-colors duration-150"
+				class="inline-flex items-center px-6 py-3 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition-colors duration-150"
 			>
-				<svg
-					class="w-5 h-5 mr-2"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M15 19l-7-7 7-7"></path>
-				</svg>
+				<ChevronLeftIcon className="w-5 h-5 mr-2" />
 				Back to Blog
 			</a>
 		</div>
@@ -84,16 +73,15 @@ if (!post) {
 
 <style>
 	.prose :global(ul) {
-		@apply list-disc pl-8 my-6; /* Updated styling */
-		list-style-position: outside; /* Forces bullets outside */
+		@apply list-disc pl-8 my-6;
+		list-style-position: outside;
 	}
 
 	.prose :global(li) {
-		@apply my-2; /* Adds spacing between list items */
-		padding-left: 0.5em; /* Gives some space after the bullet */
+		@apply my-2;
+		padding-left: 0.5em;
 	}
 
-	/* Rest of your existing styles */
 	.prose :global(img) {
 		@apply rounded-xl shadow-lg;
 	}

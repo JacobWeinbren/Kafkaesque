@@ -1,0 +1,141 @@
+---
+// src/components/layout/Navbar.astro
+import {
+	HomeIcon,
+	UserIcon,
+	DocumentTextIcon,
+	MagnifyingGlassIcon,
+	Bars3Icon,
+} from "@heroicons/react/24/outline";
+
+const links = [
+	{ href: "/", text: "Home", Icon: HomeIcon },
+	{ href: "/about", text: "About", Icon: UserIcon },
+	{ href: "/blog", text: "Blog", Icon: DocumentTextIcon },
+	{ href: "/search", text: "Search", Icon: MagnifyingGlassIcon },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<nav class="sticky top-0 z-50 bg-green-500 text-white">
+	<div class="max-w-7xl mx-auto px-6">
+		<div class="flex items-center justify-between h-16">
+			<a
+				href="/"
+				class="font-bold text-xl text-white hover:text-white/90 transition-colors"
+			>
+				Jacob W
+			</a>
+
+			<div class="hidden md:flex space-x-1">
+				{
+					links.map(({ href, text, Icon }) => {
+						const isActive = currentPath === href;
+						return (
+							<a
+								href={href}
+								class:list={[
+									"px-4 py-2 rounded-lg transition-colors flex items-center gap-2",
+									"focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-green-500",
+									isActive
+										? "bg-white/20 text-white"
+										: "text-white/90 hover:text-white hover:bg-white/10",
+								]}
+								aria-current={isActive ? "page" : undefined}
+							>
+								<Icon className="w-5 h-5" />
+								{text}
+							</a>
+						);
+					})
+				}
+			</div>
+
+			<div class="w-10 h-10 flex md:hidden items-center justify-center">
+				<button
+					id="menuButton"
+					class="p-2 rounded-lg hover:bg-white/10 transition-colors focus:outline-none
+                 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-green-500"
+					aria-label="Toggle menu"
+					aria-expanded="false"
+				>
+					<Bars3Icon className="w-6 h-6 text-white" />
+				</button>
+			</div>
+		</div>
+
+		<!-- Mobile Menu -->
+		<div
+			id="mobileMenu"
+			class="hidden md:hidden pb-6 space-y-2 transform origin-top transition-all duration-300"
+			role="navigation"
+		>
+			{
+				links.map(({ href, text, Icon }, index) => {
+					const isActive = currentPath === href;
+					return (
+						<a
+							href={href}
+							class:list={[
+								"px-4 py-2 rounded-lg transition-all duration-150 flex items-center gap-2",
+								"focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-green-500",
+								"opacity-0 translate-y-4",
+								isActive
+									? "bg-white/20 text-white"
+									: "text-white/90 hover:text-white hover:bg-white/10",
+							]}
+							style={`animation: slideIn 0.3s ease-out ${index * 0.1}s forwards;`}
+							aria-current={isActive ? "page" : undefined}
+						>
+							<Icon className="w-5 h-5" />
+							{text}
+						</a>
+					);
+				})
+			}
+		</div>
+	</div>
+</nav>
+
+<style>
+	@keyframes slideIn {
+		from {
+			opacity: 0;
+			transform: translateY(1rem);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+</style>
+
+<script>
+	const menuButton = document.getElementById("menuButton");
+	const mobileMenu = document.getElementById("mobileMenu");
+
+	if (menuButton && mobileMenu) {
+		menuButton.addEventListener("click", () => {
+			const isExpanded =
+				menuButton.getAttribute("aria-expanded") === "true";
+			menuButton.setAttribute("aria-expanded", (!isExpanded).toString());
+
+			if (isExpanded) {
+				// Closing animation
+				mobileMenu.style.maxHeight = "0px";
+				mobileMenu.style.opacity = "0";
+				setTimeout(() => {
+					mobileMenu.classList.add("hidden");
+				}, 300);
+			} else {
+				// Opening animation
+				mobileMenu.classList.remove("hidden");
+				requestAnimationFrame(() => {
+					mobileMenu.style.maxHeight = `${mobileMenu.scrollHeight}px`;
+					mobileMenu.style.opacity = "1";
+				});
+			}
+		});
+	}
+</script>

@@ -1,4 +1,5 @@
 ---
+// src/components/blog/SignupForm.astro
 interface Props {
 	location?: "post" | "standalone";
 }
@@ -6,13 +7,12 @@ interface Props {
 const { location = "standalone" } = Astro.props;
 ---
 
-<!-- src/components/SignupForm.astro -->
 <div
 	class:list={[
-		"max-w-xl mx-auto backdrop-blur-sm",
+		"max-w-xl mx-auto backdrop-blur-sm transition-all duration-300",
 		location === "post"
 			? "border-t border-gray-200 pt-8 mt-8"
-			: "bg-white/80 rounded-xl shadow-sm p-8",
+			: "bg-white/80 rounded-xl shadow-sm p-8 hover:shadow-md",
 	]}
 >
 	<div class="text-center mb-8">
@@ -22,47 +22,78 @@ const { location = "standalone" } = Astro.props;
 		</p>
 	</div>
 
-	<form id="subscribeForm" class="space-y-4">
+	<form id="subscribeForm" class="space-y-4" novalidate>
 		<div class="relative">
 			<input
 				type="email"
 				id="email"
 				name="email"
 				required
+				pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
 				class="w-full px-4 py-3 pl-5 border-2 border-gray-200 rounded-lg
                focus:border-green-500 focus:ring-2 focus:ring-green-500/20 focus:outline-none
-               transition-all duration-150"
+               transition-all duration-150 peer"
 				placeholder="you@example.com"
+				aria-label="Email address"
 			/>
+			<div id="emailError" class="hidden text-red-500 text-sm mt-1"></div>
 		</div>
 
 		<button
 			type="submit"
 			class="w-full bg-green-500 text-white py-3 px-6 rounded-lg font-medium
              hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500
-             focus:ring-offset-2 transition-all duration-150"
+             focus:ring-offset-2 transition-all duration-150 disabled:opacity-50
+             disabled:cursor-not-allowed"
 		>
 			Subscribe
 		</button>
 
-		<p id="formMessage" class="text-sm text-center mt-4 hidden"></p>
+		<div
+			id="formMessage"
+			class="text-sm text-center mt-4 hidden"
+			role="status"
+			aria-live="polite"
+		>
+		</div>
 	</form>
 </div>
 
 <script>
 	const form = document.getElementById("subscribeForm") as HTMLFormElement;
 	const messageEl = document.getElementById("formMessage");
+	const emailInput = document.getElementById("email") as HTMLInputElement;
+	const emailError = document.getElementById("emailError");
 
-	if (form && messageEl) {
+	if (form && messageEl && emailInput && emailError) {
+		emailInput.addEventListener("input", () => {
+			emailInput.setCustomValidity("");
+			emailError.classList.add("hidden");
+			emailError.textContent = "";
+		});
+
+		emailInput.addEventListener("invalid", () => {
+			if (emailInput.value === "") {
+				emailError.textContent = "Please enter your email address";
+			} else {
+				emailError.textContent = "Please enter a valid email address";
+			}
+			emailError.classList.remove("hidden");
+		});
+
 		form.addEventListener("submit", async (e) => {
 			e.preventDefault();
+
+			if (!form.checkValidity()) {
+				return;
+			}
+
 			const submitButton = form.querySelector("button");
 			if (!submitButton) return;
 
 			submitButton.disabled = true;
 			submitButton.innerHTML = `
         <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
         Subscribing...
@@ -88,6 +119,13 @@ const { location = "standalone" } = Astro.props;
 					submitButton.innerHTML = "✓ Subscribed!";
 					submitButton.className =
 						"w-full bg-green-600 text-white py-3 px-6 rounded-lg font-medium cursor-not-allowed";
+
+					// Reset form after 5 seconds
+					setTimeout(() => {
+						submitButton.innerHTML = "Subscribe";
+						submitButton.disabled = false;
+						messageEl.classList.add("hidden");
+					}, 5000);
 				} else {
 					submitButton.innerHTML = "Subscribe";
 					submitButton.disabled = false;
