@@ -3,54 +3,46 @@ import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
 import vercel from "@astrojs/vercel";
 import compress from "astro-compress";
+import critters from "astro-critters";
 
 export default defineConfig({
 	integrations: [
-		tailwind({
-			config: { applyBaseStyles: false },
-		}),
+		tailwind(),
 		react(),
-		compress(),
+		compress({
+			css: true,
+			html: true,
+			js: true,
+			img: true,
+			svg: true,
+		}),
+		critters({
+			preload: "media",
+			inlineFonts: true,
+		}),
 	],
 	output: "server",
 	adapter: vercel({
 		analytics: true,
 		imageService: true,
-		maxDuration: 60, // Add timeout configuration
+		isr: true,
 	}),
 	image: {
-		domains: ["cdn.hashnode.com"],
-		remotePatterns: [
-			{
-				protocol: "https",
-				hostname: "cdn.hashnode.com",
+		service: {
+			entrypoint: "astro/assets/services/sharp",
+			config: {
+				limitInputPixels: false,
 			},
-		],
-	},
-	prefetch: {
-		prefetchAll: true,
-		defaultStrategy: "viewport",
+		},
 	},
 	vite: {
 		build: {
-			cssMinify: true,
-			minify: true,
-			rollupOptions: {
-				output: {
-					manualChunks: {
-						"react-vendor": ["react", "react-dom"],
-						search: ["fuse.js", "lodash/debounce"],
-					},
-				},
-			},
+			cssCodeSplit: true,
+			sourcemap: true,
+			minify: "terser",
 		},
-		resolve: {
-			alias: {
-				"@": "/src",
-			},
-		},
-		ssr: {
-			noExternal: ["@heroicons/react"],
+		optimizeDeps: {
+			include: ["react", "react-dom", "@heroicons/react"],
 		},
 	},
 });

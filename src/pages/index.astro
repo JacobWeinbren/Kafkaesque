@@ -58,7 +58,7 @@ const { posts: latestPosts } = await getPosts({ limit: 3 });
 						>
 							{post.coverImage && (
 								<div class="aspect-video overflow-hidden">
-									<Image
+									<img
 										src={post.coverImage}
 										alt={post.title}
 										width={600}

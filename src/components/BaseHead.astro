@@ -3,27 +3,41 @@ import "@/assets/styles/globals.css";
 import "@/assets/styles/animations.css";
 const { title, description, image } = Astro.props;
 const permalink = `${Astro.url.origin}${Astro.url.pathname}`;
+
+const defaultImage = `${Astro.url.origin}/img/logo_white.jpg`;
+const ogImage = image || defaultImage;
 ---
 
 <head>
 	<meta charset="UTF-8" />
+	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="theme-color" content="#22c55e" />
+
+	<!-- Primary Meta Tags -->
 	<title>{title}</title>
+	<meta name="title" content={title} />
 	<meta name="description" content={description} />
 
-	<!-- Favicon -->
-	<link rel="icon" type="image/png" href="favicon/favicon.ico" />
-
-	<!-- Open Graph -->
+	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content={permalink} />
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />
-	<meta property="og:image" content={image} />
+	<meta property="og:image" content={ogImage} />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
 
-	<!-- Font -->
-	<link
-		href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap"
-		rel="stylesheet"
-	/>
+	<!-- Twitter -->
+	<meta property="twitter:card" content="summary_large_image" />
+	<meta property="twitter:url" content={permalink} />
+	<meta property="twitter:title" content={title} />
+	<meta property="twitter:description" content={description} />
+	<meta property="twitter:image" content={ogImage} />
+
+	<!-- Favicon -->
+	<link rel="icon" href="/favicon/favicon.ico" sizes="any" />
+	<link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+	<link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
+	<link rel="manifest" href="/favicon/site.webmanifest" />
 </head>
