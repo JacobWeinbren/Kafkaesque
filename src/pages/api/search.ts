@@ -6,12 +6,10 @@ import Fuse from "fuse.js";
 const fuseCache = new WeakMap();
 let postsCache: any = null;
 let lastUpdated = 0;
-
 const CACHE_DURATION = 1000 * 60 * 5;
 
 export const GET: APIRoute = async ({ url }) => {
 	const query = url.searchParams.get("q");
-
 	if (!query) {
 		return new Response(JSON.stringify([]), {
 			status: 200,
@@ -21,14 +19,12 @@ export const GET: APIRoute = async ({ url }) => {
 			},
 		});
 	}
-
 	try {
 		const now = Date.now();
 		if (!postsCache || now - lastUpdated > CACHE_DURATION) {
-			const posts = await getAllPosts(); // Use getAllPosts instead of getPosts
+			const posts = await getAllPosts();
 			postsCache = posts;
 			lastUpdated = now;
-
 			fuseCache.set(
 				postsCache,
 				new Fuse(posts, {
@@ -38,18 +34,13 @@ export const GET: APIRoute = async ({ url }) => {
 				})
 			);
 		}
-
 		const fuse = fuseCache.get(postsCache);
-		if (!fuse) {
-			throw new Error("Search index not initialized");
-		}
-
+		if (!fuse) throw new Error("Search index not initialized");
 		const results = fuse
 			.search(query)
 			.filter((result) => result.score && result.score < 0.7)
 			.map((result) => result.item)
 			.slice(0, 9);
-
 		return new Response(JSON.stringify(results), {
 			status: 200,
 			headers: {
@@ -57,14 +48,11 @@ export const GET: APIRoute = async ({ url }) => {
 				"Cache-Control": "public, max-age=300",
 			},
 		});
-	} catch (error) {
+	} catch (error: any) {
 		console.error("Search error:", error);
 		return new Response(
 			JSON.stringify({ error: "Search failed", message: error.message }),
-			{
-				status: 500,
-				headers: { "Content-Type": "application/json" },
-			}
+			{ status: 500, headers: { "Content-Type": "application/json" } }
 		);
 	}
 };

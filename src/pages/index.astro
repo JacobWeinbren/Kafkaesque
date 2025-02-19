@@ -1,5 +1,4 @@
 ---
-// src/pages/index.astro
 import BaseLayout from "@/components/layout/BaseLayout.astro";
 import {
 	DocumentIcon,
@@ -10,82 +9,68 @@ import {
 
 <BaseLayout
 	title="Jacob Weinbren"
-	description="Full Stack Developer and GIS Specialist."
+	description="Professional full‑stack web developer & GIS specialist."
 >
 	<!-- Hero Section -->
 	<section
-		class="relative min-h-[30vh] sm:min-h-[20vh] flex items-center justify-center bg-gradient-to-br from-green-400 to-green-600 text-white py-16 sm:py-20"
+		class="relative flex items-center justify-center min-h-[50vh] bg-gradient-to-br from-green-600 to-green-800 text-white"
 	>
-		<div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
-		<div class="relative text-center">
+		<div class="relative z-10 text-center">
 			<h1
-				class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4 animate-fade-in"
+				class="text-5xl md:text-6xl font-bold mb-4 animate-fade-in-fast"
 			>
 				Jacob Weinbren
 			</h1>
-			<p
-				class="text-lg sm:text-xl md:text-2xl text-white/90 max-w-2xl mx-auto leading-relaxed animate-fade-in delay-100"
-			>
-				Web Developer & GIS Specialist
+			<p class="text-xl md:text-2xl max-w-2xl mx-auto animate-pop-up">
+				Professional full‑stack web developer &amp; GIS specialist.
 			</p>
 		</div>
 	</section>
 
 	<!-- Navigation Grid -->
-	<section class="bg-white py-12 sm:py-16">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6">
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+	<section class="py-16 bg-white">
+		<div class="max-w-7xl mx-auto px-4 text-center">
+			<h2 class="text-3xl font-bold text-gray-900 mb-8">
+				Navigate My World
+			</h2>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 				<a
 					href="/Jacob Weinbren - Resume.pdf"
-					download="Jacob Weinbren - Resume.pdf"
-					class="group flex flex-col items-center justify-center p-4 sm:p-8 bg-gray-50 rounded-xl hover:bg-green-50 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+					download
+					class="card transition transform hover:scale-105 hover:shadow-2xl"
 				>
 					<DocumentIcon
-						aria-hidden="true"
-						className="h-12 w-12 text-green-600 mb-4"
+						className="h-12 w-12 text-green-600 mx-auto mb-4"
 					/>
-					<h3
-						class="text-xl font-semibold text-gray-900 group-hover:text-green-600 transition-colors duration-300"
-					>
-						CV
-					</h3>
-					<p class="text-gray-600 mt-2 text-center">
-						Download my curriculum vitae.
+					<h3 class="text-xl font-semibold text-gray-800">CV</h3>
+					<p class="text-gray-600 mt-2">
+						Download my professional resume.
 					</p>
 				</a>
 				<a
 					href="/portfolio"
-					class="group flex flex-col items-center justify-center p-4 sm:p-8 bg-gray-50 rounded-xl hover:bg-green-50 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+					class="card transition transform hover:scale-105 hover:shadow-2xl"
 				>
 					<BriefcaseIcon
-						aria-hidden="true"
-						className="h-12 w-12 text-green-600 mb-4"
+						className="h-12 w-12 text-green-600 mx-auto mb-4"
 					/>
-					<h3
-						class="text-xl font-semibold text-gray-900 group-hover:text-green-600 transition-colors duration-300"
-					>
+					<h3 class="text-xl font-semibold text-gray-800">
 						Portfolio
 					</h3>
-					<p class="text-gray-600 mt-2 text-center">
-						Explore projects showcasing my development and GIS
-						skills.
+					<p class="text-gray-600 mt-2">
+						Explore my projects and experience.
 					</p>
 				</a>
 				<a
 					href="/blog"
-					class="group flex flex-col items-center justify-center p-4 sm:p-8 bg-gray-50 rounded-xl hover:bg-green-50 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+					class="card transition transform hover:scale-105 hover:shadow-2xl"
 				>
 					<RssIcon
-						aria-hidden="true"
-						className="h-12 w-12 text-green-600 mb-4"
+						className="h-12 w-12 text-green-600 mx-auto mb-4"
 					/>
-					<h3
-						class="text-xl font-semibold text-gray-900 group-hover:text-green-600 transition-colors duration-300"
-					>
-						Blog
-					</h3>
-					<p class="text-gray-600 mt-2 text-center">
-						Read my thoughts on technology, GIS, and other topics.
+					<h3 class="text-xl font-semibold text-gray-800">Blog</h3>
+					<p class="text-gray-600 mt-2">
+						Read my insights on technology and GIS.
 					</p>
 				</a>
 			</div>
@@ -93,26 +78,16 @@ import {
 	</section>
 
 	<!-- Contact Section -->
-	<section class="py-16 sm:py-20 bg-gray-100 text-center">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6">
-			<div class="text-center mb-10 sm:mb-12">
-				<h2 class="text-3xl sm:text-4xl font-bold text-gray-900">
-					Let's Connect
-				</h2>
-				<p class="mt-4 text-lg text-gray-600">
-					Interested in discussing work or collaboration
-					opportunities? Feel free to reach out!
-				</p>
-			</div>
-
-			<div class="mt-8">
-				<a
-					href="mailto:jacobweinbren@gmail.com"
-					class="inline-flex items-center px-6 py-3 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-				>
-					Email me at jacobweinbren@gmail.com
-				</a>
-			</div>
+	<section class="py-16 bg-gray-100 text-center">
+		<div class="max-w-5xl mx-auto px-4">
+			<h2 class="text-3xl font-bold text-gray-900 mb-4">Let’s Connect</h2>
+			<p class="text-gray-600 mb-8">
+				Interested in collaborating or need a consultation? Send me a
+				message.
+			</p>
+			<a href="mailto:jacobweinbren@gmail.com" class="btn btn-primary">
+				Contact Me
+			</a>
 		</div>
 	</section>
 </BaseLayout>

@@ -4,17 +4,12 @@ import type { APIRoute } from "astro";
 export const POST: APIRoute = async ({ request }) => {
 	const data = await request.formData();
 	const email = data.get("email")?.toString();
-
 	if (!email) {
 		return new Response(
-			JSON.stringify({
-				success: false,
-				message: "Email is required",
-			}),
+			JSON.stringify({ success: false, message: "Email is required" }),
 			{ status: 400 }
 		);
 	}
-
 	try {
 		const mutation = `
       mutation SubscribeToNewsletter($input: SubscribeToNewsletterInput!) {
@@ -23,7 +18,6 @@ export const POST: APIRoute = async ({ request }) => {
         }
       }
     `;
-
 		const response = await fetch("https://gql.hashnode.com", {
 			method: "POST",
 			headers: {
@@ -42,9 +36,7 @@ export const POST: APIRoute = async ({ request }) => {
 				},
 			}),
 		});
-
 		const result = await response.json();
-
 		if (result.errors) {
 			console.error("Newsletter subscription error:", result.errors);
 			return new Response(
@@ -55,7 +47,6 @@ export const POST: APIRoute = async ({ request }) => {
 				{ status: 400 }
 			);
 		}
-
 		return new Response(
 			JSON.stringify({
 				success: true,
@@ -63,13 +54,10 @@ export const POST: APIRoute = async ({ request }) => {
 			}),
 			{ status: 200 }
 		);
-	} catch (error) {
+	} catch (error: any) {
 		console.error("Subscription error:", error);
 		return new Response(
-			JSON.stringify({
-				success: false,
-				message: "An error occurred",
-			}),
+			JSON.stringify({ success: false, message: "An error occurred" }),
 			{ status: 500 }
 		);
 	}

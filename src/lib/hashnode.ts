@@ -17,39 +17,28 @@ export async function getPosts(
 ): Promise<PostsResponse> {
 	try {
 		const postsQuery = `
-		query Publication($first: Int!, $after: String) {
-		  publication(host: "kafkaesque.hashnode.dev") {
-			posts(first: $first, after: $after) {
-			  edges {
-				cursor
-				node {
-				  id
-				  title
-				  subtitle
-				  brief
-				  slug
-				  coverImage {
-					url
-				  }
-				  publishedAt
-				  content {
-					html
-				  }
-				  tags {
-					name
-					slug
-				  }
-				}
-			  }
-			  pageInfo {
-				hasNextPage
-				endCursor
-			  }
-			}
-		  }
-		}
-	  `;
-
+      query Publication($first: Int!, $after: String) {
+        publication(host: "kafkaesque.hashnode.dev") {
+          posts(first: $first, after: $after) {
+            edges {
+              cursor
+              node {
+                id
+                title
+                subtitle
+                brief
+                slug
+                coverImage { url }
+                publishedAt
+                content { html }
+                tags { name slug }
+              }
+            }
+            pageInfo { hasNextPage endCursor }
+          }
+        }
+      }
+    `;
 		const response = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
 			headers: getHeaders(),
@@ -61,17 +50,13 @@ export async function getPosts(
 				},
 			}),
 		});
-
 		const json = await response.json();
-
 		if (json.errors) {
 			console.error("Posts Query Errors:", json.errors);
 			return { posts: [], hasMore: false, endCursor: null };
 		}
-
 		const edges = json.data?.publication?.posts?.edges || [];
 		const pageInfo = json.data?.publication?.posts?.pageInfo;
-
 		const posts = edges.map((edge: any) => ({
 			id: edge.node.id,
 			slug: edge.node.slug,
@@ -83,8 +68,6 @@ export async function getPosts(
 			publishedAt: edge.node.publishedAt,
 			tags: edge.node.tags,
 		}));
-
-		// Use pageInfo.endCursor instead of calculating it ourselves
 		return {
 			posts,
 			hasMore: pageInfo?.hasNextPage || false,
@@ -105,43 +88,30 @@ export async function getPost(slug: string): Promise<HashnodePost | null> {
             id
             title
             subtitle
-            content {
-              html
-            }
+            content { html }
             brief
-            coverImage {
-              url
-            }
+            coverImage { url }
             publishedAt
-            tags {
-              name
-              slug
-            }
+            tags { name slug }
           }
         }
       }
     `;
-
 		const response = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
 			headers: getHeaders(),
 			body: JSON.stringify({ query }),
 		});
-
 		const json = await response.json();
-
 		if (json.errors) {
 			console.error("GraphQL Errors:", json.errors);
 			return null;
 		}
-
 		const post = json.data?.publication?.post;
-
 		if (!post) return null;
-
 		return {
 			id: post.id,
-			slug: slug,
+			slug,
 			title: post.title,
 			subtitle: post.subtitle || "",
 			content: post.content.html,
@@ -160,21 +130,15 @@ export async function getAllPosts() {
 	let allPosts = [];
 	let hasMore = true;
 	let cursor = null;
-
 	while (hasMore) {
 		const {
 			posts,
 			hasMore: more,
 			endCursor,
-		} = await getPosts({
-			limit: 50, // Fetch maximum posts per request
-			after: cursor,
-		});
-
+		} = await getPosts({ limit: 50, after: cursor });
 		allPosts = [...allPosts, ...posts];
 		hasMore = more;
 		cursor = endCursor;
 	}
-
 	return allPosts;
 }

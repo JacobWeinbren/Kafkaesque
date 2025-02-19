@@ -1,93 +1,50 @@
-/* src/assets/styles/globals.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-	--text: #1f2937;
-	--background: #ffffff;
 	--primary: #22c55e;
 	--primary-dark: #16a34a;
-	--scrollbar-width: 8px;
+	--text-color: #1f2937;
+	--bg-color: #ffffff;
 }
 
 @layer base {
 	html {
-		scroll-behavior: smooth;
+		font-family: "Inter", sans-serif;
+		scroll-behaviour: smooth;
 		-webkit-tap-highlight-color: transparent;
-		text-rendering: optimizeLegibility;
+		text-rendering: optimizeSpeed;
 		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
 	}
-
 	body {
-		@apply antialiased text-gray-900 bg-gray-50;
-		font-feature-settings: "rlig" 1, "calt" 1;
+		@apply bg-gray-50 text-gray-900;
 	}
-
 	/* Custom Scrollbar */
 	::-webkit-scrollbar {
-		width: var(--scrollbar-width);
+		width: 8px;
 	}
-
 	::-webkit-scrollbar-track {
 		@apply bg-gray-100;
 	}
-
 	::-webkit-scrollbar-thumb {
 		@apply bg-gray-300 rounded-full;
 	}
-
 	::-webkit-scrollbar-thumb:hover {
 		@apply bg-gray-400;
 	}
 }
 
 @layer components {
+	.card {
+		@apply bg-white rounded-xl shadow-lg p-6 transition-all duration-300;
+	}
 	.btn {
-		@apply inline-flex items-center justify-center px-6 py-3 rounded-lg
-           font-medium transition-all duration-200
-           focus:outline-none focus:ring-2 focus:ring-offset-2;
+		@apply inline-flex items-center justify-center px-5 py-2 rounded-md font-semibold transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2;
 	}
-
 	.btn-primary {
-		@apply bg-green-500 text-white hover:bg-green-600
-           focus:ring-green-500;
+		@apply bg-green-600 text-white hover:bg-green-700 focus:ring-green-600;
 	}
-
-	.prose-custom {
-		@apply prose prose-lg prose-green
-           prose-headings:font-bold
-           prose-a:text-green-600 prose-a:no-underline hover:prose-a:text-green-700
-           prose-img:rounded-xl prose-img:shadow-lg
-           prose-pre:rounded-xl prose-pre:shadow-md;
-	}
-}
-
-/* View Transitions */
-::view-transition-old(root),
-::view-transition-new(root) {
-	animation-duration: 0.5s;
-	animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Loading Skeleton Animation */
-@keyframes shimmer {
-	0% {
-		background-position: -200% 0;
-	}
-	100% {
-		background-position: 200% 0;
-	}
-}
-
-.animate-shimmer {
-	background: linear-gradient(
-		90deg,
-		theme("colors.gray.100") 25%,
-		theme("colors.gray.200") 37%,
-		theme("colors.gray.100") 63%
-	);
-	background-size: 200% 100%;
-	animation: shimmer 1.4s infinite;
 }

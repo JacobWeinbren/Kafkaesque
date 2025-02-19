@@ -3,25 +3,16 @@
 interface Props {
 	location?: "post" | "standalone";
 }
-
 const { location = "standalone" } = Astro.props;
 ---
 
-<div
-	class:list={[
-		"max-w-xl mx-auto backdrop-blur-sm transition-all duration-300",
-		location === "post"
-			? "border-t border-gray-200 pt-8 mt-8"
-			: "bg-white/80 rounded-xl shadow-sm p-8 hover:shadow-md",
-	]}
->
-	<div class="text-center mb-8">
-		<h3 class="text-2xl font-bold text-gray-900 mb-3">Stay Updated</h3>
+<div class="card mx-auto transition transform hover:scale-105">
+	<div class="text-center mb-6">
+		<h3 class="text-2xl font-bold text-gray-800">Stay Updated</h3>
 		<p class="text-gray-600">
-			Get notified about new posts on literature, data science, and more.
+			Sign up to get notified about new posts and insights.
 		</p>
 	</div>
-
 	<form id="subscribeForm" class="space-y-4" novalidate>
 		<div class="relative">
 			<input
@@ -29,29 +20,18 @@ const { location = "standalone" } = Astro.props;
 				id="email"
 				name="email"
 				required
-				pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-				class="w-full px-4 py-3 pl-5 border-2 border-gray-200 rounded-lg
-               focus:border-green-500 focus:ring-2 focus:ring-green-500/20 focus:outline-none
-               transition-all duration-150 peer"
 				placeholder="you@example.com"
+				class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 transition"
 				aria-label="Email address"
 			/>
 			<div id="emailError" class="hidden text-red-500 text-sm mt-1"></div>
 		</div>
-
-		<button
-			type="submit"
-			class="w-full bg-green-500 text-white py-3 px-6 rounded-lg font-medium
-             hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500
-             focus:ring-offset-2 transition-all duration-150 disabled:opacity-50
-             disabled:cursor-not-allowed"
-		>
+		<button type="submit" class="w-full btn btn-primary">
 			Subscribe
 		</button>
-
 		<div
 			id="formMessage"
-			class="text-sm text-center mt-4 hidden"
+			class="text-sm text-center mt-3 hidden"
 			role="status"
 			aria-live="polite"
 		>
@@ -60,10 +40,11 @@ const { location = "standalone" } = Astro.props;
 </div>
 
 <script>
+	// Cast elements to the proper types to avoid TypeScript errors.
 	const form = document.getElementById("subscribeForm") as HTMLFormElement;
-	const messageEl = document.getElementById("formMessage");
+	const messageEl = document.getElementById("formMessage") as HTMLElement;
 	const emailInput = document.getElementById("email") as HTMLInputElement;
-	const emailError = document.getElementById("emailError");
+	const emailError = document.getElementById("emailError") as HTMLElement;
 
 	if (form && messageEl && emailInput && emailError) {
 		emailInput.addEventListener("input", () => {
@@ -73,70 +54,50 @@ const { location = "standalone" } = Astro.props;
 		});
 
 		emailInput.addEventListener("invalid", () => {
-			if (emailInput.value === "") {
-				emailError.textContent = "Please enter your email address";
-			} else {
-				emailError.textContent = "Please enter a valid email address";
-			}
+			emailError.textContent =
+				emailInput.value === ""
+					? "Please enter your email."
+					: "Enter a valid email.";
 			emailError.classList.remove("hidden");
 		});
 
 		form.addEventListener("submit", async (e) => {
 			e.preventDefault();
-
-			if (!form.checkValidity()) {
-				return;
-			}
-
-			const submitButton = form.querySelector("button");
+			if (!form.checkValidity()) return;
+			const submitButton = form.querySelector(
+				"button"
+			) as HTMLButtonElement;
 			if (!submitButton) return;
-
 			submitButton.disabled = true;
-			submitButton.innerHTML = `
-        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        Subscribing...
-      `;
-
+			submitButton.innerHTML = `Subscribing...`;
 			try {
 				const formData = new FormData(form);
 				const response = await fetch("/api/signup", {
 					method: "POST",
 					body: formData,
 				});
-
 				const data = await response.json();
-
 				messageEl.textContent = data.message;
-				messageEl.className = `text-sm text-center mt-4 ${
-					response.ok ? "text-green-600" : "text-red-600"
-				}`;
+				messageEl.className = `text-sm text-center mt-3 ${response.ok ? "text-green-600" : "text-red-600"}`;
 				messageEl.classList.remove("hidden");
-
 				if (response.ok) {
 					form.reset();
-					submitButton.innerHTML = "✓ Subscribed!";
-					submitButton.className =
-						"w-full bg-green-600 text-white py-3 px-6 rounded-lg font-medium cursor-not-allowed";
-
-					// Reset form after 5 seconds
+					submitButton.innerHTML = `✓ Subscribed!`;
 					setTimeout(() => {
-						submitButton.innerHTML = "Subscribe";
+						submitButton.innerHTML = `Subscribe`;
 						submitButton.disabled = false;
 						messageEl.classList.add("hidden");
-					}, 5000);
+					}, 4000);
 				} else {
-					submitButton.innerHTML = "Subscribe";
+					submitButton.innerHTML = `Subscribe`;
 					submitButton.disabled = false;
 				}
-			} catch (error) {
-				console.error("Subscription error:", error);
-				messageEl.textContent = "An error occurred. Please try again.";
-				messageEl.className = "text-sm text-center mt-4 text-red-600";
+			} catch (err) {
+				console.error("Subscription error:", err);
+				messageEl.textContent = "Error occurred. Try again.";
+				messageEl.className = "text-sm text-center mt-3 text-red-600";
 				messageEl.classList.remove("hidden");
-
-				submitButton.innerHTML = "Subscribe";
+				submitButton.innerHTML = `Subscribe`;
 				submitButton.disabled = false;
 			}
 		});

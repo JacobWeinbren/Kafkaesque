@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 	darkMode: ["class"],
-	content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
+	content: ["./src/**/*.{astro,html,js,jsx,ts,tsx,vue,svelte,md,mdx}"],
 	theme: {
 		extend: {
 			colors: {
@@ -18,50 +18,21 @@ module.exports = {
 					900: "#14532d",
 				},
 			},
-			typography: (theme) => ({
-				DEFAULT: {
-					css: {
-						color: theme("colors.gray.700"),
-						a: {
-							color: theme("colors.green.600"),
-							"&:hover": {
-								color: theme("colors.green.700"),
-							},
-						},
-						"h1,h2,h3,h4": {
-							color: theme("colors.gray.900"),
-							fontWeight: "700",
-						},
-						code: {
-							color: theme("colors.green.600"),
-							backgroundColor: theme("colors.gray.100"),
-							paddingLeft: "4px",
-							paddingRight: "4px",
-							paddingTop: "2px",
-							paddingBottom: "2px",
-							borderRadius: "0.25rem",
-						},
-						"code::before": {
-							content: "none",
-						},
-						"code::after": {
-							content: "none",
-						},
-					},
-				},
-			}),
+			fontFamily: {
+				sans: ["Inter", "sans-serif"],
+			},
 			animation: {
-				"fade-in": "fadeIn 0.5s ease-out",
-				"slide-up": "slideUp 0.5s ease-out",
+				"fade-in-fast": "fadeInFast 200ms cubic-bezier(0.4, 0, 0.2, 1)",
+				"pop-up": "popUp 200ms ease-out",
 			},
 			keyframes: {
-				fadeIn: {
-					"0%": { opacity: "0" },
-					"100%": { opacity: "1" },
+				fadeInFast: {
+					"0%": { opacity: 0, transform: "scale(0.95)" },
+					"100%": { opacity: 1, transform: "scale(1)" },
 				},
-				slideUp: {
-					"0%": { transform: "translateY(20px)", opacity: "0" },
-					"100%": { transform: "translateY(0)", opacity: "1" },
+				popUp: {
+					"0%": { opacity: 0, transform: "translateY(10px)" },
+					"100%": { opacity: 1, transform: "translateY(0)" },
 				},
 			},
 		},
