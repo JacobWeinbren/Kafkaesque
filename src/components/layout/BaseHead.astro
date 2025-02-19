@@ -2,6 +2,7 @@
 // src/components/layout/BaseHead.astro
 import "@/assets/styles/globals.css";
 import "@/assets/styles/animations.css";
+import SpeedInsights from "@vercel/speed-insights/astro";
 
 interface Props {
 	title: string;
@@ -39,4 +40,5 @@ const ogImage = image || defaultImage;
 		href="/favicon/apple-touch-icon.png"
 		sizes="180x180"
 	/>
+	<SpeedInsights />
 </head>
