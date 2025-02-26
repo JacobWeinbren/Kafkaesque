@@ -114,22 +114,10 @@ const currentPath = Astro.url.pathname;
 			mobileMenu.classList.remove("max-h-0", "opacity-0");
 			mobileMenu.classList.add("max-h-[250px]", "opacity-100");
 			menuButton.setAttribute("aria-expanded", "true");
-
-			// Add animation to menu items
-			const menuItems = mobileMenu.querySelectorAll("a");
-			menuItems.forEach((item) => {
-				item.classList.add("animate-fade-in-fast");
-			});
 		} else {
 			mobileMenu.classList.add("max-h-0", "opacity-0");
 			mobileMenu.classList.remove("max-h-[250px]", "opacity-100");
 			menuButton.setAttribute("aria-expanded", "false");
-
-			// Remove animations
-			const menuItems = mobileMenu.querySelectorAll("a");
-			menuItems.forEach((item) => {
-				item.classList.remove("animate-fade-in-fast");
-			});
 		}
 	});
 </script>
