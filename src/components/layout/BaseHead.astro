@@ -3,6 +3,7 @@
 import "@/assets/styles/globals.css";
 import "@/assets/styles/animations.css";
 import SpeedInsights from "@vercel/speed-insights/astro";
+import Analytics from "@vercel/analytics/astro";
 
 interface Props {
 	title: string;
@@ -50,4 +51,5 @@ const ogImage = image || defaultImage;
 	<!-- Theme color -->
 	<meta name="theme-color" content="#16a34a" />
 	<SpeedInsights />
+	<Analytics />
 </head>
