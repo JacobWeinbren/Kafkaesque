@@ -22,7 +22,6 @@ const projects = [
 		],
 		icon: MapIcon,
 		date: "2024-07",
-		tags: ["GIS", "Data Analysis", "Python", "Electoral Geography"],
 		link: "https://kafkaesque.blog/post/deprivation-and-the-2024-ge",
 		image: "/images/projects/uk-election.jpg",
 	},
@@ -34,7 +33,6 @@ const projects = [
 		],
 		icon: ChartBarIcon,
 		date: "2024-06",
-		tags: ["GIS", "Data Visualisation", "Redis", "Census Analysis"],
 		link: "https://github.com/JacobWeinbren/Canadian-Census",
 		image: "/images/projects/canada-census.jpg",
 	},
@@ -46,7 +44,6 @@ const projects = [
 		],
 		icon: NewspaperIcon,
 		date: "2024-06",
-		tags: ["Web Development", "Astro", "SEO", "Political Tech"],
 		link: "https://github.com/JacobWeinbren/Emily4MK",
 		image: "/images/projects/campaign-site.jpg",
 	},
@@ -58,7 +55,6 @@ const projects = [
 		],
 		icon: AcademicCapIcon,
 		date: "2024-01",
-		tags: ["Machine Learning", "Education Tech", "Linguistics"],
 		link: "https://kafkaesque.blog/post/complete-duolingo-hebrew-set",
 		image: "/images/projects/hebrew-learning.jpg",
 	},
@@ -70,7 +66,6 @@ const projects = [
 		],
 		icon: PresentationChartLineIcon,
 		date: "2022-06",
-		tags: ["Electoral Analysis", "Interactive Mapping", "D3.js"],
 		link: "https://kafkaesque.blog/post/updated-israel-map",
 		image: "/images/projects/israel-elections.jpg",
 	},
@@ -82,7 +77,6 @@ const projects = [
 		],
 		icon: DocumentTextIcon,
 		date: "2022-05",
-		tags: ["Astro", "Tailwind CSS", "Technical Writing"],
 		link: "https://github.com/JacobWeinbren/Kafkaesque",
 		image: "/images/projects/portfolio.jpg",
 	},
@@ -146,14 +140,6 @@ projects.sort((a, b) => (a.date < b.date ? 1 : -1));
 									<div class="mb-4 text-gray-600 text-sm space-y-2 flex-grow">
 										{project.description.map((desc) => (
 											<p>{desc}</p>
-										))}
-									</div>
-
-									<div class="flex flex-wrap gap-1.5 mb-2">
-										{project.tags.map((tag) => (
-											<span class="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs font-medium">
-												{tag}
-											</span>
 										))}
 									</div>
 
