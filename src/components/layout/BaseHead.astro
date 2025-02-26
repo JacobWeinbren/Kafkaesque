@@ -13,7 +13,7 @@ interface Props {
 
 const { title, description, image, article = false } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const defaultImage = `${Astro.url.origin}/img/logo_white.jpg`;
+const defaultImage = `${Astro.url.origin}/img/logo_white.webp`;
 const ogImage = image || defaultImage;
 ---
 
