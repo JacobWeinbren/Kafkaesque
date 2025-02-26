@@ -1,4 +1,4 @@
-// src/pages/api/search.ts - Improved caching
+// src/pages/api/search.ts
 import type { APIRoute } from "astro";
 import { getAllPosts } from "@/lib/hashnode";
 import Fuse from "fuse.js";
@@ -59,7 +59,7 @@ export const GET: APIRoute = async ({ url, request }) => {
 			.search(query)
 			.filter((result) => result.score && result.score < 0.7)
 			.map((result) => result.item)
-			.slice(0, 9);
+			.slice(0, 12);
 
 		return new Response(JSON.stringify(results), {
 			status: 200,

@@ -1,5 +1,4 @@
 ---
-// src/components/Footer.astro
 import {
 	FaGithub as GithubIcon,
 	FaLinkedin as LinkedInIcon,
@@ -8,27 +7,29 @@ import { EnvelopeIcon } from "@heroicons/react/24/outline";
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="bg-gray-50 py-12 border-t border-gray-200">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6">
+<!-- src/components/Footer.astro -->
+<footer class="bg-gray-50 py-10 border-t border-gray-200">
+	<div class="max-w-6xl mx-auto px-4">
 		<div
-			class="flex flex-col md:flex-row justify-between items-center mb-8"
+			class="flex flex-col md:flex-row justify-between items-center mb-6"
 		>
-			<div class="mb-6 md:mb-0">
+			<div class="mb-5 md:mb-0">
 				<a
 					href="/"
-					class="flex items-center text-green-600 font-display font-bold text-xl"
+					class="flex items-center text-green-800 font-display font-bold text-lg"
 				>
 					Jacob Weinbren
 				</a>
-				<p class="text-gray-600 mt-2 max-w-md">
-					Full-stack web developer and GIS specialist.
+				<p class="text-gray-600 text-sm mt-1 max-w-md">
+					GIS specialist and full-stack developer focused on spatial
+					data visualisation.
 				</p>
 			</div>
 			<div class="flex flex-col items-center md:items-end">
-				<div class="flex space-x-6 mb-4">
+				<div class="flex space-x-5 mb-3">
 					<a
 						href="mailto:jacobweinbren@gmail.com"
-						class="text-gray-600 hover:text-green-600 transition p-2 rounded-full hover:bg-green-50"
+						class="text-gray-600 hover:text-green-700 transition"
 						aria-label="Email"
 					>
 						<EnvelopeIcon className="w-5 h-5" />
@@ -37,7 +38,7 @@ const currentYear = new Date().getFullYear();
 						href="https://github.com/JacobWeinbren"
 						target="_blank"
 						rel="noopener noreferrer"
-						class="text-gray-600 hover:text-green-600 transition p-2 rounded-full hover:bg-green-50"
+						class="text-gray-600 hover:text-green-700 transition"
 						aria-label="GitHub"
 					>
 						<GithubIcon className="w-5 h-5" />
@@ -46,39 +47,39 @@ const currentYear = new Date().getFullYear();
 						href="https://www.linkedin.com/in/jacob-weinbren/"
 						target="_blank"
 						rel="noopener noreferrer"
-						class="text-gray-600 hover:text-green-600 transition p-2 rounded-full hover:bg-green-50"
+						class="text-gray-600 hover:text-green-700 transition"
 						aria-label="LinkedIn"
 					>
 						<LinkedInIcon className="w-5 h-5" />
 					</a>
 				</div>
-				<nav class="flex flex-wrap justify-center space-x-6">
+				<nav class="flex flex-wrap justify-center space-x-5">
 					<a
 						href="/"
-						class="text-gray-600 hover:text-green-600 transition text-sm mb-2"
+						class="text-gray-600 hover:text-green-700 transition text-sm mb-2"
 						>Home</a
 					>
 					<a
 						href="/portfolio"
-						class="text-gray-600 hover:text-green-600 transition text-sm mb-2"
+						class="text-gray-600 hover:text-green-700 transition text-sm mb-2"
 						>Portfolio</a
 					>
 					<a
 						href="/blog"
-						class="text-gray-600 hover:text-green-600 transition text-sm mb-2"
+						class="text-gray-600 hover:text-green-700 transition text-sm mb-2"
 						>Blog</a
 					>
 				</nav>
 			</div>
 		</div>
-		<div class="border-t border-gray-200 pt-6 text-center">
-			<p class="text-gray-600 text-sm">
+		<div class="border-t border-gray-200 pt-4 text-center">
+			<p class="text-gray-500 text-xs">
 				© {currentYear} Jacob Weinbren. Built with
 				<a
 					href="https://astro.build"
 					target="_blank"
 					rel="noopener noreferrer"
-					class="text-green-600 hover:text-green-700 font-semibold"
+					class="text-green-700 hover:text-green-800 font-medium"
 				>
 					Astro
 				</a>.

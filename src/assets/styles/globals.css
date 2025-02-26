@@ -1,16 +1,17 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap");
+/* src/assets/styles/globals.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-	/* Maintain the green color scheme */
-	--primary: #22c55e; /* Green 500 */
-	--primary-dark: #16a34a; /* Green 600 */
-	--primary-light: #86efac; /* Green 300 */
-	--accent: #6366f1; /* Indigo 500 - complementary accent */
-	--text-color: #1f2937; /* Gray 800 */
+	/* Professional green colour scheme with refined accents */
+	--primary: #2e7d32; /* Deeper forest green */
+	--primary-dark: #1b5e20; /* Dark green */
+	--primary-light: #81c784; /* Light green */
+	--accent: #546e7a; /* Slate blue-grey - professional accent */
+	--text-color: #212121; /* Near black for better readability */
 	--bg-color: #ffffff;
 }
 
@@ -25,21 +26,21 @@
 
 	body {
 		@apply bg-gray-50 text-gray-900;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23dcfce7' fill-opacity='0.4'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23dcfce7' fill-opacity='0.3'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 	}
 
-	/* Custom Scrollbar */
+	/* Custom Scrollbar - Subtle professional style */
 	::-webkit-scrollbar {
-		width: 8px;
+		width: 6px;
 	}
 	::-webkit-scrollbar-track {
 		@apply bg-gray-100;
 	}
 	::-webkit-scrollbar-thumb {
-		@apply bg-green-200 rounded-full;
+		@apply bg-green-300 rounded-full;
 	}
 	::-webkit-scrollbar-thumb:hover {
-		@apply bg-green-300;
+		@apply bg-green-400;
 	}
 
 	h1,
@@ -54,19 +55,19 @@
 
 @layer components {
 	.card {
-		@apply bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all duration-300;
+		@apply bg-white rounded-lg shadow-sm border border-gray-200 p-6 transition-all duration-300;
 	}
 
 	.btn {
-		@apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg font-medium transition transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2;
+		@apply inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition hover:translate-y-[-1px] active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-offset-2;
 	}
 
 	.btn-primary {
-		@apply bg-green-600 text-white hover:bg-green-700 focus:ring-green-500;
+		@apply bg-green-700 text-white hover:bg-green-800 focus:ring-green-600;
 	}
 
 	.btn-secondary {
-		@apply bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
+		@apply bg-slate-600 text-white hover:bg-slate-700 focus:ring-slate-500;
 	}
 
 	.btn-outline {
@@ -74,7 +75,7 @@
 	}
 
 	.badge {
-		@apply px-2.5 py-0.5 rounded-full text-xs font-medium;
+		@apply px-2 py-0.5 rounded-md text-xs font-medium;
 	}
 
 	.badge-primary {
@@ -82,11 +83,11 @@
 	}
 
 	.badge-secondary {
-		@apply bg-indigo-100 text-indigo-800;
+		@apply bg-slate-100 text-slate-800;
 	}
 
 	.section {
-		@apply py-16 md:py-24;
+		@apply py-16 md:py-20;
 	}
 
 	.container-narrow {
@@ -94,6 +95,6 @@
 	}
 
 	.prose-custom {
-		@apply prose prose-lg prose-green prose-headings:font-display prose-headings:font-bold prose-a:text-green-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg;
+		@apply prose prose-lg prose-green prose-headings:font-display prose-headings:font-bold prose-a:text-green-700 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg;
 	}
 }

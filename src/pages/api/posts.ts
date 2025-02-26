@@ -6,7 +6,7 @@ export const GET: APIRoute = async ({ url }) => {
 	try {
 		const cursor = url.searchParams.get("cursor");
 		const { posts, hasMore, endCursor } = await getPosts({
-			limit: 6,
+			limit: 9,
 			after: cursor === "null" ? null : cursor,
 		});
 		return new Response(JSON.stringify({ posts, hasMore, endCursor }), {

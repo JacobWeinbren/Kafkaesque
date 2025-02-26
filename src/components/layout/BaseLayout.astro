@@ -1,5 +1,4 @@
 ---
-// src/components/layout/BaseLayout.astro
 import BaseHead from "@/components/layout/BaseHead.astro";
 import Navbar from "@/components/layout/Navbar.astro";
 import Footer from "@/components/Footer.astro";
@@ -7,7 +6,7 @@ import Footer from "@/components/Footer.astro";
 const { title, description, image } = Astro.props;
 ---
 
-<!doctype html>
+<!-- src/components/layout/BaseLayout.astro --><!doctype html>
 <html lang="en" class="scroll-smooth">
 	<BaseHead {title} {description} {image} />
 	<body class="min-h-screen flex flex-col bg-gray-50">
@@ -17,10 +16,10 @@ const { title, description, image } = Astro.props;
 		</main>
 		<Footer />
 
-		<!-- Back to top button -->
+		<!-- Back to top button - simplified professional design -->
 		<button
 			id="backToTop"
-			class="fixed bottom-6 right-6 bg-green-600 text-white p-3 rounded-full shadow-lg opacity-0 pointer-events-none transition-all duration-300 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+			class="fixed bottom-5 right-5 bg-green-700 text-white p-2 rounded-md shadow-md opacity-0 pointer-events-none transition-all duration-300 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
 			aria-label="Back to top"
 		>
 			<svg

@@ -1,23 +1,21 @@
 ---
-// src/components/blog/SignupForm.astro
 interface Props {
 	location?: "post" | "standalone";
 }
 const { location = "standalone" } = Astro.props;
 ---
 
-<div
-	class="card mx-auto transition transform hover:scale-105 hover:shadow-lg border-green-100"
->
-	<div class="text-center mb-6">
-		<h3 class="text-2xl font-display font-bold text-gray-800">
+<!-- src/components/blog/SignupForm.astro -->
+<div class="card mx-auto transition border-green-100 max-w-md">
+	<div class="mb-5">
+		<h3 class="text-xl font-display font-bold text-gray-800">
 			Stay Updated
 		</h3>
-		<p class="text-gray-600">
-			Sign up to get notified about new posts and insights.
+		<p class="text-gray-600 text-sm">
+			Get notified about new posts on GIS and development.
 		</p>
 	</div>
-	<form id="subscribeForm" class="space-y-4" novalidate>
+	<form id="subscribeForm" class="space-y-3" novalidate>
 		<div class="relative">
 			<input
 				type="email"
@@ -25,17 +23,17 @@ const { location = "standalone" } = Astro.props;
 				name="email"
 				required
 				placeholder="you@example.com"
-				class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition"
+				class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-green-600 focus:border-green-600 transition"
 				aria-label="Email address"
 			/>
-			<div id="emailError" class="hidden text-red-500 text-sm mt-1"></div>
+			<div id="emailError" class="hidden text-red-500 text-xs mt-1"></div>
 		</div>
-		<button type="submit" class="w-full btn btn-primary">
+		<button type="submit" class="w-full btn btn-primary text-sm">
 			Subscribe
 		</button>
 		<div
 			id="formMessage"
-			class="text-sm text-center mt-3 hidden"
+			class="text-xs text-center mt-2 hidden"
 			role="status"
 			aria-live="polite"
 		>
@@ -74,7 +72,7 @@ const { location = "standalone" } = Astro.props;
 			if (!submitButton) return;
 			submitButton.disabled = true;
 			submitButton.innerHTML = `
-                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg class="animate-spin -ml-1 mr-2 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
@@ -88,12 +86,12 @@ const { location = "standalone" } = Astro.props;
 				});
 				const data = await response.json();
 				messageEl.textContent = data.message;
-				messageEl.className = `text-sm text-center mt-3 ${response.ok ? "text-green-600" : "text-red-600"}`;
+				messageEl.className = `text-xs text-center mt-2 ${response.ok ? "text-green-600" : "text-red-600"}`;
 				messageEl.classList.remove("hidden");
 				if (response.ok) {
 					form.reset();
 					submitButton.innerHTML = `
-                        <svg class="inline-block -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="inline-block -ml-1 mr-1 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                         </svg>
                         Subscribed!
@@ -110,7 +108,7 @@ const { location = "standalone" } = Astro.props;
 			} catch (err) {
 				console.error("Subscription error:", err);
 				messageEl.textContent = "Error occurred. Try again.";
-				messageEl.className = "text-sm text-center mt-3 text-red-600";
+				messageEl.className = "text-xs text-center mt-2 text-red-600";
 				messageEl.classList.remove("hidden");
 				submitButton.innerHTML = `Subscribe`;
 				submitButton.disabled = false;

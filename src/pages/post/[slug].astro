@@ -6,7 +6,7 @@ import { formatDate } from "@/utils/helpers";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 export async function getStaticPaths() {
-	const { posts } = await getPosts();
+	const { posts } = await getPosts({ limit: 100 });
 	return posts.map((post) => ({ params: { slug: post.slug } }));
 }
 
@@ -15,24 +15,32 @@ const post = await getPost(slug);
 if (!post) return Astro.redirect("/404");
 ---
 
-<BaseLayout title={post.title} description={post.subtitle}>
-	<article class="max-w-4xl mx-auto px-4 py-8">
+<!-- src/pages/post/[slug].astro -->
+<BaseLayout
+	title={post.title}
+	description={post.subtitle || post.brief}
+	image={post.coverImage || undefined}
+	article={true}
+>
+	<article class="max-w-3xl mx-auto px-4 py-8">
 		{
 			post.coverImage && (
-				<div class="mb-10">
+				<div class="mb-8">
 					<img
 						src={post.coverImage}
 						alt={post.title}
-						class="w-full h-[60vh] object-cover rounded-xl shadow-md"
+						class="w-full h-auto max-h-[50vh] object-cover rounded-lg shadow-md"
 					/>
 				</div>
 			)
 		}
-		<header class="mb-8 text-center">
-			<time class="text-green-600 font-semibold">
+		<header class="mb-8">
+			<time class="text-green-700 text-sm font-medium">
 				{formatDate(post.publishedAt)}
 			</time>
-			<h1 class="text-4xl md:text-5xl font-bold mt-4 mb-4">
+			<h1
+				class="text-3xl md:text-4xl font-bold mt-2 mb-3 font-display text-gray-900"
+			>
 				{post.title}
 			</h1>
 			{
@@ -40,19 +48,30 @@ if (!post) return Astro.redirect("/404");
 					<p class="text-lg text-gray-600">{post.subtitle}</p>
 				)
 			}
+			{
+				post.tags && post.tags.length > 0 && (
+					<div class="flex flex-wrap gap-2 mt-4">
+						{post.tags.map((tag) => (
+							<span class="bg-green-50 text-green-700 px-2 py-1 rounded-md text-xs">
+								{tag.name}
+							</span>
+						))}
+					</div>
+				)
+			}
 		</header>
 		<div class="prose prose-custom max-w-none">
 			<Fragment set:html={post.content} />
 		</div>
-		<div class="mt-12">
+		<div class="mt-10 border-t pt-8">
 			<SignupForm location="post" />
 		</div>
-		<div class="mt-8 border-t pt-4 text-center">
+		<div class="mt-6 text-center">
 			<a
 				href="/blog"
-				class="inline-flex items-center text-green-600 hover:text-green-700 transition"
+				class="inline-flex items-center text-green-700 hover:text-green-800 transition text-sm"
 			>
-				<ChevronLeftIcon className="w-5 h-5 mr-2" />
+				<ChevronLeftIcon className="w-4 h-4 mr-1" />
 				Back to Blog
 			</a>
 		</div>

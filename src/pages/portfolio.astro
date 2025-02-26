@@ -1,113 +1,125 @@
 ---
 import BaseLayout from "@/components/layout/BaseLayout.astro";
 import {
-	PresentationChartBarIcon,
-	BuildingOfficeIcon,
-	ArrowTrendingUpIcon,
-	BookOpenIcon,
-	UserGroupIcon,
-	ComputerDesktopIcon,
+	MapIcon,
+	ChartBarIcon,
+	GlobeAltIcon,
+	CodeBracketIcon,
+	CommandLineIcon,
+	DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 
 const projects = [
 	{
 		title: "UK General Election Visualisation",
 		description: [
-			"An interactive visualisation that applies ecological regression analysis to uncover subtle correlations between deprivation levels and voting patterns in the recent UK general election.",
-			"Built using Python and state-of-the-art mapping tools, the project received acclaim from prominent political analysts and academic experts.",
+			"An advanced interactive visualisation applying ecological regression analysis to uncover correlations between deprivation levels and voting patterns across constituencies.",
+			"Developed with Python for data processing and modern web mapping libraries, this project received recognition from political analysts and academic researchers.",
 		],
-		icon: ArrowTrendingUpIcon,
+		icon: MapIcon,
 		date: "2024-07",
-		tags: ["GIS", "Data Analysis", "Mapping", "Python"],
+		tags: ["GIS", "Data Analysis", "Python", "Electoral Geography"],
 		link: "https://kafkaesque.blog/post/deprivation-and-the-2024-ge",
+		image: "/images/projects/uk-election.jpg",
 	},
 	{
-		title: "Canadian Census 2021 Visualisation",
+		title: "Canadian Census Data Explorer",
 		description: [
-			"A dynamic, data‑driven web application that visualises extensive census data from over 2.5 million buildings and 2,500 variables.",
-			"Leveraging Redis as a high-speed map server with a JavaScript‑powered front end, it has earned recognition from industry leaders.",
+			"A high-performance web application visualising comprehensive census data across 2.5 million buildings with thousands of demographic variables.",
+			"Built with Redis as a map tile server and optimised JavaScript frontend, delivering near-instantaneous rendering of complex spatial datasets.",
 		],
-		icon: PresentationChartBarIcon,
+		icon: ChartBarIcon,
 		date: "2024-06",
-		tags: ["GIS", "Visualisation", "Redis"],
+		tags: ["GIS", "Data Visualisation", "Redis", "Census Analysis"],
 		link: "https://github.com/JacobWeinbren/Canadian-Census",
+		image: "/images/projects/canada-census.jpg",
 	},
 	{
-		title: "MP Campaign Site",
+		title: "Parliamentary Campaign Website",
 		description: [
-			"A modern, responsive campaign website developed with Astro for a UK parliamentary candidate.",
-			"The site is built to ensure cross-device compatibility, SEO optimisation, and strict adherence to political branding guidelines.",
+			"A bespoke, responsive campaign website for a UK parliamentary candidate built using Astro and modern web techniques.",
+			"Designed with performance, accessibility and SEO optimisation as key priorities, while strictly adhering to political branding guidelines.",
 		],
-		icon: BuildingOfficeIcon,
+		icon: CodeBracketIcon,
 		date: "2024-06",
-		tags: ["Web Development", "Astro", "SEO"],
+		tags: ["Web Development", "Astro", "SEO", "Political Tech"],
 		link: "https://github.com/JacobWeinbren/Emily4MK",
+		image: "/images/projects/campaign-site.jpg",
 	},
 	{
 		title: "Hebrew Learning Platform",
 		description: [
-			"An innovative educational platform that integrates interactive flashcards with advanced neural transliteration to facilitate Hebrew language learning.",
-			"Developed by a global team, it improves accessibility by automating transliteration and offering over 4,000 interactive flashcards.",
+			"An educational web application that combines interactive flashcards with advanced neural transliteration algorithms for Hebrew language acquisition.",
+			"Features over 4,000 interactive cards and improves accessibility through automated transliteration, developed through international collaboration.",
 		],
-		icon: BookOpenIcon,
+		icon: GlobeAltIcon,
 		date: "2024-01",
-		tags: ["Web Dev", "Machine Learning", "Education"],
+		tags: ["Machine Learning", "Education Tech", "Linguistics"],
 		link: "https://kafkaesque.blog/post/complete-duolingo-hebrew-set",
+		image: "/images/projects/hebrew-learning.jpg",
 	},
 	{
-		title: "Israeli Elections Visualisation",
+		title: "Israeli Elections Analysis",
 		description: [
-			"An updated interactive visualisation that maps and analyses recent Israeli election results to highlight socio‑political trends.",
-			"It employs advanced data analytics and responsive cartographic design to provide insights that informed key stakeholders.",
+			"A comprehensive interactive mapping platform for analysing Israeli election results with demographic and geographic context.",
+			"Employs responsive cartographic design and statistical analysis to reveal socio-political trends across multiple election cycles.",
 		],
-		icon: UserGroupIcon,
+		icon: CommandLineIcon,
 		date: "2022-06",
-		tags: ["GIS", "Data Analysis", "Mapping"],
+		tags: ["Electoral Analysis", "Interactive Mapping", "D3.js"],
 		link: "https://kafkaesque.blog/post/updated-israel-map",
+		image: "/images/projects/israel-elections.jpg",
 	},
 	{
-		title: "Personal Portfolio Website",
+		title: "Technical Blog & Portfolio",
 		description: [
-			"The inaugural version of my personal portfolio website, built using Astro and Tailwind CSS, documents my journey in web development and GIS.",
-			"Serving as both a blog and a professional platform, it features my insights on literature, technology, and politics.",
+			"A performant, accessible personal website built with Astro and Tailwind CSS, showcasing technical writing and project work.",
+			"Features optimised loading, responsive design, and a custom search implementation for content discovery.",
 		],
-		icon: ComputerDesktopIcon,
+		icon: DocumentTextIcon,
 		date: "2022-05",
-		tags: ["Web Development", "Astro", "Tailwind"],
+		tags: ["Astro", "Tailwind CSS", "Technical Writing"],
 		link: "https://github.com/JacobWeinbren/Kafkaesque",
+		image: "/images/projects/portfolio.jpg",
 	},
 ];
 
 projects.sort((a, b) => (a.date < b.date ? 1 : -1));
 ---
 
+<!-- src/pages/portfolio.astro -->
 <BaseLayout
 	title="Portfolio – Jacob Weinbren"
-	description="A selection of recent work in web development and GIS."
+	description="Recent projects in geospatial analysis, data visualisation and web development."
 >
-	<!-- Hero Section -->
-	<section class="py-24 bg-gradient-to-br from-gray-50 to-gray-100">
-		<div class="max-w-7xl mx-auto px-4 text-center">
-			<span
-				class="inline-block px-4 py-1.5 bg-green-100 text-green-700 tracking-wide mb-4 rounded-full font-medium"
-				>MY WORK</span
-			>
+	<!-- Header Section -->
+	<section class="relative overflow-hidden">
+		<div
+			class="absolute inset-0 bg-gradient-to-br from-green-800 via-green-700 to-green-600"
+		>
+		</div>
+		<div
+			class="absolute inset-0 opacity-10"
+			style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.2\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"
+		>
+		</div>
+		<div class="relative max-w-5xl mx-auto px-4 py-16 text-center">
 			<h1
-				class="text-5xl md:text-6xl font-bold text-gray-900 font-display"
+				class="text-4xl md:text-5xl font-bold text-white mb-3 font-display"
 			>
-				Projects
+				Project Portfolio
 			</h1>
-			<p class="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
-				A selection of recent work in web development and geospatial
-				data visualisation.
+			<p class="text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
+				Selected work in geospatial analysis, data visualisation, and
+				web development
 			</p>
 		</div>
 	</section>
 
 	<!-- Projects Grid -->
-	<section class="py-16 bg-white">
-		<div class="max-w-7xl mx-auto px-4">
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+	<section class="py-12 bg-white">
+		<div class="max-w-6xl mx-auto px-4">
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 				{
 					projects.map((project) => (
 						<a
@@ -116,34 +128,109 @@ projects.sort((a, b) => (a.date < b.date ? 1 : -1));
 							rel="noopener noreferrer"
 							class="group transition-all duration-300"
 						>
-							<div class="card h-full hover:scale-105 hover:shadow-xl transition-all duration-300 bg-white flex flex-col relative overflow-hidden">
-								<div class="absolute top-0 right-0 bg-green-100 text-green-800 px-3 py-1 text-xs font-medium rounded-bl-lg">
-									{project.date}
-								</div>
-								<div class="flex items-center mb-5 pt-4">
-									<div class="w-12 h-12 flex items-center justify-center rounded-lg bg-green-50 text-green-600 mr-4 group-hover:bg-green-100 transition-colors">
-										<project.icon className="w-6 h-6" />
+							<div class="bg-white rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full">
+								<div class="p-5 flex flex-col flex-grow">
+									<div class="flex items-center mb-3">
+										<div class="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-md bg-green-100 text-green-700 mr-3 group-hover:bg-green-200 transition-colors">
+											<project.icon className="w-5 h-5" />
+										</div>
+										<h2 class="text-lg font-semibold text-gray-800 group-hover:text-green-700 transition-colors font-display">
+											{project.title}
+										</h2>
 									</div>
-									<h2 class="text-xl font-semibold text-gray-800 group-hover:text-green-700 transition-colors">
-										{project.title}
-									</h2>
-								</div>
-								<div class="mb-5 text-gray-600 space-y-2 flex-grow">
-									{project.description.map((desc) => (
-										<p>{desc}</p>
-									))}
-								</div>
-								<div class="flex flex-wrap gap-2 mb-4">
-									{project.tags.map((tag) => (
-										<span class="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium">
-											{tag}
+
+									<div class="mb-4 text-gray-600 text-sm space-y-2 flex-grow">
+										{project.description.map((desc) => (
+											<p>{desc}</p>
+										))}
+									</div>
+
+									<div class="flex flex-wrap gap-1.5 mb-2">
+										{project.tags.map((tag) => (
+											<span class="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs font-medium">
+												{tag}
+											</span>
+										))}
+									</div>
+
+									<div class="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
+										<span class="text-xs text-gray-500">
+											{project.date.substring(0, 4)}
 										</span>
-									))}
+										<span class="text-green-700 flex items-center text-xs font-medium">
+											View Project
+											<svg
+												class="ml-1 w-3 h-3 transition-transform group-hover:translate-x-0.5"
+												viewBox="0 0 20 20"
+												fill="currentColor"
+											>
+												<path
+													fill-rule="evenodd"
+													d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
+													clip-rule="evenodd"
+												/>
+											</svg>
+										</span>
+									</div>
 								</div>
 							</div>
 						</a>
 					))
 				}
+			</div>
+		</div>
+	</section>
+
+	<!-- Skills Section -->
+	<section class="py-12 bg-gray-50 border-t border-gray-200">
+		<div class="max-w-4xl mx-auto px-4 text-center">
+			<h2 class="text-2xl font-bold text-gray-900 mb-6 font-display">
+				Technical Expertise
+			</h2>
+
+			<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+				<div class="bg-white p-4 rounded-lg border border-gray-200">
+					<h3 class="font-medium text-gray-800 mb-2">Languages</h3>
+					<p class="text-sm text-gray-600">
+						Python, JavaScript, TypeScript, SQL, R
+					</p>
+				</div>
+
+				<div class="bg-white p-4 rounded-lg border border-gray-200">
+					<h3 class="font-medium text-gray-800 mb-2">
+						Web Technologies
+					</h3>
+					<p class="text-sm text-gray-600">
+						React, Next.js, Astro, Node.js, Express
+					</p>
+				</div>
+
+				<div class="bg-white p-4 rounded-lg border border-gray-200">
+					<h3 class="font-medium text-gray-800 mb-2">GIS Tools</h3>
+					<p class="text-sm text-gray-600">
+						QGIS, ArcGIS, PostGIS, MapboxGL, Leaflet
+					</p>
+				</div>
+
+				<div class="bg-white p-4 rounded-lg border border-gray-200">
+					<h3 class="font-medium text-gray-800 mb-2">
+						Data Analysis
+					</h3>
+					<p class="text-sm text-gray-600">
+						Pandas, NumPy, GeoPandas, D3.js, Observable
+					</p>
+				</div>
+			</div>
+
+			<div class="mt-8">
+				<a
+					href="/Jacob Weinbren - Resume.pdf"
+					download
+					class="btn btn-primary inline-flex items-center"
+				>
+					<DocumentTextIcon className="w-4 h-4 mr-2" />
+					Download Full CV
+				</a>
 			</div>
 		</div>
 	</section>

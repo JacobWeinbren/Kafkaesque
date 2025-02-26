@@ -1,5 +1,4 @@
 ---
-// src/components/layout/BaseHead.astro
 import "@/assets/styles/globals.css";
 import "@/assets/styles/animations.css";
 import SpeedInsights from "@vercel/speed-insights/astro";
@@ -18,6 +17,7 @@ const defaultImage = `${Astro.url.origin}/img/logo_white.jpg`;
 const ogImage = image || defaultImage;
 ---
 
+<!-- src/components/layout/BaseHead.astro -->
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -44,12 +44,12 @@ const ogImage = image || defaultImage;
 	<!-- Preload fonts -->
 	<link
 		rel="preload"
-		href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+		href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
 		as="style"
 	/>
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<!-- Theme color -->
-	<meta name="theme-color" content="#16a34a" />
+	<meta name="theme-color" content="#2e7d32" />
 	<SpeedInsights />
 	<Analytics />
 </head>

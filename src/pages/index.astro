@@ -8,133 +8,184 @@ import {
 } from "@heroicons/react/24/outline";
 ---
 
+<!-- src/pages/index.astro -->
 <BaseLayout
-	title="Jacob Weinbren"
-	description="Professional full‑stack web developer & GIS specialist."
+	title="Jacob Weinbren | GIS Specialist & Full-Stack Developer"
+	description="Specialising in geospatial data visualisation and full-stack web development."
 >
-	<!-- Hero Section -->
+	<!-- Hero Section - More professional and focused on GIS/Development -->
 	<section
-		class="relative flex items-center justify-center min-h-[85vh] bg-gradient-to-br from-green-600 via-green-500 to-green-700 text-white overflow-hidden"
+		class="relative flex items-center min-h-[80vh] bg-gradient-to-br from-green-800 via-green-700 to-green-600 text-white overflow-hidden"
 	>
-		<!-- Decorative elements -->
-		<div class="absolute inset-0 overflow-hidden">
-			<div class="absolute -inset-[10%] opacity-10">
-				<svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
-					<defs>
-						<linearGradient
-							id="b"
-							gradientTransform="rotate(45 .5 .5)"
-						>
-							<stop offset="0%" stop-color="#FFF"></stop>
-							<stop
-								offset="100%"
-								stop-color="#FFF"
-								stop-opacity="0"></stop>
-						</linearGradient>
-						<clipPath id="a"
-							><circle cx="500" cy="500" r="450"
-							></circle></clipPath
-						>
-					</defs>
-					<g clip-path="url(#a)">
-						<circle
-							cx="500"
-							cy="500"
-							r="450"
-							fill="none"
-							stroke="url(#b)"
-							stroke-width="120"></circle>
-						<circle
-							cx="500"
-							cy="500"
-							r="300"
-							fill="none"
-							stroke="url(#b)"
-							stroke-width="100"></circle>
-						<circle
-							cx="500"
-							cy="500"
-							r="150"
-							fill="none"
-							stroke="url(#b)"
-							stroke-width="80"></circle>
-					</g>
-				</svg>
-			</div>
+		<!-- Technical/GIS background pattern -->
+		<div
+			class="absolute inset-0 opacity-10"
+			style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.2\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"
+		>
 		</div>
 
-		<div class="relative z-10 text-center max-w-4xl px-6">
-			<span
-				class="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-sm text-green-50 tracking-wide mb-4 rounded-full font-medium"
-				>WEB DEVELOPER & GIS SPECIALIST</span
-			>
-			<h1
-				class="font-display text-5xl sm:text-6xl md:text-7xl font-bold mb-6 animate-fade-in-fast tracking-tight"
-			>
-				Jacob Weinbren
-			</h1>
-			<p
-				class="text-xl md:text-2xl max-w-3xl mx-auto mb-8 text-green-50 animate-pop-up leading-relaxed"
-			>
-				Telling meaningful stories through full‑stack web development
-				and geospatial data visualisation.
-			</p>
-			<div
-				class="flex flex-wrap justify-center gap-4 animate-pop-up stagger-2"
-			>
-				<a
-					href="/portfolio"
-					class="btn bg-white text-green-700 hover:bg-green-50 shadow-lg hover:shadow-xl transition-all duration-300 inline-flex items-center"
-				>
-					View My Work
-					<ArrowRightIcon className="h-4 w-4 ml-2" />
-				</a>
-				<a
-					href="/blog"
-					class="btn bg-green-700/40 backdrop-blur-sm text-white hover:bg-green-700/60 border border-green-500/50 inline-flex items-center"
-				>
-					Read My Blog
-				</a>
+		<div class="relative z-10 text-left max-w-5xl mx-auto px-6 py-12">
+			<div class="grid md:grid-cols-2 gap-12 items-center">
+				<div>
+					<h1
+						class="font-display text-4xl sm:text-5xl md:text-6xl font-bold mb-4 tracking-tight"
+					>
+						Jacob Weinbren
+					</h1>
+					<p
+						class="text-xl max-w-xl mb-6 text-green-50 leading-relaxed"
+					>
+						Full-stack developer & GIS specialist crafting dynamic
+						spatial data visualisations and robust web applications.
+					</p>
+					<div class="flex flex-wrap gap-3">
+						<a
+							href="/portfolio"
+							class="btn bg-white text-green-800 hover:bg-green-50 shadow-md hover:shadow-lg transition-all duration-300 text-sm"
+						>
+							View Portfolio
+							<ArrowRightIcon className="h-4 w-4 ml-1" />
+						</a>
+						<a
+							href="/blog"
+							class="btn bg-green-600/60 backdrop-blur-sm text-white hover:bg-green-600/80 border border-green-500/50 text-sm"
+						>
+							Read Blog
+						</a>
+					</div>
+				</div>
+				<div class="hidden md:block">
+					<!-- Technical/Map-inspired decorative graphic -->
+					<div
+						class="relative rounded-md overflow-hidden border border-white/20 shadow-xl opacity-90"
+					>
+						<svg
+							viewBox="0 0 500 380"
+							xmlns="http://www.w3.org/2000/svg"
+							class="w-full h-auto"
+						>
+							<defs>
+								<pattern
+									id="grid"
+									width="40"
+									height="40"
+									patternUnits="userSpaceOnUse"
+								>
+									<path
+										d="M 40 0 L 0 0 0 40"
+										fill="none"
+										stroke="rgba(255,255,255,0.1)"
+										stroke-width="1"></path>
+								</pattern>
+								<linearGradient
+									id="mapGradient"
+									x1="0%"
+									y1="0%"
+									x2="100%"
+									y2="100%"
+								>
+									<stop
+										offset="0%"
+										stop-color="rgba(20,83,45,0.7)"></stop>
+									<stop
+										offset="100%"
+										stop-color="rgba(21,128,61,0.7)"></stop>
+								</linearGradient>
+							</defs>
+							<rect
+								width="500"
+								height="380"
+								fill="url(#mapGradient)"></rect>
+							<rect width="500" height="380" fill="url(#grid)"
+							></rect>
+
+							<!-- Map-like elements -->
+							<path
+								d="M100,80 L240,120 L320,60 L420,180 L380,240 L280,220 L200,300 L80,240 Z"
+								fill="rgba(255,255,255,0.1)"
+								stroke="rgba(255,255,255,0.6)"
+								stroke-width="2"></path>
+							<circle cx="180" cy="150" r="5" fill="#fff"
+							></circle>
+							<circle cx="320" cy="200" r="5" fill="#fff"
+							></circle>
+							<circle cx="120" cy="220" r="5" fill="#fff"
+							></circle>
+							<path
+								d="M180,150 L320,200 L120,220 Z"
+								stroke="rgba(255,255,255,0.6)"
+								stroke-width="2"
+								fill="none"
+								stroke-dasharray="4,4"></path>
+
+							<!-- Data visualization elements -->
+							<rect
+								x="380"
+								y="60"
+								width="80"
+								height="20"
+								fill="rgba(255,255,255,0.2)"></rect>
+							<rect
+								x="380"
+								y="90"
+								width="40"
+								height="20"
+								fill="rgba(255,255,255,0.2)"></rect>
+							<rect
+								x="380"
+								y="120"
+								width="60"
+								height="20"
+								fill="rgba(255,255,255,0.2)"></rect>
+
+							<!-- Code-inspired elements -->
+							<text
+								x="40"
+								y="40"
+								fill="rgba(255,255,255,0.6)"
+								font-family="monospace"
+								font-size="12">&lt;visualisation&gt;</text
+							>
+							<text
+								x="40"
+								y="340"
+								fill="rgba(255,255,255,0.6)"
+								font-family="monospace"
+								font-size="12">&lt;/visualisation&gt;</text
+							>
+						</svg>
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- Navigation Grid -->
-	<section class="py-24 bg-white">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 text-center">
-			<h2
-				class="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-3"
-			>
-				Navigate My World
-			</h2>
-			<p class="text-gray-600 text-lg max-w-2xl mx-auto mb-12">
-				Explore my work, expertise, and thoughts on technology and
-				spatial data analysis.
-			</p>
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+	<!-- Quick Links Section -->
+	<section class="py-16 bg-gray-50 border-y border-gray-200">
+		<div class="max-w-5xl mx-auto px-4">
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 				<!-- CV/Resume Card -->
 				<a
 					href="/Jacob Weinbren - Resume.pdf"
 					download
-					class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col items-center text-center hover:shadow-md transition-shadow duration-300"
+					class="bg-white rounded-lg border border-gray-200 p-5 hover:border-green-300 hover:shadow-md transition-all duration-300 flex flex-col"
 				>
-					<div
-						class="w-16 h-16 flex items-center justify-center rounded-full bg-green-50 mb-5"
-					>
-						<DocumentIcon className="h-7 w-7 text-green-600" />
+					<div class="flex items-center mb-3">
+						<DocumentIcon className="h-5 w-5 text-green-700 mr-2" />
+						<h3
+							class="text-lg font-display font-semibold text-gray-800"
+						>
+							CV / Resume
+						</h3>
 					</div>
-					<h3
-						class="text-xl font-display font-semibold text-gray-800 mb-2"
-					>
-						CV / Resume
-					</h3>
-					<p class="text-gray-600 mb-6">
-						Download my professional resume and qualifications.
+					<p class="text-gray-600 text-sm mb-4 flex-grow">
+						Download my professional experience, skills, and
+						qualifications.
 					</p>
 					<span
-						class="text-green-600 flex items-center text-sm font-medium mt-auto"
+						class="text-green-700 flex items-center text-sm font-medium mt-auto"
 					>
-						Download
+						Download PDF
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							class="ml-1 w-4 h-4"
@@ -155,26 +206,26 @@ import {
 				<!-- Portfolio Card -->
 				<a
 					href="/portfolio"
-					class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col items-center text-center hover:shadow-md transition-shadow duration-300"
+					class="bg-white rounded-lg border border-gray-200 p-5 hover:border-green-300 hover:shadow-md transition-all duration-300 flex flex-col"
 				>
-					<div
-						class="w-16 h-16 flex items-center justify-center rounded-full bg-green-50 mb-5"
-					>
-						<BriefcaseIcon className="h-7 w-7 text-green-600" />
+					<div class="flex items-center mb-3">
+						<BriefcaseIcon
+							className="h-5 w-5 text-green-700 mr-2"
+						/>
+						<h3
+							class="text-lg font-display font-semibold text-gray-800"
+						>
+							Portfolio
+						</h3>
 					</div>
-					<h3
-						class="text-xl font-display font-semibold text-gray-800 mb-2"
-					>
-						Portfolio
-					</h3>
-					<p class="text-gray-600 mb-6">
-						Explore my recent projects, case studies, and
-						experience.
+					<p class="text-gray-600 text-sm mb-4 flex-grow">
+						Explore my projects in GIS, data visualization, and web
+						development.
 					</p>
 					<span
-						class="text-green-600 flex items-center text-sm font-medium mt-auto"
+						class="text-green-700 flex items-center text-sm font-medium mt-auto"
 					>
-						Browse Projects
+						View Projects
 						<ArrowRightIcon className="ml-1 w-4 h-4" />
 					</span>
 				</a>
@@ -182,25 +233,24 @@ import {
 				<!-- Blog Card -->
 				<a
 					href="/blog"
-					class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col items-center text-center hover:shadow-md transition-shadow duration-300"
+					class="bg-white rounded-lg border border-gray-200 p-5 hover:border-green-300 hover:shadow-md transition-all duration-300 flex flex-col"
 				>
-					<div
-						class="w-16 h-16 flex items-center justify-center rounded-full bg-green-50 mb-5"
-					>
-						<RssIcon className="h-7 w-7 text-green-600" />
+					<div class="flex items-center mb-3">
+						<RssIcon className="h-5 w-5 text-green-700 mr-2" />
+						<h3
+							class="text-lg font-display font-semibold text-gray-800"
+						>
+							Blog
+						</h3>
 					</div>
-					<h3
-						class="text-xl font-display font-semibold text-gray-800 mb-2"
-					>
-						Blog
-					</h3>
-					<p class="text-gray-600 mb-6">
-						Read my insights on technology, GIS, and development.
+					<p class="text-gray-600 text-sm mb-4 flex-grow">
+						Articles and insights on GIS, spatial analysis, and
+						development.
 					</p>
 					<span
-						class="text-green-600 flex items-center text-sm font-medium mt-auto"
+						class="text-green-700 flex items-center text-sm font-medium mt-auto"
 					>
-						View Articles
+						Read Articles
 						<ArrowRightIcon className="ml-1 w-4 h-4" />
 					</span>
 				</a>
@@ -209,23 +259,24 @@ import {
 	</section>
 
 	<!-- Contact Section -->
-	<section class="py-16 bg-gray-50">
-		<div class="max-w-5xl mx-auto px-4">
+	<section class="py-16 bg-white">
+		<div class="max-w-4xl mx-auto px-4">
 			<div
-				class="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center"
+				class="bg-green-50 rounded-lg p-8 border border-green-100 flex flex-col items-center text-center"
 			>
-				<h2 class="text-3xl font-bold text-gray-900 mb-4">
-					Let's Connect
+				<h2 class="text-2xl font-bold text-gray-900 mb-3 font-display">
+					Let's Work Together
 				</h2>
-				<p class="text-gray-600 mb-8 text-center">
-					Interested in collaborating or need a consultation? Send me
-					a message.
+				<p class="text-gray-700 mb-6 max-w-xl">
+					Looking for expertise in spatial data visualization or
+					full-stack development? I'm available for projects and
+					consultations.
 				</p>
 				<a
 					href="mailto:jacobweinbren@gmail.com"
-					class="btn bg-green-600 text-white hover:bg-green-700 transition-colors inline-flex items-center"
+					class="btn btn-primary px-6"
 				>
-					Contact Me
+					Get in Touch
 				</a>
 			</div>
 		</div>

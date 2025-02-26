@@ -1,4 +1,3 @@
-// src/components/search/Search.tsx
 import { useState, useEffect, useCallback, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import debounce from "lodash/debounce";
@@ -98,13 +97,13 @@ export default function Search() {
 			} finally {
 				setIsLoading(false);
 			}
-		}, 300),
+		}, 250),
 		[]
 	);
 
 	return (
-		<div className="w-full max-w-4xl mx-auto px-4">
-			<form onSubmit={(e) => e.preventDefault()} className="mb-6">
+		<div className="w-full max-w-2xl mx-auto">
+			<form onSubmit={(e) => e.preventDefault()} className="mb-5">
 				<div className="relative">
 					<input
 						type="text"
@@ -122,17 +121,17 @@ export default function Search() {
 							}
 							window.history.replaceState({}, "", url.toString());
 						}}
-						placeholder="Search posts..."
-						className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition shadow-sm"
+						placeholder="Search posts and projects..."
+						className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md focus:ring-green-600 focus:border-green-600 transition shadow-sm text-sm"
 						aria-label="Search posts"
 					/>
-					<MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+					<MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
 				</div>
 			</form>
 			<div className="min-h-[200px]">
 				{error && (
 					<div
-						className="text-center text-red-500 py-4 bg-red-50 rounded-lg border border-red-100 mb-6"
+						className="text-center text-red-500 py-3 bg-red-50 rounded-md border border-red-100 mb-4 text-sm"
 						role="alert"
 					>
 						<p>{error}</p>
@@ -140,41 +139,31 @@ export default function Search() {
 				)}
 
 				{isLoading ? (
-					<div className="grid gap-6 md:grid-cols-2">
-						{[1, 2, 3, 4].map((i) => (
-							<div
-								key={i}
-								className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm animate-pulse"
-							>
-								<div className="h-40 bg-gray-200"></div>
-								<div className="p-6">
-									<div className="h-4 w-1/4 bg-gray-200 rounded mb-4"></div>
-									<div className="h-6 bg-gray-200 rounded mb-2"></div>
-									<div className="h-6 w-3/4 bg-gray-200 rounded mb-4"></div>
-									<div className="h-4 bg-gray-200 rounded"></div>
-								</div>
-							</div>
-						))}
+					<div className="flex justify-center items-center h-48">
+						<div className="text-center">
+							<div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-green-600 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite] mb-3"></div>
+							<p className="text-gray-600">Searching...</p>
+						</div>
 					</div>
 				) : results.length > 0 ? (
-					<div className="grid gap-6 md:grid-cols-2">
+					<div className="grid gap-4 md:grid-cols-2">
 						{results.map((post, index) => (
 							<a
 								key={post.id}
 								href={`/post/${post.slug}`}
-								className="group flex flex-col h-full bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:shadow-md transition transform hover:-translate-y-1"
+								className="group flex flex-col h-full bg-white rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-sm transition"
 								style={{ animationDelay: `${index * 50}ms` }}
 							>
-								<div className="p-6 flex flex-col h-full">
-									<h2 className="text-xl font-display font-bold text-gray-900 mb-2 group-hover:text-green-600 transition">
+								<div className="p-4 flex flex-col h-full">
+									<h2 className="text-base font-display font-bold text-gray-900 mb-1.5 group-hover:text-green-700 transition">
 										{post.title}
 									</h2>
-									<p className="text-gray-600 line-clamp-3 mb-3 flex-grow">
+									<p className="text-gray-600 text-sm line-clamp-2 mb-3 flex-grow">
 										{post.subtitle || post.brief}
 									</p>
 									<div className="flex items-center mt-auto">
 										<div className="flex-1">
-											<time className="text-sm text-gray-500">
+											<time className="text-xs text-gray-500">
 												{new Date(
 													post.publishedAt
 												).toLocaleDateString("en-GB", {
@@ -184,10 +173,10 @@ export default function Search() {
 												})}
 											</time>
 										</div>
-										<span className="text-green-600 flex items-center text-sm font-medium">
+										<span className="text-green-700 flex items-center text-xs font-medium">
 											View post
 											<svg
-												className="ml-1 w-4 h-4 transition group-hover:translate-x-1"
+												className="ml-1 w-3 h-3 transition group-hover:translate-x-0.5"
 												viewBox="0 0 20 20"
 												fill="currentColor"
 											>
@@ -206,9 +195,9 @@ export default function Search() {
 				) : (
 					hasSearched &&
 					query && (
-						<div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
+						<div className="text-center py-8 bg-gray-50 rounded-md border border-gray-200">
 							<svg
-								className="mx-auto h-12 w-12 text-gray-400 mb-4"
+								className="mx-auto h-10 w-10 text-gray-400 mb-3"
 								fill="none"
 								viewBox="0 0 24 24"
 								stroke="currentColor"
@@ -220,21 +209,20 @@ export default function Search() {
 									d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
 								/>
 							</svg>
-							<p className="text-gray-600 text-lg mb-2">
+							<p className="text-gray-600 text-base mb-1">
 								No results found
 							</p>
 							<p className="text-gray-500 text-sm">
-								Try using different keywords or check your
-								spelling
+								Try different keywords or check spelling
 							</p>
 						</div>
 					)
 				)}
 
 				{!isLoading && !hasSearched && (
-					<div className="text-center py-12 bg-green-50 rounded-lg border border-green-100">
-						<MagnifyingGlassIcon className="mx-auto h-12 w-12 text-green-500 mb-4" />
-						<p className="text-gray-700 text-lg mb-2">
+					<div className="text-center py-8 bg-green-50 rounded-md border border-green-100">
+						<MagnifyingGlassIcon className="mx-auto h-10 w-10 text-green-600 mb-3" />
+						<p className="text-gray-700 text-base mb-1">
 							Looking for something?
 						</p>
 						<p className="text-gray-600 text-sm">
