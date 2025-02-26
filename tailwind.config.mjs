@@ -20,21 +20,52 @@ module.exports = {
 			},
 			fontFamily: {
 				sans: ["Inter", "sans-serif"],
+				display: ["Manrope", "sans-serif"],
 			},
 			animation: {
-				"fade-in-fast": "fadeInFast 200ms cubic-bezier(0.4, 0, 0.2, 1)",
-				"pop-up": "popUp 200ms ease-out",
+				"fade-in-fast":
+					"fadeInFast 300ms cubic-bezier(0.16, 1, 0.3, 1)",
+				"pop-up": "popUp 300ms cubic-bezier(0.16, 1, 0.3, 1)",
+				shimmer: "shimmer 1.5s infinite linear",
 			},
 			keyframes: {
 				fadeInFast: {
-					"0%": { opacity: 0, transform: "scale(0.95)" },
+					"0%": { opacity: 0, transform: "scale(0.97)" },
 					"100%": { opacity: 1, transform: "scale(1)" },
 				},
 				popUp: {
 					"0%": { opacity: 0, transform: "translateY(10px)" },
 					"100%": { opacity: 1, transform: "translateY(0)" },
 				},
+				shimmer: {
+					"0%": { backgroundPosition: "-468px 0" },
+					"100%": { backgroundPosition: "468px 0" },
+				},
 			},
+			typography: (theme) => ({
+				DEFAULT: {
+					css: {
+						a: {
+							color: theme("colors.green.600"),
+							"&:hover": {
+								color: theme("colors.green.800"),
+							},
+						},
+						h1: {
+							fontFamily: theme("fontFamily.display").join(", "),
+						},
+						h2: {
+							fontFamily: theme("fontFamily.display").join(", "),
+						},
+						h3: {
+							fontFamily: theme("fontFamily.display").join(", "),
+						},
+						h4: {
+							fontFamily: theme("fontFamily.display").join(", "),
+						},
+					},
+				},
+			}),
 		},
 	},
 	plugins: [

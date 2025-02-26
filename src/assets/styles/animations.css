@@ -1,28 +1,56 @@
-/* src/assets/styles/animations.css */
 @keyframes fadeInFast {
 	from {
 		opacity: 0;
-		transform: scale(0.95);
+		transform: scale(0.97);
 	}
 	to {
 		opacity: 1;
 		transform: scale(1);
 	}
 }
+
 .animate-fade-in-fast {
-	animation: fadeInFast 200ms cubic-bezier(0.4, 0, 0.2, 1);
+	animation: fadeInFast 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes popUp {
-	from {
+	0% {
 		opacity: 0;
 		transform: translateY(10px);
 	}
-	to {
+	100% {
 		opacity: 1;
 		transform: translateY(0);
 	}
 }
+
 .animate-pop-up {
-	animation: popUp 200ms ease-out;
+	animation: popUp 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: -468px 0;
+	}
+	100% {
+		background-position: 468px 0;
+	}
+}
+
+.animate-shimmer {
+	background: linear-gradient(to right, #f6f7f8 8%, #edeef1 18%, #f6f7f8 33%);
+	background-size: 800px 104px;
+	animation: shimmer 1.5s infinite linear;
+}
+
+.stagger-1 {
+	animation-delay: 100ms;
+}
+
+.stagger-2 {
+	animation-delay: 200ms;
+}
+
+.stagger-3 {
+	animation-delay: 300ms;
 }

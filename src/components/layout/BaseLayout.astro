@@ -12,9 +12,57 @@ const { title, description, image } = Astro.props;
 	<BaseHead {title} {description} {image} />
 	<body class="min-h-screen flex flex-col bg-gray-50">
 		<Navbar />
-		<main class="flex-grow container mx-auto px-6 py-8">
+		<main class="flex-grow">
 			<slot />
 		</main>
 		<Footer />
+
+		<!-- Back to top button -->
+		<button
+			id="backToTop"
+			class="fixed bottom-6 right-6 bg-green-600 text-white p-3 rounded-full shadow-lg opacity-0 pointer-events-none transition-all duration-300 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+			aria-label="Back to top"
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				class="h-5 w-5"
+				viewBox="0 0 20 20"
+				fill="currentColor"
+			>
+				<path
+					fill-rule="evenodd"
+					d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+					clip-rule="evenodd"></path>
+			</svg>
+		</button>
 	</body>
 </html>
+
+<script>
+	const backToTopButton = document.getElementById("backToTop");
+
+	function toggleBackToTopButton() {
+		if (window.scrollY > 300) {
+			backToTopButton.classList.replace("opacity-0", "opacity-100");
+			backToTopButton.classList.replace(
+				"pointer-events-none",
+				"pointer-events-auto"
+			);
+		} else {
+			backToTopButton.classList.replace("opacity-100", "opacity-0");
+			backToTopButton.classList.replace(
+				"pointer-events-auto",
+				"pointer-events-none"
+			);
+		}
+	}
+
+	window.addEventListener("scroll", toggleBackToTopButton);
+
+	backToTopButton.addEventListener("click", () => {
+		window.scrollTo({
+			top: 0,
+			behavior: "smooth",
+		});
+	});
+</script>

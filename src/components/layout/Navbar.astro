@@ -19,26 +19,31 @@ const currentPath = Astro.url.pathname;
 ---
 
 <nav
-	class="sticky top-0 z-50 bg-green-600 bg-opacity-80 backdrop-blur-md shadow-lg transition"
+	class="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100 transition"
 >
-	<div class="max-w-7xl mx-auto px-6">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6">
 		<div class="flex items-center justify-between h-16">
 			<a
 				href="/"
-				class="text-white font-bold text-2xl tracking-tight hover:opacity-90 transition"
+				class="flex items-center font-display font-bold text-2xl tracking-tight text-green-600 hover:text-green-700 transition"
 			>
 				Jacob W
 			</a>
-			<div class="hidden md:flex space-x-6">
+			<div class="hidden md:flex space-x-1">
 				{
 					links.map(({ href, text, Icon }) => {
-						const isActive = currentPath === href;
+						const isActive =
+							href === "/"
+								? currentPath === href
+								: currentPath.startsWith(href);
+
 						return (
 							<a
 								href={href}
 								class:list={[
-									"flex items-center gap-2 text-white hover:text-green-300 transition",
-									isActive && "underline underline-offset-4",
+									"flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 hover:text-green-600 transition-all duration-200",
+									isActive &&
+										"bg-green-50 text-green-600 font-medium",
 								]}
 								aria-current={isActive ? "page" : undefined}
 							>
@@ -52,7 +57,7 @@ const currentPath = Astro.url.pathname;
 			<div class="md:hidden">
 				<button
 					id="menuButton"
-					class="p-2 text-white hover:text-green-300 transition focus:outline-none focus:ring-2 focus:ring-white"
+					class="p-2 rounded-md text-gray-700 hover:bg-gray-100 hover:text-green-600 transition focus:outline-none"
 					aria-label="Toggle menu"
 					aria-expanded="false"
 				>
@@ -67,18 +72,23 @@ const currentPath = Astro.url.pathname;
 			class="overflow-hidden max-h-0 opacity-0 transition-all duration-300 md:hidden"
 			role="navigation"
 		>
-			<div class="flex flex-col space-y-4 py-4">
+			<div class="flex flex-col space-y-1 py-4">
 				{
 					links.map(({ href, text, Icon }, index) => {
-						const isActive = currentPath === href;
+						const isActive =
+							href === "/"
+								? currentPath === href
+								: currentPath.startsWith(href);
+
 						return (
 							<a
 								href={href}
 								class:list={[
-									"flex items-center gap-2 px-4 py-2 text-white hover:bg-green-700 transition",
-									isActive && "bg-green-700",
+									"flex items-center gap-2 px-4 py-3 rounded-md text-gray-700 hover:bg-gray-100 hover:text-green-600 transition-all duration-200",
+									isActive &&
+										"bg-green-50 text-green-600 font-medium",
 								]}
-								style={`animation: fadeInFast 200ms ease-out ${index * 50}ms forwards;`}
+								style={`animation-delay: ${index * 50}ms;`}
 								aria-current={isActive ? "page" : undefined}
 							>
 								<Icon className="w-5 h-5" />
@@ -92,32 +102,34 @@ const currentPath = Astro.url.pathname;
 	</div>
 </nav>
 
-<style>
-	@keyframes fadeInFast {
-		from {
-			opacity: 0;
-			transform: translateY(8px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-</style>
-
 <script>
 	const menuButton = document.getElementById("menuButton");
 	const mobileMenu = document.getElementById("mobileMenu");
+
+	// Improved menu toggle animation
 	menuButton?.addEventListener("click", () => {
 		const isOpen = mobileMenu.classList.contains("max-h-0");
+
 		if (isOpen) {
 			mobileMenu.classList.remove("max-h-0", "opacity-0");
-			mobileMenu.classList.add("max-h-[300px]", "opacity-100");
+			mobileMenu.classList.add("max-h-[320px]", "opacity-100");
 			menuButton.setAttribute("aria-expanded", "true");
+
+			// Add animation to menu items
+			const menuItems = mobileMenu.querySelectorAll("a");
+			menuItems.forEach((item, index) => {
+				item.classList.add("animate-fade-in-fast");
+			});
 		} else {
 			mobileMenu.classList.add("max-h-0", "opacity-0");
-			mobileMenu.classList.remove("max-h-[300px]", "opacity-100");
+			mobileMenu.classList.remove("max-h-[320px]", "opacity-100");
 			menuButton.setAttribute("aria-expanded", "false");
+
+			// Remove animations
+			const menuItems = mobileMenu.querySelectorAll("a");
+			menuItems.forEach((item) => {
+				item.classList.remove("animate-fade-in-fast");
+			});
 		}
 	});
 </script>

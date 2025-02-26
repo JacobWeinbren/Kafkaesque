@@ -33,6 +33,7 @@ export default defineConfig({
 		serviceEntryPoint: "@astrojs/image/sharp",
 	},
 	prefetch: { prefetchAll: true },
+	// Enhanced Vite config
 	vite: {
 		build: {
 			cssMinify: "lightningcss",
@@ -42,11 +43,15 @@ export default defineConfig({
 					manualChunks: {
 						"react-vendor": ["react", "react-dom"],
 						search: ["fuse.js", "lodash/debounce"],
+						icons: ["@heroicons/react", "react-icons/fa"],
 					},
 				},
 			},
 		},
 		ssr: { noExternal: ["@heroicons/react"] },
 		resolve: { alias: { "@": "/src" } },
+		optimizeDeps: {
+			include: ["react", "react-dom", "fuse.js", "lodash/debounce"],
+		},
 	},
 });
