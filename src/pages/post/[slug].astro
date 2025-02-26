@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "@/components/layout/BaseLayout.astro";
-import SignupForm from "@/components/blog/SignupForm.astro";
+import SignupForm from "@/components/blog/SignupForm.svelte";
 import { getPosts, getPost } from "@/lib/hashnode";
 import { formatDate } from "@/utils/helpers";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
@@ -64,7 +64,7 @@ if (!post) return Astro.redirect("/404");
 			<Fragment set:html={post.content} />
 		</div>
 		<div class="mt-10 border-t pt-8">
-			<SignupForm location="post" />
+			<SignupForm client:load />
 		</div>
 		<div class="mt-6 text-center">
 			<a

@@ -11,6 +11,7 @@ import {
 	CodeBracketIcon,
 	BeakerIcon,
 	ComputerDesktopIcon,
+	ArrowRightIcon,
 } from "@heroicons/react/24/outline";
 
 const projects = [
@@ -149,17 +150,7 @@ projects.sort((a, b) => (a.date < b.date ? 1 : -1));
 										</span>
 										<span class="text-green-700 flex items-center text-xs font-medium">
 											View Project
-											<svg
-												class="ml-1 w-3 h-3 transition-transform group-hover:translate-x-0.5"
-												viewBox="0 0 20 20"
-												fill="currentColor"
-											>
-												<path
-													fill-rule="evenodd"
-													d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
-													clip-rule="evenodd"
-												/>
-											</svg>
+											<ArrowRightIcon className="h-3 w-3 ml-1 transition-transform group-hover:translate-x-0.5" />
 										</span>
 									</div>
 								</div>
@@ -220,7 +211,7 @@ projects.sort((a, b) => (a.date < b.date ? 1 : -1));
 					download
 					class="btn btn-primary inline-flex items-center"
 				>
-					<ArrowDownTrayIcon className="w-4 h-4 mr-2" />
+					<ArrowDownTrayIcon className="h-4 w-4 mr-2" />
 					Download Full CV
 				</a>
 			</div>

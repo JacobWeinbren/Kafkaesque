@@ -1,4 +1,4 @@
-<!-- src/components/blog/BlogPosts.svelte -->
+<!-- BlogPosts.svelte -->
 <script context="module" lang="ts">
 	// Move export of types to module context.
 	export interface BlogPost {
@@ -114,18 +114,19 @@
 						class="flex items-center text-green-700 text-sm font-medium mt-auto"
 					>
 						Read more
+						<!-- Arrow Right Icon -->
 						<svg
+							class="ml-1 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke="currentColor"
-							class="ml-1 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
 						>
 							<path
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								stroke-width="2"
-								d="M9 5l7 7-7 7"
+								d="M14 5l7 7m0 0l-7 7m7-7H3"
 							/>
 						</svg>
 					</div>
