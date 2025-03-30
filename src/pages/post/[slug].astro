@@ -8,7 +8,7 @@ import { formatDate } from "@/utils/helpers";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 export async function getStaticPaths() {
-	const { posts } = await getPosts({ limit: 100 });
+	const { posts } = await getPosts({ limit: 50 });
 	return posts.map((post) => ({ params: { slug: post.slug } }));
 }
 
