@@ -1,17 +1,9 @@
 ---
+// src/pages/blog.astro
 import BaseLayout from "@/components/layout/BaseLayout.astro";
-import { getPosts } from "@/lib/hashnode";
 import BlogPosts from "@/components/blog/BlogPosts.svelte";
-
-// Get initial posts on the server
-const {
-	posts: initialPosts,
-	hasMore: initialHasMore,
-	endCursor: initialEndCursor,
-} = await getPosts({ limit: 9 });
 ---
 
-<!-- src/pages/blog.astro -->
 <BaseLayout
 	title="Blog – Jacob Weinbren"
 	description="Insights on GIS, spatial data analysis, and web development."
@@ -40,12 +32,12 @@ const {
 	</section>
 
 	<section class="max-w-6xl mx-auto px-4 py-12">
-		<!-- Svelte component for blog posts -->
+		<!-- Svelte component now receives default/empty initial props -->
 		<BlogPosts
 			client:load
-			initialPosts={initialPosts}
-			initialHasMore={initialHasMore}
-			initialEndCursor={initialEndCursor}
+			initialPosts={[]}
+			initialHasMore={true}
+			initialEndCursor={null}
 		/>
 	</section>
 </BaseLayout>
