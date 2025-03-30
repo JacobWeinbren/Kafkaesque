@@ -68,6 +68,9 @@ export async function getPosts(
 			publishedAt: edge.node.publishedAt,
 			tags: edge.node.tags,
 		}));
+		console.log(
+			`Successfully fetched ${posts.length} posts: ${posts[0].title}`
+		);
 		return {
 			posts,
 			hasMore: pageInfo?.hasNextPage || false,
