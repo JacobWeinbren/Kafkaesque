@@ -3,13 +3,14 @@ export const prerender = true;
 
 import BaseLayout from "@/components/layout/BaseLayout.astro";
 import SignupForm from "@/components/blog/SignupForm.svelte";
-import { getPosts, getPost } from "@/lib/hashnode";
+import { getAllPosts, getPost } from "@/lib/hashnode";
 import { formatDate } from "@/utils/helpers";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 export async function getStaticPaths() {
-	const { posts } = await getPosts({ limit: 50 });
-	return posts.map((post) => ({ params: { slug: post.slug } }));
+	const allPosts = await getAllPosts();
+	console.log(`Found ${allPosts.length} total posts for static generation`);
+	return allPosts.map((post) => ({ params: { slug: post.slug } }));
 }
 
 const { slug } = Astro.params;
