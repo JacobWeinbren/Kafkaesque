@@ -8,35 +8,14 @@ import { formatDate } from "@/utils/helpers";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 export async function getStaticPaths() {
-	try {
-		// First try to get all posts
-		const allPosts = await getAllPosts();
+	// First try to get all posts
+	const allPosts = await getAllPosts();
 
-		// Add extensive logging to debug
-		console.log(
-			`Found ${allPosts.length} total posts for static generation`
-		);
-		console.log(`Post slugs: ${allPosts.map((p) => p.slug).join(", ")}`);
+	// Add extensive logging to debug
+	console.log(`Found ${allPosts.length} total posts for static generation`);
+	console.log(`Post slugs: ${allPosts.map((p) => p.slug).join(", ")}`);
 
-		// Check if specific problematic post exists
-		const hasMrpPost = allPosts.some(
-			(post) => post.slug === "deprivation-and-the-latest-mrp"
-		);
-		console.log(`Does MRP post exist in fetched posts? ${hasMrpPost}`);
-
-		return allPosts.map((post) => ({ params: { slug: post.slug } }));
-	} catch (error) {
-		console.error("Error in getStaticPaths:", error);
-
-		// As a fallback, hardcode any known posts that might be missing
-		const knownPosts = [
-			// Add your missing post here
-			{ slug: "deprivation-and-the-latest-mrp" },
-		];
-
-		console.log("Using fallback list of known posts");
-		return knownPosts.map((post) => ({ params: { slug: post.slug } }));
-	}
+	return allPosts.map((post) => ({ params: { slug: post.slug } }));
 }
 
 const { slug } = Astro.params;
