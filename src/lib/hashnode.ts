@@ -199,30 +199,29 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 
 	while (hasMore) {
 		try {
-			// getPosts internally handles its own errors/logging
 			const {
 				posts,
 				hasMore: more,
 				endCursor,
-			} = await getPosts({ limit: 50, after: cursor }); // Fetch large batches
+			} = await getPosts({ limit: 20, after: cursor });
 
 			if (posts.length > 0) {
 				allPosts = [...allPosts, ...posts];
+				console.log(
+					`Fetched batch of ${posts.length} posts, total now: ${allPosts.length}`
+				);
 			}
 
 			hasMore = more;
 			cursor = endCursor;
 
-			if (!hasMore) {
-				break; // Exit loop cleanly
-			}
+			if (!hasMore) break;
 		} catch (error) {
-			// Log error specific to the getAllPosts loop iteration
 			console.error(
 				`Error fetching batch in getAllPosts (cursor: ${cursor}):`,
 				error
 			);
-			hasMore = false; // Stop fetching on error to prevent infinite loops
+			hasMore = false;
 		}
 	}
 	return allPosts;
