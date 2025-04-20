@@ -1,4 +1,3 @@
-<!-- BlogPosts.svelte -->
 <script context="module" lang="ts">
 	// Module context remains the same
 	export interface BlogPost {
@@ -15,36 +14,31 @@
 	import { onMount, onDestroy } from "svelte";
 	import { fade } from "svelte/transition";
 
-	// Component props now have defaults for client-side loading
+	// Default to empty values since we'll load everything dynamically
 	export let initialPosts: BlogPost[] = [];
-	export let initialHasMore: boolean = true; // Assume true until first fetch
-	export let initialEndCursor: string | null = null; // Start with null
+	export let initialHasMore: boolean = true;
+	export let initialEndCursor: string | null = null;
 
-	let posts: BlogPost[] = initialPosts; // Starts empty
-	let currentCursor: string | null = initialEndCursor; // Starts null
-	let hasMore: boolean = initialHasMore; // Starts true
-	let loading = false;
-	let initialLoadDone = false; // Track if the first client fetch attempt is complete
+	let posts: BlogPost[] = initialPosts;
+	let currentCursor: string | null = initialEndCursor;
+	let hasMore: boolean = initialHasMore;
+	let loading = true; // Start with loading true for initial fetch
+	let initialLoadDone = false;
 	let loadMoreTrigger: HTMLDivElement;
 	let observer: IntersectionObserver | null = null;
 
 	async function loadMorePosts(isInitialLoad = false) {
-		// Prevent loading if already loading, or if not initial load and no more posts
-		// Allow initial load even if hasMore is technically false initially
-		if (loading || (!hasMore && !isInitialLoad)) {
-			if (!hasMore && !isInitialLoad) {
-				initialLoadDone = true; // Ensure flag is set if we bail early
-			}
+		if (loading && !isInitialLoad) return;
+		if (!hasMore && !isInitialLoad) {
+			initialLoadDone = true;
 			return;
 		}
 
 		loading = true;
 		try {
-			// Construct API URL: Use null/empty cursor for the very first load
 			const cursorParam = currentCursor
 				? `?cursor=${encodeURIComponent(currentCursor)}`
 				: "";
-			// Fetch from the API route
 			const res = await fetch(`/api/posts${cursorParam}`);
 
 			if (!res.ok) {
@@ -53,22 +47,19 @@
 					`Failed to load posts: ${res.status} ${errorText}`
 				);
 			}
-			const data = await res.json(); // Expect { posts: [], hasMore: bool, endCursor: string|null }
+			const data = await res.json();
 
 			if (data.posts && data.posts.length > 0) {
-				// Replace posts on initial load, append otherwise
 				posts = isInitialLoad ? data.posts : [...posts, ...data.posts];
-				currentCursor = data.endCursor || null; // Update cursor
-				hasMore = data.hasMore; // Update hasMore status
+				currentCursor = data.endCursor || null;
+				hasMore = data.hasMore;
 			} else {
-				// If no posts returned (initial or subsequent), assume no more
 				if (isInitialLoad) {
-					posts = []; // Ensure posts is empty if initial load returns none
+					posts = [];
 				}
 				hasMore = false;
 			}
 
-			// Log the first post title after fetch for debugging
 			if (posts.length > 0) {
 				console.log(
 					`Client fetched ${data.posts?.length || 0} posts. First post: ${posts[0].title}. HasMore: ${hasMore}`
@@ -78,10 +69,10 @@
 			}
 		} catch (e) {
 			console.error("Error in loadMorePosts:", e);
-			hasMore = false; // Stop trying on error
+			hasMore = false;
 		} finally {
 			loading = false;
-			initialLoadDone = true; // Mark that an initial load attempt was made
+			initialLoadDone = true;
 		}
 	}
 
@@ -89,7 +80,6 @@
 		observer = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
-					// Trigger only after initial load attempt is done and if intersecting
 					if (
 						entry.isIntersecting &&
 						hasMore &&
@@ -103,20 +93,18 @@
 					}
 				});
 			},
-			{ rootMargin: "200px" } // Load when 200px away from viewport bottom
+			{ rootMargin: "200px" }
 		);
 		if (loadMoreTrigger) observer.observe(loadMoreTrigger);
 	}
 
 	onMount(() => {
-		// Trigger the first load explicitly when component mounts
 		console.log("BlogPosts component mounted, triggering initial load.");
-		loadMorePosts(true); // Pass true for initial load
+		loadMorePosts(true); // Always fetch posts on mount
 		setupObserver();
 	});
 
 	onDestroy(() => {
-		// Clean up the observer when the component is destroyed
 		if (observer && loadMoreTrigger) {
 			observer.unobserve(loadMoreTrigger);
 			console.log("Intersection observer disconnected.");
@@ -124,11 +112,10 @@
 	});
 </script>
 
-<!-- Skeleton Loader: Show ONLY during initial load (loading=true, posts empty) -->
+<!-- Skeleton Loader: Show during initial load -->
 {#if loading && posts.length === 0}
 	<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 		{#each Array(6) as _, i}
-			<!-- Show 6 skeletons initially -->
 			<div
 				class="bg-white rounded-lg overflow-hidden border border-gray-200 h-full animate-pulse"
 			>
@@ -220,7 +207,7 @@
 	</div>
 {/if}
 
-<!-- Loading More Spinner: Show when loading subsequent pages (loading=true, posts exist) -->
+<!-- Loading More Spinner: Show when loading subsequent pages -->
 {#if loading && posts.length > 0}
 	<div class="flex justify-center py-6">
 		<div
@@ -229,19 +216,18 @@
 	</div>
 {/if}
 
-<!-- End of Posts / No Posts Message: Show only when initial load is done, no longer loading, and no more posts -->
+<!-- End of Posts / No Posts Message -->
 {#if !loading && !hasMore && initialLoadDone}
 	<div class="text-center py-6 text-gray-500 border-t mt-8 pt-4">
 		{#if posts.length > 0}
 			You've reached the end of the posts
 		{:else}
-			No posts found. <!-- Message if zero posts were ever loaded -->
+			No posts found.
 		{/if}
 	</div>
 {/if}
 
 <!-- Element that will trigger loading more posts via IntersectionObserver -->
-<!-- Only render trigger if we think there are more posts OR initial load isn't done yet -->
 {#if hasMore || !initialLoadDone}
 	<div bind:this={loadMoreTrigger} class="h-10 mt-8"></div>
 {/if}

@@ -1,25 +1,16 @@
 ---
-export const prerender = true;
-
 import BaseLayout from "@/components/layout/BaseLayout.astro";
 import SignupForm from "@/components/blog/SignupForm.svelte";
-import { getAllPosts, getPost } from "@/lib/hashnode";
+import { getPost } from "@/lib/hashnode";
 import { formatDate } from "@/utils/helpers";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
-export async function getStaticPaths() {
-	// First try to get all posts
-	const allPosts = await getAllPosts();
-
-	// Add extensive logging to debug
-	console.log(`Found ${allPosts.length} total posts for static generation`);
-	console.log(`Post slugs: ${allPosts.map((p) => p.slug).join(", ")}`);
-
-	return allPosts.map((post) => ({ params: { slug: post.slug } }));
-}
-
 const { slug } = Astro.params;
+
+// Fetch the post data dynamically for the requested slug
 const post = await getPost(slug);
+
+// Handle 404 if post not found
 if (!post) return Astro.redirect("/404");
 ---
 
