@@ -18,7 +18,9 @@ export default defineConfig({
 		imageService: true,
 		maxDuration: 60,
 		edgeMiddleware: false,
-		isr: true,
+		isr: {
+			expiration: 60,
+		},
 	}),
 	image: {
 		// Keep your existing image config - looks good

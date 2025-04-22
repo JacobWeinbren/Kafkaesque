@@ -15,15 +15,48 @@ const { title, description, image, article = false } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const defaultImage = `${Astro.url.origin}/img/logo_white.webp`;
 const ogImage = image || defaultImage;
+
+// Define the critical font file URL
+const criticalFontUrl =
+	"https://fonts.gstatic.com/s/inter/v18/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw.woff2";
+// Define the Google Fonts CSS API URL
+const googleFontsCssUrl =
+	"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap";
 ---
 
-<!-- src/components/layout/BaseHead.astro -->
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>{title}</title>
 	<meta name="description" content={description} />
 	<link rel="canonical" href={canonicalURL.toString()} />
+
+	<!-- Preconnect to the domain hosting the font files -->
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+	<!-- Preload the *critical* font file itself -->
+	<link
+		rel="preload"
+		href={criticalFontUrl}
+		as="font"
+		type="font/woff2"
+		crossorigin="anonymous"
+	/>
+
+	<!-- Link the Google Fonts CSS file normally (don't preload this as style AND link it) -->
+	<!-- The browser will fetch this after the critical font preload starts -->
+	<link rel="stylesheet" href={googleFontsCssUrl} />
+
+	<!-- Favicons -->
+	<link rel="icon" href="/favicon/favicon-32x32.png" sizes="32x32" />
+	<link rel="icon" href="/favicon/favicon-16x16.png" sizes="16x16" />
+	<link
+		rel="apple-touch-icon"
+		href="/favicon/apple-touch-icon.png"
+		sizes="180x180"
+	/>
+
+	<!-- OG / Twitter Meta -->
 	<meta property="og:type" content={article ? "article" : "website"} />
 	<meta property="og:url" content={canonicalURL.toString()} />
 	<meta property="og:title" content={title} />
@@ -34,22 +67,14 @@ const ogImage = image || defaultImage;
 	<meta name="twitter:title" content={title} />
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={ogImage} />
-	<link rel="icon" href="/favicon/favicon-32x32.png" sizes="32x32" />
-	<link rel="icon" href="/favicon/favicon-16x16.png" sizes="16x16" />
-	<link
-		rel="apple-touch-icon"
-		href="/favicon/apple-touch-icon.png"
-		sizes="180x180"
-	/>
-	<!-- Preload fonts -->
-	<link
-		rel="preload"
-		href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
-		as="style"
-	/>
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
 	<!-- Theme color -->
 	<meta name="theme-color" content="#2e7d32" />
+
+	<!-- Vercel Analytics -->
 	<SpeedInsights />
 	<Analytics />
+
+	<!-- Allow Astro to inject its head content (styles, scripts) -->
+	<slot name="head" />
 </head>

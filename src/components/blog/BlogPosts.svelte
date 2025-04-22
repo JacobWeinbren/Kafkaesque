@@ -166,10 +166,11 @@
 								src={post.coverImage}
 								alt={post.title}
 								class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-								loading="lazy"
+								loading={i === 0 ? "eager" : "lazy"}
 								decoding="async"
 								width="400"
 								height="225"
+								fetchpriority={i === 0 ? "high" : null}
 							/>
 						</div>
 					{/if}
