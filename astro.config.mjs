@@ -18,7 +18,7 @@ export default defineConfig({
 		imageService: true,
 		maxDuration: 60,
 		edgeMiddleware: false,
-		isr: true,
+		isr: false,
 	}),
 	image: {
 		domains: ["cdn.hashnode.com"],
