@@ -162,10 +162,7 @@
 				in:fade={{ duration: 300, delay: (i % 6) * 75 }}
 				class="group bg-white rounded-xl overflow-hidden border border-slate-100 hover:border-green-200 hover:shadow-md shadow-sm transition-all duration-300 h-full flex flex-col"
 			>
-				<a
-					href={`/blog/post/${post.slug}`}
-					class="h-full flex flex-col"
-				>
+				<a href={`/post/${post.slug}`} class="h-full flex flex-col">
 					{#if coverImageUrl}
 						<div class="relative h-48 overflow-hidden bg-slate-100">
 							<img
