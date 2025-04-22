@@ -8,6 +8,9 @@ import type {
 const HASHNODE_ENDPOINT = "https://gql.hashnode.com";
 const HASHNODE_HOST = "kafkaesque.hashnode.dev";
 
+// Tracking used cursors to prevent duplicates
+const usedCursors = new Set<string>();
+
 const getHeaders = () => ({
 	"Content-Type": "application/json",
 	Authorization: `Bearer ${import.meta.env.HASHNODE_ACCESS_TOKEN}`,
@@ -18,6 +21,18 @@ export async function getPosts(
 ): Promise<PostsResponse> {
 	const { limit = 6, after = null } = options;
 
+	// Check if we've already used this cursor to prevent cycles
+	if (after && usedCursors.has(after)) {
+		console.warn("Cursor already used:", after);
+		return { posts: [], hasMore: false, endCursor: null };
+	}
+
+	// Track this cursor
+	if (after) {
+		usedCursors.add(after);
+	}
+
+	// Using edges-based pagination with cursor (Hashnode requires this specific pattern)
 	const postsQuery = `
       query Publication($first: Int!, $after: String, $host: String!) {
         publication(host: $host) {
@@ -84,6 +99,11 @@ export async function getPosts(
 		const edges = publicationData.posts.edges || [];
 		const pageInfo = publicationData.posts.pageInfo;
 
+		// IMPORTANT: Use the EDGE cursors instead of pageInfo.endCursor
+		// This is critical for proper GraphQL cursor pagination with Hashnode
+		const lastEdgeCursor =
+			edges.length > 0 ? edges[edges.length - 1].cursor : null;
+
 		// Map fields
 		const posts: HashnodePost[] = edges.map((edge: any) => ({
 			id: edge.node.id,
@@ -97,16 +117,11 @@ export async function getPosts(
 			tags: edge.node.tags || [],
 		}));
 
-		// Check if we got a valid endCursor and it's different from the "after" cursor
-		const shouldAdvancePagination =
-			posts.length > 0 &&
-			pageInfo?.endCursor &&
-			pageInfo.endCursor !== after;
-
+		// Fix the cursor issue by using the last edge's cursor instead of endCursor
 		return {
 			posts,
-			hasMore: shouldAdvancePagination && pageInfo?.hasNextPage,
-			endCursor: pageInfo?.endCursor || null,
+			hasMore: pageInfo?.hasNextPage && posts.length > 0,
+			endCursor: lastEdgeCursor,
 		};
 	} catch (error) {
 		console.error("Failed to fetch posts due to exception:", error);
@@ -114,7 +129,9 @@ export async function getPosts(
 	}
 }
 
+// Keep these functions unchanged
 export async function getPost(slug: string): Promise<HashnodePost | null> {
+	// Existing implementation unchanged
 	const query = `
       query GetPostBySlug($slug: String!, $host: String!) {
         publication(host: $host) {
@@ -186,6 +203,7 @@ export async function getPost(slug: string): Promise<HashnodePost | null> {
 }
 
 export async function getAllPosts(): Promise<HashnodePost[]> {
+	// Existing implementation unchanged
 	let allPosts: HashnodePost[] = [];
 	let hasMore = true;
 	let cursor: string | null = null;

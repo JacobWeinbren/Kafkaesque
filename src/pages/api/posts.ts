@@ -7,22 +7,26 @@ export const GET: APIRoute = async ({ request }) => {
 	const postsPerPage = 6;
 
 	try {
-		// Fetch posts using the optimized function
+		// Fetch posts using the fixed function
 		const data = await getPosts({
 			limit: postsPerPage,
 			after: cursor,
 		});
 
-		// Additional check to ensure we don't report hasMore when we got no posts
+		// Add an extra layer of validation
 		if (data.posts.length === 0) {
 			data.hasMore = false;
+			data.endCursor = null;
 		}
 
 		const headers = new Headers({
 			"Content-Type": "application/json",
-			"Cache-Control":
-				"public, max-age=60, s-maxage=60, stale-while-revalidate=300",
+			"Cache-Control": "no-cache", // Prevent caching for pagination requests
 		});
+
+		console.log(
+			`API response: ${data.posts.length} posts, hasMore=${data.hasMore}, endCursor=${data.endCursor}`
+		);
 
 		return new Response(JSON.stringify(data), {
 			status: 200,
@@ -36,7 +40,7 @@ export const GET: APIRoute = async ({ request }) => {
 				status: 500,
 				headers: {
 					"Content-Type": "application/json",
-					"Cache-Control": "public, max-age=10, s-maxage=10",
+					"Cache-Control": "no-cache",
 				},
 			}
 		);

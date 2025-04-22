@@ -39,11 +39,13 @@
 		const isInitialLoad = cursor === null;
 
 		try {
-			// Construct API URL with cursor if provided
+			// Add timestamp to prevent browser caching
+			const timestamp = Date.now();
 			const apiUrl = cursor
-				? `/api/posts?cursor=${encodeURIComponent(cursor)}`
-				: "/api/posts";
+				? `/api/posts?cursor=${encodeURIComponent(cursor)}&_t=${timestamp}`
+				: `/api/posts?_t=${timestamp}`;
 
+			console.log(`Fetching: ${apiUrl}`);
 			const res = await fetch(apiUrl);
 
 			// Handle HTTP errors
@@ -65,6 +67,10 @@
 				endCursor: string | null;
 			} = await res.json();
 
+			console.log(
+				`Got ${data.posts.length} posts, hasMore=${data.hasMore}, endCursor=${data.endCursor}`
+			);
+
 			// Process fetched posts
 			if (data.posts && data.posts.length > 0) {
 				// Filter out posts we've already loaded
@@ -72,10 +78,10 @@
 					(post) => !loadedPostIds.has(post.id)
 				);
 
-				// Track new post IDs
+				// Update the set of loaded post IDs
 				newPosts.forEach((post) => loadedPostIds.add(post.id));
 
-				// If we got no new posts after filtering duplicates
+				// If we got duplicate posts (nothing new)
 				if (newPosts.length === 0 && !isInitialLoad) {
 					console.warn(
 						"No new posts returned but API claims more exist. Stopping pagination."
@@ -86,7 +92,7 @@
 					posts = isInitialLoad ? newPosts : [...posts, ...newPosts];
 
 					// Update pagination state
-					currentCursor = data.endCursor || null;
+					currentCursor = data.endCursor;
 					hasMore = data.hasMore;
 				}
 			} else if (isInitialLoad) {
