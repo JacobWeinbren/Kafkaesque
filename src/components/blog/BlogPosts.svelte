@@ -19,7 +19,9 @@
 	let loading = false;
 	let initialLoadAttempted = false;
 	let errorMessage: string | null = null;
-	let fetchAttempts = new Map<string, number>();
+
+	// Track loaded post IDs to prevent duplicates
+	let loadedPostIds = new Set<string>();
 
 	// Element refs
 	let loadMoreTrigger: HTMLDivElement | undefined = undefined;
@@ -30,20 +32,6 @@
 		// Prevent concurrent fetches or fetching when no more data exists
 		if (loading || (!hasMore && cursor !== null)) {
 			return;
-		}
-
-		// BUGFIX: Prevent infinite loops with same cursor
-		if (cursor) {
-			const attempts = fetchAttempts.get(cursor) || 0;
-			if (attempts >= 2) {
-				console.warn(
-					"Stopping pagination: same cursor requested multiple times",
-					cursor
-				);
-				hasMore = false;
-				return;
-			}
-			fetchAttempts.set(cursor, attempts + 1);
 		}
 
 		loading = true;
@@ -79,14 +67,15 @@
 
 			// Process fetched posts
 			if (data.posts && data.posts.length > 0) {
-				// Filter out potential duplicates before adding
+				// Filter out posts we've already loaded
 				const newPosts = data.posts.filter(
-					(newPost) =>
-						!posts.some((existing) => existing.id === newPost.id)
+					(post) => !loadedPostIds.has(post.id)
 				);
 
-				// BUGFIX: If we got no new posts but API claims there are more,
-				// stop pagination to prevent infinite loops
+				// Track new post IDs
+				newPosts.forEach((post) => loadedPostIds.add(post.id));
+
+				// If we got no new posts after filtering duplicates
 				if (newPosts.length === 0 && !isInitialLoad) {
 					console.warn(
 						"No new posts returned but API claims more exist. Stopping pagination."
@@ -105,7 +94,7 @@
 				posts = [];
 				hasMore = false;
 			} else {
-				// No posts in non-initial load means we've reached the end
+				// No posts in a subsequent request means we're done
 				hasMore = false;
 			}
 		} catch (e: any) {
@@ -237,7 +226,6 @@
 						>
 							{post.title}
 						</h2>
-						<!-- Display subtitle -->
 						<p
 							class="text-gray-600 text-sm line-clamp-3 mb-4 flex-grow"
 						>

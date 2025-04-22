@@ -13,16 +13,15 @@ export const GET: APIRoute = async ({ request }) => {
 			after: cursor,
 		});
 
-		// FIXED: Additional validation to prevent infinite loops
+		// Additional check to ensure we don't report hasMore when we got no posts
 		if (data.posts.length === 0) {
 			data.hasMore = false;
-			data.endCursor = null;
 		}
 
-		// FIXED: Set cache headers to prevent stale data causing issues
 		const headers = new Headers({
 			"Content-Type": "application/json",
-			"Cache-Control": "no-cache, private",
+			"Cache-Control":
+				"public, max-age=60, s-maxage=60, stale-while-revalidate=300",
 		});
 
 		return new Response(JSON.stringify(data), {
@@ -37,7 +36,7 @@ export const GET: APIRoute = async ({ request }) => {
 				status: 500,
 				headers: {
 					"Content-Type": "application/json",
-					"Cache-Control": "no-cache, private",
+					"Cache-Control": "public, max-age=10, s-maxage=10",
 				},
 			}
 		);

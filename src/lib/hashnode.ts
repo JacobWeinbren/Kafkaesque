@@ -13,7 +13,6 @@ const getHeaders = () => ({
 	Authorization: `Bearer ${import.meta.env.HASHNODE_ACCESS_TOKEN}`,
 });
 
-// Fix the getPosts function to handle potential pagination issues
 export async function getPosts(
 	options: GetPostsOptions = {}
 ): Promise<PostsResponse> {
@@ -53,8 +52,6 @@ export async function getPosts(
 					host: HASHNODE_HOST,
 				},
 			}),
-			// Add cache busting to prevent stale responses causing pagination issues
-			cache: "no-store",
 		});
 
 		if (!response.ok) {
@@ -100,16 +97,15 @@ export async function getPosts(
 			tags: edge.node.tags || [],
 		}));
 
-		// FIXED: Check if cursor is the same as endCursor, which indicates no actual advancement
-		const isSameCursor = after && after === pageInfo?.endCursor;
-
-		// FIXED: If no posts returned or cursor didn't advance, don't report hasMore
-		const actuallyHasMore =
-			pageInfo?.hasNextPage && posts.length > 0 && !isSameCursor;
+		// Check if we got a valid endCursor and it's different from the "after" cursor
+		const shouldAdvancePagination =
+			posts.length > 0 &&
+			pageInfo?.endCursor &&
+			pageInfo.endCursor !== after;
 
 		return {
 			posts,
-			hasMore: actuallyHasMore,
+			hasMore: shouldAdvancePagination && pageInfo?.hasNextPage,
 			endCursor: pageInfo?.endCursor || null,
 		};
 	} catch (error) {
@@ -118,9 +114,7 @@ export async function getPosts(
 	}
 }
 
-// Keep the rest of the file as is
 export async function getPost(slug: string): Promise<HashnodePost | null> {
-	// Existing function body...
 	const query = `
       query GetPostBySlug($slug: String!, $host: String!) {
         publication(host: $host) {
@@ -192,7 +186,6 @@ export async function getPost(slug: string): Promise<HashnodePost | null> {
 }
 
 export async function getAllPosts(): Promise<HashnodePost[]> {
-	// Existing function body...
 	let allPosts: HashnodePost[] = [];
 	let hasMore = true;
 	let cursor: string | null = null;
