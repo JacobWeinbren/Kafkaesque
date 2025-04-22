@@ -20,24 +20,16 @@
 	];
 
 	let mobileMenuOpen = false;
-	let scrolled = false;
 
 	function toggleMobileMenu() {
 		mobileMenuOpen = !mobileMenuOpen;
 	}
 
-	// Track scrolling for navbar styling
-	if (typeof window !== "undefined") {
-		window.addEventListener("scroll", () => {
-			scrolled = window.scrollY > 10;
-		});
-	}
+	// Remove scroll tracking to reduce glitchiness
 </script>
 
 <nav
-	class="sticky top-0 z-50 transition duration-300 {scrolled
-		? 'bg-white/95 backdrop-blur-sm shadow-md'
-		: 'bg-transparent'}"
+	class="relative z-50 bg-white/95 shadow-sm transition-all duration-300"
 	aria-label="Main navigation"
 >
 	<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -104,8 +96,8 @@
 		<!-- Mobile Menu -->
 		{#if mobileMenuOpen}
 			<div
-				transition:slide={{ duration: 300, easing: quintOut }}
-				class="md:hidden pb-3 pt-2 absolute left-0 right-0 bg-white shadow-lg border-b border-slate-200 p-4"
+				transition:slide={{ duration: 250, easing: quintOut }}
+				class="md:hidden absolute left-0 right-0 bg-white shadow-lg border-b border-slate-200 p-4"
 				role="navigation"
 			>
 				<div class="flex flex-col space-y-1">
@@ -119,7 +111,7 @@
 							class="flex items-center gap-2 px-3 py-3 rounded-md text-slate-700 hover:bg-green-50/50 hover:text-green-700 transition-colors {isActive
 								? 'bg-green-50 text-green-700 font-medium'
 								: ''}"
-							in:fade={{ delay: i * 50, duration: 200 }}
+							in:fade={{ delay: i * 50, duration: 150 }}
 							aria-current={isActive ? "page" : undefined}
 							on:click={() => (mobileMenuOpen = false)}
 						>
