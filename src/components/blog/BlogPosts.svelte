@@ -2,7 +2,6 @@
 	import { onMount, onDestroy } from "svelte";
 	import { fade } from "svelte/transition";
 
-	// Interface for the post data expected from the API
 	interface BlogPost {
 		id: string;
 		slug: string;
@@ -20,162 +19,80 @@
 	let initialLoadAttempted = false;
 	let errorMessage: string | null = null;
 
-	// Track loaded post IDs to prevent duplicates
-	let loadedPostIds = new Set<string>();
-
-	// Element refs
+	// Element ref for intersection observer
 	let loadMoreTrigger: HTMLDivElement | undefined = undefined;
 	let observer: IntersectionObserver | null = null;
 
-	// Function to fetch posts from the API endpoint
 	async function loadPosts(cursor: string | null = null) {
-		// Prevent concurrent fetches or fetching when no more data exists
-		if (loading || (!hasMore && cursor !== null)) {
-			return;
-		}
+		if (loading || (!hasMore && cursor !== null)) return;
 
 		loading = true;
 		errorMessage = null;
 		const isInitialLoad = cursor === null;
 
 		try {
-			// Add timestamp to prevent browser caching
 			const timestamp = Date.now();
-			const apiUrl = cursor
-				? `/api/posts?cursor=${encodeURIComponent(cursor)}&_t=${timestamp}`
-				: `/api/posts?_t=${timestamp}`;
+			const apiUrl = `/api/posts${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}${cursor ? "&" : "?"}_t=${timestamp}`;
 
-			console.log(`Fetching: ${apiUrl}`);
 			const res = await fetch(apiUrl);
 
-			// Handle HTTP errors
 			if (!res.ok) {
-				let errorText = `HTTP error ${res.status}`;
-				try {
-					const errorData = await res.json();
-					errorText = errorData.error || errorText;
-				} catch {
-					/* ignore json parsing error if body isn't JSON */
-				}
+				const errorText =
+					res.status === 500
+						? (await res.json()).error || `HTTP error ${res.status}`
+						: `HTTP error ${res.status}`;
 				throw new Error(`Failed to load posts: ${errorText}`);
 			}
 
-			// Parse JSON response
-			const data: {
-				posts: BlogPost[];
-				hasMore: boolean;
-				endCursor: string | null;
-			} = await res.json();
+			const data = await res.json();
 
-			console.log(
-				`Got ${data.posts.length} posts, hasMore=${data.hasMore}, endCursor=${data.endCursor || "null"}`
-			);
-
-			// Process fetched posts
-			if (data.posts && data.posts.length > 0) {
-				// Filter out posts we've already loaded
-				const newPosts = data.posts.filter(
-					(post) => !loadedPostIds.has(post.id)
-				);
-				console.log(
-					`After filtering duplicates: ${newPosts.length} new posts`
-				);
-
-				// Update the set of loaded post IDs
-				newPosts.forEach((post) => loadedPostIds.add(post.id));
-
-				// If we got duplicate posts (nothing new)
-				if (newPosts.length === 0 && !isInitialLoad) {
-					console.warn(
-						"No new posts returned but API claims more exist. Stopping pagination."
-					);
-					hasMore = false;
-				} else {
-					// Append or replace posts based on initial load or not
-					posts = isInitialLoad ? newPosts : [...posts, ...newPosts];
-
-					// Update pagination state
-					currentCursor = data.endCursor;
-					hasMore = data.hasMore;
-
-					console.log(
-						`Updated state: posts=${posts.length}, hasMore=${hasMore}, currentCursor=${currentCursor || "null"}`
-					);
-				}
-			} else if (isInitialLoad) {
-				// Ensure posts array is empty if initial load yields nothing
-				posts = [];
-				hasMore = false;
-				console.log("Initial load returned no posts");
+			if (data.posts?.length > 0) {
+				// For initial load, replace posts. Otherwise, append.
+				posts = isInitialLoad ? data.posts : [...posts, ...data.posts];
+				currentCursor = data.endCursor;
+				hasMore = data.hasMore;
 			} else {
-				// No posts in a subsequent request means we're done
+				// No posts returned
+				if (isInitialLoad) posts = [];
 				hasMore = false;
-				console.log(
-					"Subsequent request returned no posts, ending pagination"
-				);
 			}
 		} catch (e: any) {
-			console.error("Error loading posts:", e);
 			errorMessage = e.message || "An unknown error occurred.";
 			hasMore = false;
 		} finally {
 			loading = false;
-			if (isInitialLoad) {
-				initialLoadAttempted = true;
-			}
+			initialLoadAttempted = true;
 		}
 	}
 
-	// Setup the Intersection Observer
-	function setupObserver(elementToObserve: HTMLDivElement) {
-		if (!elementToObserve) {
-			return;
-		}
-
-		if (observer) observer.disconnect();
+	// Set up intersection observer
+	function setupObserver() {
+		if (!loadMoreTrigger || observer) return;
 
 		observer = new IntersectionObserver(
 			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting && hasMore && !loading) {
-						console.log(
-							"Observer triggering load with cursor:",
-							currentCursor
-						);
-						loadPosts(currentCursor);
-					}
-				});
+				if (entries[0].isIntersecting && hasMore && !loading) {
+					loadPosts(currentCursor);
+				}
 			},
-			{
-				rootMargin: "300px",
-				threshold: 0.01,
-			}
+			{ rootMargin: "300px", threshold: 0.01 }
 		);
 
-		observer.observe(elementToObserve);
-		console.log("Observer set up and observing trigger element");
+		observer.observe(loadMoreTrigger);
 	}
 
-	// Set up the observer once the trigger element exists and initial load is done
-	$: if (loadMoreTrigger && initialLoadAttempted && !observer) {
-		console.log("Setting up observer");
-		setupObserver(loadMoreTrigger);
+	// Setup observer when conditions are met
+	$: if (loadMoreTrigger && initialLoadAttempted && hasMore) {
+		setupObserver();
 	}
 
-	// Fetch initial posts when the component mounts
-	onMount(() => {
-		console.log("Component mounted, loading initial posts");
-		loadPosts(null);
-	});
+	onMount(() => loadPosts(null));
 
-	// Clean up the observer when the component is destroyed
 	onDestroy(() => {
-		if (observer) {
-			observer.disconnect();
-		}
+		if (observer) observer.disconnect();
 	});
 
-	// Helper function to format date
+	// Format date helper
 	function formatDate(dateString: string): string {
 		return new Date(dateString).toLocaleDateString("en-GB", {
 			day: "numeric",
@@ -185,8 +102,7 @@
 	}
 </script>
 
-<!-- Rest of the template unchanged -->
-<!-- Skeleton Loader: Show ONLY during the very first load attempt -->
+<!-- Skeleton Loader -->
 {#if loading && !initialLoadAttempted}
 	<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 		{#each Array(6) as _, i}
@@ -207,7 +123,7 @@
 	</div>
 {/if}
 
-<!-- Error Message Display: Show if initial load fails -->
+<!-- Error Message Display -->
 {#if errorMessage && posts.length === 0}
 	<div
 		class="text-center py-6 text-red-600 border border-red-200 bg-red-50 p-4 rounded"
@@ -217,7 +133,7 @@
 	</div>
 {/if}
 
-<!-- Post Grid: Render posts once available -->
+<!-- Post Grid -->
 {#if posts.length > 0}
 	<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 		{#each posts as post, i (post.id)}
@@ -282,7 +198,7 @@
 	</div>
 {/if}
 
-<!-- Loading More Spinner: Show when loading subsequent pages -->
+<!-- Loading More Spinner -->
 {#if loading && initialLoadAttempted && posts.length > 0}
 	<div class="flex justify-center py-6" aria-live="polite">
 		<div
@@ -301,11 +217,10 @@
 		{:else if !errorMessage}
 			No posts found.
 		{/if}
-		<!-- Error message handled separately above -->
 	</div>
 {/if}
 
-<!-- Intersection Observer Trigger: Rendered when more posts might exist and initial load is done -->
+<!-- Intersection Observer Trigger -->
 {#if hasMore && initialLoadAttempted}
 	<div bind:this={loadMoreTrigger} class="h-10 mt-8" aria-hidden="true"></div>
 {/if}
