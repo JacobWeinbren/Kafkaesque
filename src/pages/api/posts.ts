@@ -1,5 +1,6 @@
+// /api/posts.ts
 import type { APIRoute } from "astro";
-import { getPosts } from "@/lib/hashnode";
+import { getPosts, resetTracking } from "@/lib/hashnode";
 
 export const GET: APIRoute = async ({ request }) => {
 	const url = new URL(request.url);
@@ -9,7 +10,13 @@ export const GET: APIRoute = async ({ request }) => {
 	try {
 		console.log(`API route called with cursor: ${cursor || "null"}`);
 
-		// Fetch posts using the fixed function
+		// Reset tracking when no cursor is provided (initial request)
+		if (!cursor) {
+			resetTracking();
+			console.log("Resetting post tracking for fresh request");
+		}
+
+		// Fetch posts using our fixed function
 		const data = await getPosts({
 			limit: postsPerPage,
 			after: cursor,
@@ -21,9 +28,13 @@ export const GET: APIRoute = async ({ request }) => {
 			}, endCursor=${data.endCursor || "null"}`
 		);
 
+		// Strong cache control headers
 		const headers = new Headers({
 			"Content-Type": "application/json",
-			"Cache-Control": "no-cache",
+			"Cache-Control":
+				"no-store, no-cache, must-revalidate, proxy-revalidate",
+			Pragma: "no-cache",
+			Expires: "0",
 		});
 
 		return new Response(JSON.stringify(data), {
@@ -38,7 +49,7 @@ export const GET: APIRoute = async ({ request }) => {
 				status: 500,
 				headers: {
 					"Content-Type": "application/json",
-					"Cache-Control": "no-cache",
+					"Cache-Control": "no-store, no-cache, must-revalidate",
 				},
 			}
 		);

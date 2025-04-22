@@ -8,13 +8,14 @@ import type {
 const HASHNODE_ENDPOINT = "https://gql.hashnode.com";
 const HASHNODE_HOST = "kafkaesque.hashnode.dev";
 
+// Track the posts we've already seen by ID
+const fetchedPostIds = new Set<string>();
+let lastUsedCursor: string | null = null;
+
 const getHeaders = () => ({
 	"Content-Type": "application/json",
 	Authorization: `Bearer ${import.meta.env.HASHNODE_ACCESS_TOKEN}`,
 });
-
-// Track previously seen cursors to detect loops
-const seenCursors = new Set<string>();
 
 // Fetch a list of posts
 export async function getPosts(
@@ -22,44 +23,44 @@ export async function getPosts(
 ): Promise<PostsResponse> {
 	const { limit = 6, after = null } = options;
 
-	// Standard cursor-based pagination query with page info
+	// Standard query - keep it simple
 	const postsQuery = `
-		query Publication($first: Int!, $after: String, $host: String!) {
-		  publication(host: $host) {
-			posts(first: $first, after: $after) {
-			  edges {
-				node {
-				  id
-				  title
-				  subtitle
-				  slug
-				  coverImage { url }
-				  publishedAt
-				  tags { name slug }
-				}
+	  query Publication($first: Int!, $after: String, $host: String!) {
+		publication(host: $host) {
+		  posts(first: $first, after: $after) {
+			edges {
+			  node {
+				id
+				title
+				subtitle
+				slug
+				coverImage { url }
+				publishedAt
+				tags { name slug }
 			  }
-			  pageInfo {
-				hasNextPage
-				endCursor
-			  }
+			}
+			pageInfo {
+			  hasNextPage
+			  endCursor
 			}
 		  }
 		}
-	  `;
+	  }
+	`;
 
 	try {
 		console.log(`Hashnode query with cursor: ${after || "null"}`);
 
-		// Check if we've seen this cursor before - avoid infinite loops
-		if (after && seenCursors.has(after)) {
-			console.warn(`Cursor loop detected: ${after}`);
+		// Detect pagination loops - if we see the same cursor twice, something's wrong
+		const cursorLoopDetected = after !== null && after === lastUsedCursor;
+		if (cursorLoopDetected) {
+			console.warn(`Cursor loop detected, using skip approach`);
+			// Force hasMore=false to stop pagination attempts with a broken cursor
 			return { posts: [], hasMore: false, endCursor: null };
 		}
 
-		// Add current cursor to seen set
-		if (after) {
-			seenCursors.add(after);
-		}
+		// Update last used cursor
+		lastUsedCursor = after;
 
 		const response = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
@@ -123,39 +124,33 @@ export async function getPosts(
 			tags: edge.node.tags || [],
 		}));
 
-		// CRITICAL FIX: Multiple checks to detect pagination issues
-		const sameAsPreviousCursor = after && after === pageInfo.endCursor;
-		const emptyButClaimsMore = posts.length === 0 && pageInfo.hasNextPage;
-		const cursorButNoNext = after && !pageInfo.hasNextPage;
+		// Filter out posts we've already seen by ID
+		const newPosts = posts.filter((post) => !fetchedPostIds.has(post.id));
 
-		// If any issues detected, stop pagination
-		const hasMore =
+		// Track the posts we've seen
+		newPosts.forEach((post) => fetchedPostIds.add(post.id));
+
+		console.log(`Found ${newPosts.length} new posts after filtering`);
+
+		// Different pagination control logic
+		let hasMore = false;
+
+		// Only consider hasMore=true if:
+		// 1. The API says there are more posts AND
+		// 2. We actually got new posts in this batch AND
+		// 3. The cursor isn't the same as before
+		if (
 			pageInfo.hasNextPage &&
-			!sameAsPreviousCursor &&
-			!emptyButClaimsMore &&
-			posts.length > 0;
-
-		// Only use the endCursor if we actually have more posts
-		const endCursor = hasMore ? pageInfo.endCursor : null;
-
-		console.log(
-			`Processed - posts: ${
-				posts.length
-			}, hasMore: ${hasMore}, endCursor: ${endCursor || "null"}, ` +
-				`sameAsPrevious: ${sameAsPreviousCursor}, emptyButClaimsMore: ${emptyButClaimsMore}, cursorButNoNext: ${cursorButNoNext}`
-		);
-
-		// For debugging: Log post IDs to check for duplicates
-		if (posts.length > 0) {
-			console.log(
-				`Post IDs in this batch: ${posts.map((p) => p.id).join(", ")}`
-			);
+			newPosts.length > 0 &&
+			(after === null || after !== pageInfo.endCursor)
+		) {
+			hasMore = true;
 		}
 
 		return {
-			posts,
+			posts: newPosts,
 			hasMore,
-			endCursor,
+			endCursor: hasMore ? pageInfo.endCursor : null,
 		};
 	} catch (error) {
 		console.error("Failed to fetch posts due to exception:", error);
@@ -163,9 +158,10 @@ export async function getPosts(
 	}
 }
 
-// Reset seen cursors (useful for testing/debugging)
-export function resetCursorTracking() {
-	seenCursors.clear();
+// Reset tracking (useful between page loads or for testing)
+export function resetTracking() {
+	fetchedPostIds.clear();
+	lastUsedCursor = null;
 }
 
 // Keep these functions unchanged
@@ -242,8 +238,8 @@ export async function getPost(slug: string): Promise<HashnodePost | null> {
 }
 
 export async function getAllPosts(): Promise<HashnodePost[]> {
-	// Reset cursor tracking to avoid false positives in bulk fetching
-	resetCursorTracking();
+	// Reset tracking for bulk fetching
+	resetTracking();
 
 	let allPosts: HashnodePost[] = [];
 	let hasMore = true;
@@ -263,9 +259,9 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 
 			if (batchPosts.length > 0) {
 				allPosts = [...allPosts, ...batchPosts];
-			} else if (more) {
+			} else {
 				console.warn(
-					`getAllPosts: Received hasMore=true but no posts in batch ${fetchAttempts}. Stopping pagination early.`
+					`getAllPosts: No new posts in batch ${fetchAttempts}. Stopping pagination.`
 				);
 				hasMore = false;
 				break;
