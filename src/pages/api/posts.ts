@@ -7,26 +7,24 @@ export const GET: APIRoute = async ({ request }) => {
 	const postsPerPage = 6;
 
 	try {
+		console.log(`API route called with cursor: ${cursor || "null"}`);
+
 		// Fetch posts using the fixed function
 		const data = await getPosts({
 			limit: postsPerPage,
 			after: cursor,
 		});
 
-		// Add an extra layer of validation
-		if (data.posts.length === 0) {
-			data.hasMore = false;
-			data.endCursor = null;
-		}
+		console.log(
+			`API route returning: ${data.posts.length} posts, hasMore=${
+				data.hasMore
+			}, endCursor=${data.endCursor || "null"}`
+		);
 
 		const headers = new Headers({
 			"Content-Type": "application/json",
-			"Cache-Control": "no-cache", // Prevent caching for pagination requests
+			"Cache-Control": "no-cache",
 		});
-
-		console.log(
-			`API response: ${data.posts.length} posts, hasMore=${data.hasMore}, endCursor=${data.endCursor}`
-		);
 
 		return new Response(JSON.stringify(data), {
 			status: 200,

@@ -8,37 +8,23 @@ import type {
 const HASHNODE_ENDPOINT = "https://gql.hashnode.com";
 const HASHNODE_HOST = "kafkaesque.hashnode.dev";
 
-// Tracking used cursors to prevent duplicates
-const usedCursors = new Set<string>();
-
 const getHeaders = () => ({
 	"Content-Type": "application/json",
 	Authorization: `Bearer ${import.meta.env.HASHNODE_ACCESS_TOKEN}`,
 });
 
+// Fetch a list of posts
 export async function getPosts(
 	options: GetPostsOptions = {}
 ): Promise<PostsResponse> {
 	const { limit = 6, after = null } = options;
 
-	// Check if we've already used this cursor to prevent cycles
-	if (after && usedCursors.has(after)) {
-		console.warn("Cursor already used:", after);
-		return { posts: [], hasMore: false, endCursor: null };
-	}
-
-	// Track this cursor
-	if (after) {
-		usedCursors.add(after);
-	}
-
-	// Using edges-based pagination with cursor (Hashnode requires this specific pattern)
+	// Standard cursor-based pagination query with page info
 	const postsQuery = `
       query Publication($first: Int!, $after: String, $host: String!) {
         publication(host: $host) {
           posts(first: $first, after: $after) {
             edges {
-              cursor
               node {
                 id
                 title
@@ -49,13 +35,18 @@ export async function getPosts(
                 tags { name slug }
               }
             }
-            pageInfo { hasNextPage endCursor }
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
           }
         }
       }
     `;
 
 	try {
+		console.log(`Hashnode query with cursor: ${after || "null"}`);
+
 		const response = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
 			headers: getHeaders(),
@@ -97,12 +88,11 @@ export async function getPosts(
 		}
 
 		const edges = publicationData.posts.edges || [];
-		const pageInfo = publicationData.posts.pageInfo;
+		const pageInfo = publicationData.posts.pageInfo || {};
 
-		// IMPORTANT: Use the EDGE cursors instead of pageInfo.endCursor
-		// This is critical for proper GraphQL cursor pagination with Hashnode
-		const lastEdgeCursor =
-			edges.length > 0 ? edges[edges.length - 1].cursor : null;
+		console.log(
+			`Raw API response - edges: ${edges.length}, hasNextPage: ${pageInfo.hasNextPage}, endCursor: ${pageInfo.endCursor}`
+		);
 
 		// Map fields
 		const posts: HashnodePost[] = edges.map((edge: any) => ({
@@ -117,11 +107,19 @@ export async function getPosts(
 			tags: edge.node.tags || [],
 		}));
 
-		// Fix the cursor issue by using the last edge's cursor instead of endCursor
+		// CRITICAL FIX: Check if the cursor would stay the same, which indicates a pagination error
+		const sameAsPreviousCursor = after && after === pageInfo.endCursor;
+		const hasMore =
+			pageInfo.hasNextPage && !sameAsPreviousCursor && posts.length > 0;
+
+		console.log(
+			`Processed - posts: ${posts.length}, hasMore: ${hasMore}, endCursor: ${pageInfo.endCursor}, sameAsPrevious: ${sameAsPreviousCursor}`
+		);
+
 		return {
 			posts,
-			hasMore: pageInfo?.hasNextPage && posts.length > 0,
-			endCursor: lastEdgeCursor,
+			hasMore,
+			endCursor: hasMore ? pageInfo.endCursor : null,
 		};
 	} catch (error) {
 		console.error("Failed to fetch posts due to exception:", error);

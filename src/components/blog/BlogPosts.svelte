@@ -68,7 +68,7 @@
 			} = await res.json();
 
 			console.log(
-				`Got ${data.posts.length} posts, hasMore=${data.hasMore}, endCursor=${data.endCursor}`
+				`Got ${data.posts.length} posts, hasMore=${data.hasMore}, endCursor=${data.endCursor || "null"}`
 			);
 
 			// Process fetched posts
@@ -76,6 +76,9 @@
 				// Filter out posts we've already loaded
 				const newPosts = data.posts.filter(
 					(post) => !loadedPostIds.has(post.id)
+				);
+				console.log(
+					`After filtering duplicates: ${newPosts.length} new posts`
 				);
 
 				// Update the set of loaded post IDs
@@ -94,14 +97,22 @@
 					// Update pagination state
 					currentCursor = data.endCursor;
 					hasMore = data.hasMore;
+
+					console.log(
+						`Updated state: posts=${posts.length}, hasMore=${hasMore}, currentCursor=${currentCursor || "null"}`
+					);
 				}
 			} else if (isInitialLoad) {
 				// Ensure posts array is empty if initial load yields nothing
 				posts = [];
 				hasMore = false;
+				console.log("Initial load returned no posts");
 			} else {
 				// No posts in a subsequent request means we're done
 				hasMore = false;
+				console.log(
+					"Subsequent request returned no posts, ending pagination"
+				);
 			}
 		} catch (e: any) {
 			console.error("Error loading posts:", e);
@@ -127,6 +138,10 @@
 			(entries) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting && hasMore && !loading) {
+						console.log(
+							"Observer triggering load with cursor:",
+							currentCursor
+						);
 						loadPosts(currentCursor);
 					}
 				});
@@ -138,15 +153,18 @@
 		);
 
 		observer.observe(elementToObserve);
+		console.log("Observer set up and observing trigger element");
 	}
 
 	// Set up the observer once the trigger element exists and initial load is done
 	$: if (loadMoreTrigger && initialLoadAttempted && !observer) {
+		console.log("Setting up observer");
 		setupObserver(loadMoreTrigger);
 	}
 
 	// Fetch initial posts when the component mounts
 	onMount(() => {
+		console.log("Component mounted, loading initial posts");
 		loadPosts(null);
 	});
 
@@ -167,6 +185,7 @@
 	}
 </script>
 
+<!-- Rest of the template unchanged -->
 <!-- Skeleton Loader: Show ONLY during the very first load attempt -->
 {#if loading && !initialLoadAttempted}
 	<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
