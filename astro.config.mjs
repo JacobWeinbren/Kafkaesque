@@ -23,18 +23,16 @@ export default defineConfig({
 		},
 	}),
 	image: {
-		// Keep your existing image config - looks good
 		domains: ["cdn.hashnode.com"],
 		remotePatterns: [{ protocol: "https", hostname: "cdn.hashnode.com" }],
 		format: ["avif", "webp"],
 	},
-	// Optimize prefetching strategy
 	prefetch: {
 		defaultStrategy: "hover",
 	},
 	vite: {
 		build: {
-			cssMinify: "lightningcss", // Use lightningcss for faster CSS minification
+			cssMinify: "lightningcss",
 			minify: true,
 		},
 		ssr: {

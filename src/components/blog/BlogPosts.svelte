@@ -1,80 +1,98 @@
 <script lang="ts">
-	import { onMount, onDestroy } from "svelte";
+	import { onMount, onDestroy, tick } from "svelte"; // Import tick
 	import { fade } from "svelte/transition";
 
-	// Interface now expects subtitle, removed brief
+	// Interface for the post data expected from the API
 	interface BlogPost {
 		id: string;
 		slug: string;
 		title: string;
-		subtitle: string; // Use subtitle for preview
+		subtitle: string; // Using subtitle for preview
 		coverImage?: string | null;
 		publishedAt: string;
-		// tags?: { name: string; slug: string }[];
+		// tags?: { name: string; slug: string }[]; // Uncomment if using tags
 	}
 
-	// Component state - no changes needed here
+	// Component state
 	let posts: BlogPost[] = [];
 	let currentCursor: string | null = null;
-	let hasMore: boolean = true;
-	let loading = false;
-	let initialLoadAttempted = false;
-	let errorMessage: string | null = null;
+	let hasMore: boolean = true; // Assume more initially
+	let loading = false; // Track fetch status
+	let initialLoadAttempted = false; // Track if first fetch completed
+	let errorMessage: string | null = null; // Store fetch errors
 
-	// Element refs - no changes needed here
-	let loadMoreTrigger: HTMLDivElement;
-	let observer: IntersectionObserver | null = null;
+	// Element refs
+	let loadMoreTrigger: HTMLDivElement; // Element to trigger loading
+	let observer: IntersectionObserver | null = null; // Observer instance
 
-	// Function to fetch posts - no changes needed here,
-	// it fetches from /api/posts which uses the updated getPosts
+	// Function to fetch posts from the API endpoint
 	async function loadPosts(cursor: string | null = null) {
+		// Prevent concurrent fetches or fetching when no more data exists
 		if (loading || (!hasMore && cursor !== null)) {
 			return;
 		}
+
 		loading = true;
-		errorMessage = null;
+		errorMessage = null; // Clear previous errors
 		const isInitialLoad = cursor === null;
+
 		try {
+			// Construct API URL with cursor if provided
 			const apiUrl = cursor
 				? `/api/posts?cursor=${encodeURIComponent(cursor)}`
 				: "/api/posts";
 			const res = await fetch(apiUrl);
+
+			// Handle HTTP errors
 			if (!res.ok) {
 				let errorText = `HTTP error ${res.status}`;
 				try {
+					// Try to get more specific error from response body
 					const errorData = await res.json();
 					errorText = errorData.error || errorText;
 				} catch {
-					/* ignore */
+					/* ignore json parsing error if body isn't JSON */
 				}
 				throw new Error(`Failed to load posts: ${errorText}`);
 			}
+
+			// Parse JSON response
 			const data: {
 				posts: BlogPost[];
 				hasMore: boolean;
 				endCursor: string | null;
 			} = await res.json();
 
+			// Process fetched posts
 			if (data.posts && data.posts.length > 0) {
+				// Filter out potential duplicates before adding
 				const newPosts = data.posts.filter(
 					(newPost) =>
 						!posts.some((existing) => existing.id === newPost.id)
 				);
-				// Ensure the fetched data matches the updated BlogPost interface
+				// Append or replace posts based on initial load or not
 				posts = isInitialLoad ? newPosts : [...posts, ...newPosts];
 			} else if (isInitialLoad) {
+				// Ensure posts array is empty if initial load yields nothing
 				posts = [];
 			}
+
+			// Update pagination state
 			currentCursor = data.endCursor || null;
 			hasMore = data.hasMore;
 		} catch (e: any) {
-			console.error("Error in loadPosts:", e);
+			// Handle fetch or processing errors
+			console.error("Error loading posts:", e); // Keep essential error logging
 			errorMessage = e.message || "An unknown error occurred.";
-			hasMore = false;
+			hasMore = false; // Stop trying to load more on error
 		} finally {
+			// Ensure loading state is reset
 			loading = false;
 			if (isInitialLoad) {
 				initialLoadAttempted = true;
+				// *** FIX: Wait for DOM update before setting up observer ***
+				await tick();
+				// Setup observer only after the first load attempt and DOM update
 				if (!observer) {
 					setupObserver();
 				}
@@ -82,35 +100,51 @@
 		}
 	}
 
-	// Setup observer - no changes needed here
+	// Setup the Intersection Observer to trigger loading more posts
 	function setupObserver() {
+		// Disconnect previous observer if it exists
 		if (observer) observer.disconnect();
+
 		observer = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
+					// Trigger load more only when intersecting, more posts might exist, and not currently loading
 					if (entry.isIntersecting && hasMore && !loading) {
-						loadPosts(currentCursor);
+						loadPosts(currentCursor); // Load next batch
 					}
 				});
 			},
-			{ rootMargin: "300px" }
+			{
+				rootMargin: "300px", // Load content 300px before it enters the viewport
+				threshold: 0.01, // Trigger even if only slightly visible
+			}
 		);
+
+		// Attach observer to the trigger element if it exists
 		if (loadMoreTrigger) {
 			observer.observe(loadMoreTrigger);
+		} else {
+			// This shouldn't happen with the tick() fix, but log error just in case
+			console.error(
+				"Load more trigger element not found during observer setup."
+			);
 		}
 	}
 
-	// Lifecycle hooks - no changes needed here
+	// Fetch initial posts when the component mounts
 	onMount(() => {
-		loadPosts(null);
+		loadPosts(null); // Trigger initial fetch
+		// Observer setup is now deferred to the finally block of the initial loadPosts call
 	});
+
+	// Clean up the observer when the component is destroyed
 	onDestroy(() => {
 		if (observer) {
-			observer.disconnect();
+			observer.disconnect(); // Prevent memory leaks
 		}
 	});
 
-	// Helper - no changes needed here
+	// Helper function to format date (could be moved to a shared utility)
 	function formatDate(dateString: string): string {
 		return new Date(dateString).toLocaleDateString("en-GB", {
 			day: "numeric",
@@ -120,7 +154,7 @@
 	}
 </script>
 
-<!-- Skeleton Loader - no changes needed -->
+<!-- Skeleton Loader: Show ONLY during the very first load attempt -->
 {#if loading && !initialLoadAttempted}
 	<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 		{#each Array(6) as _, i}
@@ -141,7 +175,7 @@
 	</div>
 {/if}
 
-<!-- Error Message Display - no changes needed -->
+<!-- Error Message Display: Show if initial load fails -->
 {#if errorMessage && posts.length === 0}
 	<div
 		class="text-center py-6 text-red-600 border border-red-200 bg-red-50 p-4 rounded"
@@ -166,11 +200,11 @@
 								src={post.coverImage}
 								alt={post.title}
 								class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-								loading={i === 0 ? "eager" : "lazy"}
+								loading={i < 3 ? "eager" : "lazy"}
 								decoding="async"
 								width="400"
 								height="225"
-								fetchpriority={i === 0 ? "high" : null}
+								fetchpriority={i < 3 ? "high" : null}
 							/>
 						</div>
 					{/if}
@@ -185,7 +219,7 @@
 						>
 							{post.title}
 						</h2>
-						<!-- Display subtitle instead of brief -->
+						<!-- Display subtitle -->
 						<p
 							class="text-gray-600 text-sm line-clamp-3 mb-4 flex-grow"
 						>
@@ -217,7 +251,7 @@
 	</div>
 {/if}
 
-<!-- Loading More Spinner - no changes needed -->
+<!-- Loading More Spinner: Show when loading subsequent pages -->
 {#if loading && initialLoadAttempted && posts.length > 0}
 	<div class="flex justify-center py-6" aria-live="polite">
 		<div
@@ -228,7 +262,7 @@
 	</div>
 {/if}
 
-<!-- End of Posts / No Posts Message - no changes needed -->
+<!-- End of Posts / No Posts Message -->
 {#if !loading && !hasMore && initialLoadAttempted}
 	<div class="text-center py-6 text-gray-500 border-t mt-8 pt-4">
 		{#if posts.length > 0}
@@ -236,10 +270,11 @@
 		{:else if !errorMessage}
 			No posts found.
 		{/if}
+		<!-- Error message handled separately above -->
 	</div>
 {/if}
 
-<!-- Intersection Observer Trigger - no changes needed -->
+<!-- Intersection Observer Trigger: Rendered when more posts might exist and initial load is done -->
 {#if hasMore && initialLoadAttempted}
-	<div bind:this={loadMoreTrigger} class="h-10 mt-8"></div>
+	<div bind:this={loadMoreTrigger} class="h-10 mt-8" aria-hidden="true"></div>
 {/if}
