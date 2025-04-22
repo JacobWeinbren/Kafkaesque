@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy, tick } from "svelte"; // Import tick
+	import { onMount, onDestroy } from "svelte"; // tick is no longer needed
 	import { fade } from "svelte/transition";
 
 	// Interface for the post data expected from the API
@@ -22,7 +22,7 @@
 	let errorMessage: string | null = null; // Store fetch errors
 
 	// Element refs
-	let loadMoreTrigger: HTMLDivElement; // Element to trigger loading
+	let loadMoreTrigger: HTMLDivElement | undefined = undefined; // Element to trigger loading, initialize as undefined
 	let observer: IntersectionObserver | null = null; // Observer instance
 
 	// Function to fetch posts from the API endpoint
@@ -90,18 +90,18 @@
 			loading = false;
 			if (isInitialLoad) {
 				initialLoadAttempted = true;
-				// *** FIX: Wait for DOM update before setting up observer ***
-				await tick();
-				// Setup observer only after the first load attempt and DOM update
-				if (!observer) {
-					setupObserver();
-				}
+				// Observer setup is now handled by the reactive statement below
 			}
 		}
 	}
 
-	// Setup the Intersection Observer to trigger loading more posts
-	function setupObserver() {
+	// Setup the Intersection Observer - accepts the element to observe
+	function setupObserver(elementToObserve: HTMLDivElement) {
+		if (!elementToObserve) {
+			// This check is mostly defensive now
+			console.error("setupObserver called without a valid element.");
+			return;
+		}
 		// Disconnect previous observer if it exists
 		if (observer) observer.disconnect();
 
@@ -120,21 +120,20 @@
 			}
 		);
 
-		// Attach observer to the trigger element if it exists
-		if (loadMoreTrigger) {
-			observer.observe(loadMoreTrigger);
-		} else {
-			// This shouldn't happen with the tick() fix, but log error just in case
-			console.error(
-				"Load more trigger element not found during observer setup."
-			);
-		}
+		// Attach observer to the trigger element
+		observer.observe(elementToObserve);
+	}
+
+	// Reactive statement to set up the observer once the trigger element exists
+	// and the initial load is done.
+	$: if (loadMoreTrigger && initialLoadAttempted && !observer) {
+		// Check: Element bound? Initial load done? Observer not already set?
+		setupObserver(loadMoreTrigger); // Pass the bound element
 	}
 
 	// Fetch initial posts when the component mounts
 	onMount(() => {
 		loadPosts(null); // Trigger initial fetch
-		// Observer setup is now deferred to the finally block of the initial loadPosts call
 	});
 
 	// Clean up the observer when the component is destroyed
