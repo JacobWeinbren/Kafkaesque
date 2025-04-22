@@ -14,26 +14,23 @@
 		<link rel="manifest" href="/site.webmanifest" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="theme-color" content="#166534" />
-		<!-- Updated theme-color to match green-800 -->
 
-		<!-- Optimized Font Loading -->
+		<!-- Optimized Font Loading - Inter ONLY -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
 		<!-- 1. Preload the CSS file itself -->
 		<link
 			rel="preload"
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Manrope:wght@500;700&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap"
 			as="style"
 		/>
 
 		<!-- 2. Load the CSS file normally -->
 		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Manrope:wght@500;700&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap"
 			rel="stylesheet"
 		/>
-
-		<!-- Removed preload links for specific .woff2 files -->
 
 		%sveltekit.head%
 	</head>
@@ -41,7 +38,6 @@
 		data-sveltekit-preload-data="hover"
 		class="min-h-screen flex flex-col bg-slate-50 antialiased"
 	>
-		<!-- Added antialiased for potentially smoother font rendering -->
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>
