@@ -13,6 +13,9 @@ const getHeaders = () => ({
 	Authorization: `Bearer ${import.meta.env.HASHNODE_ACCESS_TOKEN}`,
 });
 
+// Track previously seen cursors to detect loops
+const seenCursors = new Set<string>();
+
 // Fetch a list of posts
 export async function getPosts(
 	options: GetPostsOptions = {}
@@ -21,31 +24,42 @@ export async function getPosts(
 
 	// Standard cursor-based pagination query with page info
 	const postsQuery = `
-      query Publication($first: Int!, $after: String, $host: String!) {
-        publication(host: $host) {
-          posts(first: $first, after: $after) {
-            edges {
-              node {
-                id
-                title
-                subtitle
-                slug
-                coverImage { url }
-                publishedAt
-                tags { name slug }
-              }
-            }
-            pageInfo {
-              hasNextPage
-              endCursor
-            }
-          }
-        }
-      }
-    `;
+		query Publication($first: Int!, $after: String, $host: String!) {
+		  publication(host: $host) {
+			posts(first: $first, after: $after) {
+			  edges {
+				node {
+				  id
+				  title
+				  subtitle
+				  slug
+				  coverImage { url }
+				  publishedAt
+				  tags { name slug }
+				}
+			  }
+			  pageInfo {
+				hasNextPage
+				endCursor
+			  }
+			}
+		  }
+		}
+	  `;
 
 	try {
 		console.log(`Hashnode query with cursor: ${after || "null"}`);
+
+		// Check if we've seen this cursor before - avoid infinite loops
+		if (after && seenCursors.has(after)) {
+			console.warn(`Cursor loop detected: ${after}`);
+			return { posts: [], hasMore: false, endCursor: null };
+		}
+
+		// Add current cursor to seen set
+		if (after) {
+			seenCursors.add(after);
+		}
 
 		const response = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
@@ -91,7 +105,9 @@ export async function getPosts(
 		const pageInfo = publicationData.posts.pageInfo || {};
 
 		console.log(
-			`Raw API response - edges: ${edges.length}, hasNextPage: ${pageInfo.hasNextPage}, endCursor: ${pageInfo.endCursor}`
+			`Raw API response - edges: ${edges.length}, hasNextPage: ${
+				pageInfo.hasNextPage
+			}, endCursor: ${pageInfo.endCursor || "null"}`
 		);
 
 		// Map fields
@@ -107,19 +123,39 @@ export async function getPosts(
 			tags: edge.node.tags || [],
 		}));
 
-		// CRITICAL FIX: Check if the cursor would stay the same, which indicates a pagination error
+		// CRITICAL FIX: Multiple checks to detect pagination issues
 		const sameAsPreviousCursor = after && after === pageInfo.endCursor;
+		const emptyButClaimsMore = posts.length === 0 && pageInfo.hasNextPage;
+		const cursorButNoNext = after && !pageInfo.hasNextPage;
+
+		// If any issues detected, stop pagination
 		const hasMore =
-			pageInfo.hasNextPage && !sameAsPreviousCursor && posts.length > 0;
+			pageInfo.hasNextPage &&
+			!sameAsPreviousCursor &&
+			!emptyButClaimsMore &&
+			posts.length > 0;
+
+		// Only use the endCursor if we actually have more posts
+		const endCursor = hasMore ? pageInfo.endCursor : null;
 
 		console.log(
-			`Processed - posts: ${posts.length}, hasMore: ${hasMore}, endCursor: ${pageInfo.endCursor}, sameAsPrevious: ${sameAsPreviousCursor}`
+			`Processed - posts: ${
+				posts.length
+			}, hasMore: ${hasMore}, endCursor: ${endCursor || "null"}, ` +
+				`sameAsPrevious: ${sameAsPreviousCursor}, emptyButClaimsMore: ${emptyButClaimsMore}, cursorButNoNext: ${cursorButNoNext}`
 		);
+
+		// For debugging: Log post IDs to check for duplicates
+		if (posts.length > 0) {
+			console.log(
+				`Post IDs in this batch: ${posts.map((p) => p.id).join(", ")}`
+			);
+		}
 
 		return {
 			posts,
 			hasMore,
-			endCursor: hasMore ? pageInfo.endCursor : null,
+			endCursor,
 		};
 	} catch (error) {
 		console.error("Failed to fetch posts due to exception:", error);
@@ -127,25 +163,30 @@ export async function getPosts(
 	}
 }
 
+// Reset seen cursors (useful for testing/debugging)
+export function resetCursorTracking() {
+	seenCursors.clear();
+}
+
 // Keep these functions unchanged
 export async function getPost(slug: string): Promise<HashnodePost | null> {
 	// Existing implementation unchanged
 	const query = `
-      query GetPostBySlug($slug: String!, $host: String!) {
-        publication(host: $host) {
-          post(slug: $slug) {
-            id
-            title
-            subtitle
-            content { html }
-            brief
-            coverImage { url }
-            publishedAt
-            tags { name slug }
-          }
-        }
-      }
-    `;
+		query GetPostBySlug($slug: String!, $host: String!) {
+		  publication(host: $host) {
+			post(slug: $slug) {
+			  id
+			  title
+			  subtitle
+			  content { html }
+			  brief
+			  coverImage { url }
+			  publishedAt
+			  tags { name slug }
+			}
+		  }
+		}
+	  `;
 	try {
 		const response = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
@@ -201,7 +242,9 @@ export async function getPost(slug: string): Promise<HashnodePost | null> {
 }
 
 export async function getAllPosts(): Promise<HashnodePost[]> {
-	// Existing implementation unchanged
+	// Reset cursor tracking to avoid false positives in bulk fetching
+	resetCursorTracking();
+
 	let allPosts: HashnodePost[] = [];
 	let hasMore = true;
 	let cursor: string | null = null;
