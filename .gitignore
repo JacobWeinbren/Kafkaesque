@@ -1,7 +1,23 @@
-.DS_Store
-node_modules
+# .gitignore
+
+# Downloaded Assets
+src/assets/downloaded_images/
+src/assets/image-map.json
+
+# Astro build cache / output
+dist/
+.astro/
+
+# Node
+node_modules/
+
+# Env files
 .env
-dist
-.vercel
-.wrangler
-.unlighthouse
+.env.*
+!.env.example
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+.vercel/

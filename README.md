@@ -4,18 +4,17 @@ Kafkaesque Blog is a personal blog and project showcase. It features discussions
 
 ## Features
 
--   Personal blog with posts on various topics.
--   Project showcase.
--   Dark mode toggle for user preference.
--   Responsive design for various screen sizes.
+- Personal blog with posts on various topics.
+- Project showcase.
+- Dark mode toggle for user preference.
+- Responsive design for various screen sizes.
 
 ## Technology Stack
 
--   [Astro](https://astro.build/) for static site generation.
--   [Tailwind CSS](https://tailwindcss.com/) for styling.
--   [React](https://reactjs.org/) for interactive components.
--   [Ghost](https://ghost.org/) as a headless CMS for blog posts.
--   Hosted on [Cloudflare](https://cloudflare.com/).
+- [Svelte](https://svelte.dev/) for site generation.
+- [Tailwind CSS](https://tailwindcss.com/) for styling.
+- [React](https://reactjs.org/) for interactive components.
+- Hosted on [Vercel](https://vercel.com/).
 
 ## Development
 

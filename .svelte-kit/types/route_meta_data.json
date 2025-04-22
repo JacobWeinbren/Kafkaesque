@@ -1,0 +1,31 @@
+{
+	"/": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/api/image-proxy": [
+		"src/routes/api/image-proxy/+server.ts"
+	],
+	"/api/posts": [
+		"src/routes/api/posts/+server.ts"
+	],
+	"/api/search": [
+		"src/routes/api/search/+server.ts"
+	],
+	"/api/signup": [
+		"src/routes/api/signup/+server.ts"
+	],
+	"/blog": [
+		"src/routes/+layout.ts"
+	],
+	"/blog/post/[slug]": [
+		"src/routes/blog/post/[slug]/+page.server.ts",
+		"src/routes/+layout.ts"
+	],
+	"/portfolio": [
+		"src/routes/+layout.ts"
+	],
+	"/search": [
+		"src/routes/+layout.ts"
+	]
+}

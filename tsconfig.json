@@ -1,12 +1,22 @@
 {
-	"extends": "astro/tsconfigs/base",
-	"include": ["src"],
+	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
-		"baseUrl": ".",
-		"paths": {
-			"@/*": ["./src/*"]
-		},
-		"jsx": "react-jsx",
-		"jsxImportSource": "react"
-	}
+		"allowJs": true,
+		"checkJs": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strict": true,
+		"moduleResolution": "bundler"
+		// Remove typeRoots if it was added
+		// "typeRoots": ["./node_modules/@types", "./.svelte-kit/types"] // REMOVE THIS LINE
+	},
+	"include": [
+		"src/**/*.d.ts",
+		"src/**/*.js",
+		"src/**/*.ts",
+		"src/**/*.svelte"
+	]
 }
