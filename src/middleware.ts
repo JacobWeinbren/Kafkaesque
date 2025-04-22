@@ -1,6 +1,6 @@
-export async function onRequest({ request, next }) {
+export async function onRequest(context, next) {
 	const response = await next();
-	const url = new URL(request.url);
+	const url = new URL(context.request.url);
 
 	// Add cache headers to static assets
 	if (
