@@ -106,20 +106,40 @@
 </script>
 
 <!-- Initial Skeleton Loader -->
+<!-- Initial Skeleton Loader - Refined for Layout Stability -->
 {#if loading && !initialLoadAttempted}
 	<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 		{#each Array(6) as _}
 			<div
-				class="bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm h-full animate-pulse"
+				class="bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm flex flex-col animate-pulse"
+				aria-hidden="true"
 			>
-				<div class="h-48 bg-slate-200"></div>
-				<div class="p-5">
-					<div class="h-4 w-24 bg-slate-200 mb-4 rounded"></div>
-					<div class="h-5 w-full bg-slate-200 mb-3 rounded-md"></div>
-					<div class="h-5 w-3/4 bg-slate-200 mb-4 rounded-md"></div>
-					<div class="h-4 w-full bg-slate-200 mb-2 rounded"></div>
-					<div class="h-4 w-5/6 bg-slate-200 mb-6 rounded"></div>
-					<div class="h-4 w-20 bg-slate-200 rounded"></div>
+				<!-- 1. Image Placeholder: Use aspect-ratio to match the real image -->
+				<div
+					class="relative w-full bg-slate-200"
+					style="aspect-ratio: 16 / 9;"
+				>
+					<!-- Empty div to enforce aspect ratio -->
+				</div>
+
+				<!-- 2. Text Content Area: Mimic padding and flex structure -->
+				<div class="p-5 flex-grow flex flex-col">
+					<!-- Mimic Time -->
+					<div class="h-4 w-24 bg-slate-200 mb-2 rounded"></div>
+					<!-- Mimic Title (2 lines) -->
+					<div class="space-y-1.5 mb-2">
+						<div class="h-5 w-full bg-slate-200 rounded-md"></div>
+						<div class="h-5 w-5/6 bg-slate-200 rounded-md"></div>
+					</div>
+					<!-- Mimic Subtitle (3 lines) + flex-grow -->
+					<!-- This inner div mimics the <p> tag with flex-grow -->
+					<div class="flex-grow mb-4 space-y-1.5">
+						<div class="h-4 w-full bg-slate-200 rounded"></div>
+						<div class="h-4 w-full bg-slate-200 rounded"></div>
+						<div class="h-4 w-3/4 bg-slate-200 rounded"></div>
+					</div>
+					<!-- Mimic "Read article" link (mt-auto equivalent) -->
+					<div class="h-4 w-28 bg-slate-200 rounded mt-auto"></div>
 				</div>
 			</div>
 		{/each}
