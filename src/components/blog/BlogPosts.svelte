@@ -1,119 +1,127 @@
-<script context="module" lang="ts">
-	// Module context remains the same
-	export interface BlogPost {
-		id: string;
-		slug: string;
-		title: string;
-		subtitle: string;
-		coverImage?: string | null;
-		publishedAt: string;
-	}
-</script>
-
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import { fade } from "svelte/transition";
 
-	// Default to empty values since we'll load everything dynamically
-	export let initialPosts: BlogPost[] = [];
-	export let initialHasMore: boolean = true;
-	export let initialEndCursor: string | null = null;
+	// Interface now expects subtitle, removed brief
+	interface BlogPost {
+		id: string;
+		slug: string;
+		title: string;
+		subtitle: string; // Use subtitle for preview
+		coverImage?: string | null;
+		publishedAt: string;
+		// tags?: { name: string; slug: string }[];
+	}
 
-	let posts: BlogPost[] = initialPosts;
-	let currentCursor: string | null = initialEndCursor;
-	let hasMore: boolean = initialHasMore;
-	let loading = true; // Start with loading true for initial fetch
-	let initialLoadDone = false;
+	// Component state - no changes needed here
+	let posts: BlogPost[] = [];
+	let currentCursor: string | null = null;
+	let hasMore: boolean = true;
+	let loading = false;
+	let initialLoadAttempted = false;
+	let errorMessage: string | null = null;
+
+	// Element refs - no changes needed here
 	let loadMoreTrigger: HTMLDivElement;
 	let observer: IntersectionObserver | null = null;
 
-	async function loadMorePosts(isInitialLoad = false) {
-		if (loading && !isInitialLoad) return;
-		if (!hasMore && !isInitialLoad) {
-			initialLoadDone = true;
+	// Function to fetch posts - no changes needed here,
+	// it fetches from /api/posts which uses the updated getPosts
+	async function loadPosts(cursor: string | null = null) {
+		if (loading || (!hasMore && cursor !== null)) {
 			return;
 		}
-
 		loading = true;
+		errorMessage = null;
+		const isInitialLoad = cursor === null;
 		try {
-			const cursorParam = currentCursor
-				? `?cursor=${encodeURIComponent(currentCursor)}`
-				: "";
-			const res = await fetch(`/api/posts${cursorParam}`);
-
+			const apiUrl = cursor
+				? `/api/posts?cursor=${encodeURIComponent(cursor)}`
+				: "/api/posts";
+			const res = await fetch(apiUrl);
 			if (!res.ok) {
-				const errorText = await res.text();
-				throw new Error(
-					`Failed to load posts: ${res.status} ${errorText}`
-				);
+				let errorText = `HTTP error ${res.status}`;
+				try {
+					const errorData = await res.json();
+					errorText = errorData.error || errorText;
+				} catch {
+					/* ignore */
+				}
+				throw new Error(`Failed to load posts: ${errorText}`);
 			}
-			const data = await res.json();
+			const data: {
+				posts: BlogPost[];
+				hasMore: boolean;
+				endCursor: string | null;
+			} = await res.json();
 
 			if (data.posts && data.posts.length > 0) {
-				posts = isInitialLoad ? data.posts : [...posts, ...data.posts];
-				currentCursor = data.endCursor || null;
-				hasMore = data.hasMore;
-			} else {
-				if (isInitialLoad) {
-					posts = [];
-				}
-				hasMore = false;
-			}
-
-			if (posts.length > 0) {
-				console.log(
-					`Client fetched ${data.posts?.length || 0} posts. First post: ${posts[0].title}. HasMore: ${hasMore}`
+				const newPosts = data.posts.filter(
+					(newPost) =>
+						!posts.some((existing) => existing.id === newPost.id)
 				);
-			} else {
-				console.log(`Client fetched 0 posts. HasMore: ${hasMore}`);
+				// Ensure the fetched data matches the updated BlogPost interface
+				posts = isInitialLoad ? newPosts : [...posts, ...newPosts];
+			} else if (isInitialLoad) {
+				posts = [];
 			}
-		} catch (e) {
-			console.error("Error in loadMorePosts:", e);
+			currentCursor = data.endCursor || null;
+			hasMore = data.hasMore;
+		} catch (e: any) {
+			console.error("Error in loadPosts:", e);
+			errorMessage = e.message || "An unknown error occurred.";
 			hasMore = false;
 		} finally {
 			loading = false;
-			initialLoadDone = true;
+			if (isInitialLoad) {
+				initialLoadAttempted = true;
+				if (!observer) {
+					setupObserver();
+				}
+			}
 		}
 	}
 
+	// Setup observer - no changes needed here
 	function setupObserver() {
+		if (observer) observer.disconnect();
 		observer = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
-					if (
-						entry.isIntersecting &&
-						hasMore &&
-						!loading &&
-						initialLoadDone
-					) {
-						console.log(
-							"Intersection observer triggered loadMorePosts"
-						);
-						loadMorePosts();
+					if (entry.isIntersecting && hasMore && !loading) {
+						loadPosts(currentCursor);
 					}
 				});
 			},
-			{ rootMargin: "200px" }
+			{ rootMargin: "300px" }
 		);
-		if (loadMoreTrigger) observer.observe(loadMoreTrigger);
+		if (loadMoreTrigger) {
+			observer.observe(loadMoreTrigger);
+		}
 	}
 
+	// Lifecycle hooks - no changes needed here
 	onMount(() => {
-		console.log("BlogPosts component mounted, triggering initial load.");
-		loadMorePosts(true); // Always fetch posts on mount
-		setupObserver();
+		loadPosts(null);
 	});
-
 	onDestroy(() => {
-		if (observer && loadMoreTrigger) {
-			observer.unobserve(loadMoreTrigger);
-			console.log("Intersection observer disconnected.");
+		if (observer) {
+			observer.disconnect();
 		}
 	});
+
+	// Helper - no changes needed here
+	function formatDate(dateString: string): string {
+		return new Date(dateString).toLocaleDateString("en-GB", {
+			day: "numeric",
+			month: "long",
+			year: "numeric",
+		});
+	}
 </script>
 
-<!-- Skeleton Loader: Show during initial load -->
-{#if loading && posts.length === 0}
+<!-- Skeleton Loader - no changes needed -->
+{#if loading && !initialLoadAttempted}
 	<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 		{#each Array(6) as _, i}
 			<div
@@ -133,12 +141,22 @@
 	</div>
 {/if}
 
+<!-- Error Message Display - no changes needed -->
+{#if errorMessage && posts.length === 0}
+	<div
+		class="text-center py-6 text-red-600 border border-red-200 bg-red-50 p-4 rounded"
+	>
+		<p>Could not load posts:</p>
+		<p class="text-sm">{errorMessage}</p>
+	</div>
+{/if}
+
 <!-- Post Grid: Render posts once available -->
 {#if posts.length > 0}
 	<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 		{#each posts as post, i (post.id)}
 			<article
-				in:fade={{ duration: 200, delay: (i % 3) * 80 }}
+				in:fade={{ duration: 200, delay: (i % 6) * 50 }}
 				class="group bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-md transition-all duration-300 h-full flex flex-col"
 			>
 				<a href={`/post/${post.slug}`} class="h-full flex flex-col">
@@ -149,37 +167,28 @@
 								alt={post.title}
 								class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
 								loading="lazy"
+								decoding="async"
 								width="400"
 								height="225"
-								decoding="async"
 							/>
-							<div
-								class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-							></div>
 						</div>
 					{/if}
 					<div class="p-5 flex-grow flex flex-col">
 						<time
 							class="text-sm text-green-700 font-medium block mb-2"
 						>
-							{new Date(post.publishedAt).toLocaleDateString(
-								"en-GB",
-								{
-									day: "numeric",
-									month: "long",
-									year: "numeric",
-								}
-							)}
+							{formatDate(post.publishedAt)}
 						</time>
 						<h2
 							class="text-lg font-display font-bold text-gray-900 mb-2 group-hover:text-green-700 transition"
 						>
 							{post.title}
 						</h2>
+						<!-- Display subtitle instead of brief -->
 						<p
-							class="text-gray-600 text-sm line-clamp-2 mb-4 flex-grow"
+							class="text-gray-600 text-sm line-clamp-3 mb-4 flex-grow"
 						>
-							{post.subtitle}
+							{post.subtitle || ""}
 						</p>
 						<div
 							class="flex items-center text-green-700 text-sm font-medium mt-auto"
@@ -207,27 +216,29 @@
 	</div>
 {/if}
 
-<!-- Loading More Spinner: Show when loading subsequent pages -->
-{#if loading && posts.length > 0}
-	<div class="flex justify-center py-6">
+<!-- Loading More Spinner - no changes needed -->
+{#if loading && initialLoadAttempted && posts.length > 0}
+	<div class="flex justify-center py-6" aria-live="polite">
 		<div
 			class="animate-spin rounded-full h-8 w-8 border-2 border-gray-200 border-t-green-700"
+			role="status"
+			aria-label="Loading more posts"
 		></div>
 	</div>
 {/if}
 
-<!-- End of Posts / No Posts Message -->
-{#if !loading && !hasMore && initialLoadDone}
+<!-- End of Posts / No Posts Message - no changes needed -->
+{#if !loading && !hasMore && initialLoadAttempted}
 	<div class="text-center py-6 text-gray-500 border-t mt-8 pt-4">
 		{#if posts.length > 0}
-			You've reached the end of the posts
-		{:else}
+			You've reached the end of the posts.
+		{:else if !errorMessage}
 			No posts found.
 		{/if}
 	</div>
 {/if}
 
-<!-- Element that will trigger loading more posts via IntersectionObserver -->
-{#if hasMore || !initialLoadDone}
+<!-- Intersection Observer Trigger - no changes needed -->
+{#if hasMore && initialLoadAttempted}
 	<div bind:this={loadMoreTrigger} class="h-10 mt-8"></div>
 {/if}

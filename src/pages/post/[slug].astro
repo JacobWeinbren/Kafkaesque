@@ -1,20 +1,64 @@
 ---
+export const prerender = true;
 import BaseLayout from "@/components/layout/BaseLayout.astro";
 import SignupForm from "@/components/blog/SignupForm.svelte";
-import { getPost } from "@/lib/hashnode";
+import { getAllPosts, getPost } from "@/lib/hashnode";
 import { formatDate } from "@/utils/helpers";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
-const { slug } = Astro.params;
+export async function getStaticPaths() {
+	console.log("getStaticPaths: Fetching all post slugs/summaries...");
+	const allPostSummaries = await getAllPosts();
+	console.log(
+		`getStaticPaths: Found ${allPostSummaries.length} post summaries.`
+	);
 
-// Fetch the post data dynamically for the requested slug
-const post = await getPost(slug);
+	const paths = await Promise.all(
+		allPostSummaries.map(async (summary) => {
+			if (!summary || !summary.slug) {
+				console.error(
+					"getStaticPaths: Skipping invalid post summary:",
+					summary
+				);
+				return null;
+			}
 
-// Handle 404 if post not found
-if (!post) return Astro.redirect("/404");
+			console.log(
+				`getStaticPaths: Fetching full post data for slug: ${summary.slug}`
+			);
+			const fullPostData = await getPost(summary.slug);
+
+			if (!fullPostData) {
+				console.error(
+					`getStaticPaths: Failed to fetch full data for slug '${summary.slug}'. Skipping page generation.`
+				);
+				return null;
+			}
+
+			return {
+				params: { slug: summary.slug },
+				props: { post: fullPostData },
+			};
+		})
+	);
+
+	const validPaths = paths.filter(Boolean);
+	console.log(
+		`getStaticPaths: Successfully prepared ${validPaths.length} pages for generation.`
+	);
+	return validPaths;
+}
+
+const { post } = Astro.props;
+
+if (!post) {
+	throw new Error(
+		`Build Error: Post data was unexpectedly missing in Astro.props for slug '${Astro.params.slug}'. Check the props returned by getStaticPaths.`
+	);
+}
 ---
 
-<!-- src/pages/post/[slug].astro -->
+{/* Rest of the component remains the same */}
 <BaseLayout
 	title={post.title}
 	description={post.subtitle || post.brief}
@@ -22,6 +66,7 @@ if (!post) return Astro.redirect("/404");
 	article={true}
 >
 	<article class="max-w-3xl mx-auto px-4 py-8">
+		{/* Cover Image */}
 		{
 			post.coverImage && (
 				<div class="mb-8">
@@ -29,10 +74,15 @@ if (!post) return Astro.redirect("/404");
 						src={post.coverImage}
 						alt={post.title}
 						class="w-full h-auto max-h-[50vh] object-cover rounded-lg shadow-md"
+						loading="lazy"
+						decoding="async"
+						width="896"
+						height="504"
 					/>
 				</div>
 			)
 		}
+		{/* Header */}
 		<header class="mb-8">
 			<time class="text-green-700 text-sm font-medium">
 				{formatDate(post.publishedAt)}
@@ -59,12 +109,17 @@ if (!post) return Astro.redirect("/404");
 				)
 			}
 		</header>
+		{
+			/* Content - This will now work because 'post' has the 'content' field */
+		}
 		<div class="prose prose-custom max-w-none">
 			<Fragment set:html={post.content} />
 		</div>
+		{/* Signup Form */}
 		<div class="mt-10 border-t pt-8">
-			<SignupForm client:load />
+			<SignupForm client:visible />
 		</div>
+		{/* Back Link */}
 		<div class="mt-6 text-center">
 			<a
 				href="/blog"

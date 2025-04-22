@@ -1,11 +1,8 @@
-// astro.config.mjs
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
 import vercel from "@astrojs/vercel";
-import compress from "astro-compress";
 import sitemap from "@astrojs/sitemap";
-
 import svelte from "@astrojs/svelte";
 
 export default defineConfig({
@@ -13,7 +10,6 @@ export default defineConfig({
 	integrations: [
 		tailwind({ config: { applyBaseStyles: false } }),
 		react(),
-		compress({ css: true, html: true, img: true, js: true, svg: true }),
 		sitemap(),
 		svelte(),
 	],
@@ -21,34 +17,40 @@ export default defineConfig({
 	adapter: vercel({
 		imageService: true,
 		maxDuration: 60,
-		edgeMiddleware: true,
+		edgeMiddleware: false,
+		isr: true,
 	}),
 	image: {
+		// Keep your existing image config - looks good
 		domains: ["cdn.hashnode.com"],
 		remotePatterns: [{ protocol: "https", hostname: "cdn.hashnode.com" }],
 		format: ["avif", "webp"],
-		serviceEntryPoint: "@astrojs/image/sharp",
 	},
-	prefetch: { prefetchAll: true },
-	// Enhanced Vite config
+	// Optimize prefetching strategy
+	prefetch: {
+		defaultStrategy: "hover",
+	},
 	vite: {
 		build: {
-			cssMinify: "lightningcss",
+			cssMinify: "lightningcss", // Use lightningcss for faster CSS minification
 			minify: true,
-			rollupOptions: {
-				output: {
-					manualChunks: {
-						"react-vendor": ["react", "react-dom"],
-						search: ["fuse.js", "lodash/debounce"],
-						icons: ["@heroicons/react", "react-icons/fa"],
-					},
-				},
+		},
+		ssr: {
+			noExternal: ["@heroicons/react", "@heroicons/react/24/outline"],
+		},
+		resolve: {
+			alias: {
+				"@": "/src",
 			},
 		},
-		ssr: { noExternal: ["@heroicons/react"] },
-		resolve: { alias: { "@": "/src" } },
 		optimizeDeps: {
-			include: ["react", "react-dom", "fuse.js", "lodash/debounce"],
+			include: [
+				"react",
+				"react-dom",
+				"@heroicons/react/24/outline",
+				"fuse.js",
+				"lodash/debounce",
+			],
 		},
 	},
 });
