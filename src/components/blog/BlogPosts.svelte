@@ -19,47 +19,36 @@
 	let loading = false;
 	let initialLoadAttempted = false;
 	let errorMessage: string | null = null;
-
-	// Debug state
-	let debugMode = true;
-	let debugLogs: string[] = [];
-	let apiResponses: any[] = [];
-	let observerEvents = 0;
-	let manualLoadAttempts = 0;
+	let fetchAttempts = new Map<string, number>();
 
 	// Element refs
 	let loadMoreTrigger: HTMLDivElement | undefined = undefined;
 	let observer: IntersectionObserver | null = null;
 
-	function debugLog(message: string, data?: any) {
-		const timestamp = new Date().toISOString().substring(11, 23);
-		const logMessage = `${timestamp} - ${message}`;
-		console.log(logMessage, data);
-		debugLogs = [
-			...debugLogs,
-			data ? `${logMessage} ${JSON.stringify(data)}` : logMessage,
-		];
-		if (debugLogs.length > 30) debugLogs = debugLogs.slice(-30);
-	}
-
 	// Function to fetch posts from the API endpoint
-	async function loadPosts(cursor: string | null = null, isManual = false) {
+	async function loadPosts(cursor: string | null = null) {
 		// Prevent concurrent fetches or fetching when no more data exists
 		if (loading || (!hasMore && cursor !== null)) {
-			debugLog(
-				`🛑 Load prevented: loading=${loading}, hasMore=${hasMore}, cursor=${cursor}`
-			);
 			return;
+		}
+
+		// BUGFIX: Prevent infinite loops with same cursor
+		if (cursor) {
+			const attempts = fetchAttempts.get(cursor) || 0;
+			if (attempts >= 2) {
+				console.warn(
+					"Stopping pagination: same cursor requested multiple times",
+					cursor
+				);
+				hasMore = false;
+				return;
+			}
+			fetchAttempts.set(cursor, attempts + 1);
 		}
 
 		loading = true;
 		errorMessage = null;
 		const isInitialLoad = cursor === null;
-		if (isManual) manualLoadAttempts++;
-
-		debugLog(
-			`🔄 Starting fetch: cursor=${cursor}, isInitial=${isInitialLoad}, isManual=${isManual}`
-		);
 
 		try {
 			// Construct API URL with cursor if provided
@@ -67,20 +56,7 @@
 				? `/api/posts?cursor=${encodeURIComponent(cursor)}`
 				: "/api/posts";
 
-			debugLog(`📡 Fetching from: ${apiUrl}`);
-
-			const res = await fetch(apiUrl, {
-				// Add cache-busting for debugging
-				headers: debugMode
-					? {
-							"Cache-Control":
-								"no-cache, no-store, must-revalidate",
-							Pragma: "no-cache",
-						}
-					: undefined,
-			});
-
-			debugLog(`📥 Response status: ${res.status} ${res.statusText}`);
+			const res = await fetch(apiUrl);
 
 			// Handle HTTP errors
 			if (!res.ok) {
@@ -88,77 +64,51 @@
 				try {
 					const errorData = await res.json();
 					errorText = errorData.error || errorText;
-					debugLog(`⚠️ Error response body:`, errorData);
-				} catch (e) {
-					debugLog(`⚠️ Failed to parse error response as JSON`);
+				} catch {
+					/* ignore json parsing error if body isn't JSON */
 				}
 				throw new Error(`Failed to load posts: ${errorText}`);
 			}
 
 			// Parse JSON response
-			const responseText = await res.text();
-			debugLog(`📄 Response raw length: ${responseText.length} chars`);
-			let data;
-
-			try {
-				data = JSON.parse(responseText);
-				debugLog(`📊 Parsed response:`, {
-					postCount: data.posts?.length || 0,
-					hasMore: data.hasMore,
-					endCursor: data.endCursor,
-				});
-				apiResponses = [
-					...apiResponses,
-					{
-						url: apiUrl,
-						timestamp: new Date().toISOString(),
-						data: {
-							postCount: data.posts?.length || 0,
-							hasMore: data.hasMore,
-							endCursor: data.endCursor,
-						},
-					},
-				];
-			} catch (e) {
-				debugLog(`❌ JSON parse error:`, e);
-				debugLog(
-					`🔍 Response preview: ${responseText.substring(0, 100)}...`
-				);
-				throw new Error(`Failed to parse API response as JSON`);
-			}
+			const data: {
+				posts: BlogPost[];
+				hasMore: boolean;
+				endCursor: string | null;
+			} = await res.json();
 
 			// Process fetched posts
 			if (data.posts && data.posts.length > 0) {
-				debugLog(`✅ Received ${data.posts.length} posts`);
-
 				// Filter out potential duplicates before adding
 				const newPosts = data.posts.filter(
 					(newPost) =>
 						!posts.some((existing) => existing.id === newPost.id)
 				);
 
-				debugLog(
-					`📌 After duplicate filtering: ${newPosts.length} unique posts`
-				);
+				// BUGFIX: If we got no new posts but API claims there are more,
+				// stop pagination to prevent infinite loops
+				if (newPosts.length === 0 && !isInitialLoad) {
+					console.warn(
+						"No new posts returned but API claims more exist. Stopping pagination."
+					);
+					hasMore = false;
+				} else {
+					// Append or replace posts based on initial load or not
+					posts = isInitialLoad ? newPosts : [...posts, ...newPosts];
 
-				// Append or replace posts based on initial load or not
-				posts = isInitialLoad ? newPosts : [...posts, ...newPosts];
-				debugLog(`📈 Total posts now: ${posts.length}`);
+					// Update pagination state
+					currentCursor = data.endCursor || null;
+					hasMore = data.hasMore;
+				}
 			} else if (isInitialLoad) {
-				debugLog(`⚠️ Initial load returned no posts`);
+				// Ensure posts array is empty if initial load yields nothing
 				posts = [];
+				hasMore = false;
 			} else {
-				debugLog(`⚠️ No new posts in non-initial load`);
+				// No posts in non-initial load means we've reached the end
+				hasMore = false;
 			}
-
-			// Update pagination state
-			currentCursor = data.endCursor || null;
-			hasMore = data.hasMore;
-			debugLog(
-				`🔄 Updated state: cursor=${currentCursor}, hasMore=${hasMore}`
-			);
 		} catch (e: any) {
-			debugLog(`❌ Error loading posts:`, e);
 			console.error("Error loading posts:", e);
 			errorMessage = e.message || "An unknown error occurred.";
 			hasMore = false;
@@ -166,9 +116,6 @@
 			loading = false;
 			if (isInitialLoad) {
 				initialLoadAttempted = true;
-				debugLog(
-					`🏁 Initial load complete: hasMore=${hasMore}, cursor=${currentCursor}`
-				);
 			}
 		}
 	}
@@ -176,30 +123,15 @@
 	// Setup the Intersection Observer
 	function setupObserver(elementToObserve: HTMLDivElement) {
 		if (!elementToObserve) {
-			debugLog(`❌ setupObserver called without valid element`);
 			return;
 		}
 
-		// Disconnect previous observer if it exists
-		if (observer) {
-			debugLog(`🔄 Disconnecting previous observer`);
-			observer.disconnect();
-		}
+		if (observer) observer.disconnect();
 
-		debugLog(`🔍 Setting up new IntersectionObserver`);
 		observer = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
-					observerEvents++;
-					debugLog(
-						`👁️ Observer event: intersecting=${entry.isIntersecting}, hasMore=${hasMore}, loading=${loading}`
-					);
-
-					// Trigger load more only when intersecting, more posts might exist, and not currently loading
 					if (entry.isIntersecting && hasMore && !loading) {
-						debugLog(
-							`✅ Observer triggering loadPosts with cursor=${currentCursor}`
-						);
 						loadPosts(currentCursor);
 					}
 				});
@@ -210,34 +142,22 @@
 			}
 		);
 
-		// Attach observer to the trigger element
 		observer.observe(elementToObserve);
-		debugLog(`✅ Observer attached to trigger element`);
 	}
 
-	// Reactive debugging statement
-	$: {
-		debugLog(
-			`🔄 State change: loadMoreTrigger=${!!loadMoreTrigger}, initialLoadAttempted=${initialLoadAttempted}, observer=${!!observer}, hasMore=${hasMore}, posts.length=${posts.length}`
-		);
-	}
-
-	// Reactive statement to set up the observer
+	// Set up the observer once the trigger element exists and initial load is done
 	$: if (loadMoreTrigger && initialLoadAttempted && !observer) {
-		debugLog(`🏁 Conditions met to setup observer`);
 		setupObserver(loadMoreTrigger);
 	}
 
 	// Fetch initial posts when the component mounts
 	onMount(() => {
-		debugLog(`🚀 Component mounted`);
 		loadPosts(null);
 	});
 
 	// Clean up the observer when the component is destroyed
 	onDestroy(() => {
 		if (observer) {
-			debugLog(`🧹 Cleaning up observer on destroy`);
 			observer.disconnect();
 		}
 	});
@@ -250,99 +170,9 @@
 			year: "numeric",
 		});
 	}
-
-	// Manual debug functions
-	function forceLoadMore() {
-		debugLog(`🔨 Manual load triggered with cursor: ${currentCursor}`);
-		loadPosts(currentCursor, true);
-	}
-
-	function resetObserver() {
-		debugLog(`🔄 Manual observer reset`);
-		if (observer) observer.disconnect();
-		observer = null;
-		if (loadMoreTrigger && initialLoadAttempted) {
-			setupObserver(loadMoreTrigger);
-		}
-	}
 </script>
 
-<!-- Debug Panel -->
-{#if debugMode}
-	<div
-		class="fixed bottom-0 right-0 bg-white border border-gray-300 shadow-lg p-3 max-w-sm max-h-96 overflow-y-auto z-50 opacity-90 hover:opacity-100 text-xs"
-	>
-		<div class="flex justify-between mb-2">
-			<h3 class="font-bold">Infinite Scroll Debug</h3>
-			<button
-				class="bg-red-500 text-white px-2 rounded"
-				on:click={() => (debugMode = false)}>X</button
-			>
-		</div>
-
-		<div class="mb-2">
-			<strong>State:</strong>
-			<ul>
-				<li>Posts: {posts.length}</li>
-				<li>Cursor: {currentCursor || "null"}</li>
-				<li>HasMore: {hasMore.toString()}</li>
-				<li>Loading: {loading.toString()}</li>
-				<li>Initial Load: {initialLoadAttempted.toString()}</li>
-				<li>Observer: {observer ? "active" : "null"}</li>
-				<li>Trigger Element: {loadMoreTrigger ? "bound" : "null"}</li>
-				<li>Observer Events: {observerEvents}</li>
-				<li>Manual Attempts: {manualLoadAttempts}</li>
-			</ul>
-		</div>
-
-		<div class="mb-2 flex space-x-2">
-			<button
-				class="bg-blue-500 text-white px-2 py-1 rounded text-xs"
-				on:click={forceLoadMore}
-				disabled={loading || !hasMore}
-			>
-				Force Load More
-			</button>
-
-			<button
-				class="bg-green-500 text-white px-2 py-1 rounded text-xs"
-				on:click={resetObserver}
-			>
-				Reset Observer
-			</button>
-		</div>
-
-		<div class="mb-2">
-			<strong>API Calls ({apiResponses.length}):</strong>
-			<ul class="text-xs">
-				{#each apiResponses as resp, i}
-					<li class="border-t pt-1 mt-1">
-						{i + 1}. {resp.url} - Posts: {resp.data.postCount},
-						More: {resp.data.hasMore.toString().substring(0, 1)}
-					</li>
-				{/each}
-			</ul>
-		</div>
-
-		<div>
-			<strong>Last 5 Logs:</strong>
-			<ul class="text-xs">
-				{#each debugLogs.slice(-5) as log}
-					<li class="border-t pt-1 mt-1">{log}</li>
-				{/each}
-			</ul>
-		</div>
-	</div>
-{:else}
-	<button
-		class="fixed bottom-4 right-4 bg-gray-800 text-white p-2 rounded-full z-50 opacity-70 hover:opacity-100"
-		on:click={() => (debugMode = true)}
-	>
-		🐞
-	</button>
-{/if}
-
-<!-- Skeleton Loader -->
+<!-- Skeleton Loader: Show ONLY during the very first load attempt -->
 {#if loading && !initialLoadAttempted}
 	<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 		{#each Array(6) as _, i}
@@ -363,7 +193,7 @@
 	</div>
 {/if}
 
-<!-- Error Message Display -->
+<!-- Error Message Display: Show if initial load fails -->
 {#if errorMessage && posts.length === 0}
 	<div
 		class="text-center py-6 text-red-600 border border-red-200 bg-red-50 p-4 rounded"
@@ -407,6 +237,7 @@
 						>
 							{post.title}
 						</h2>
+						<!-- Display subtitle -->
 						<p
 							class="text-gray-600 text-sm line-clamp-3 mb-4 flex-grow"
 						>
@@ -438,7 +269,7 @@
 	</div>
 {/if}
 
-<!-- Loading More Spinner -->
+<!-- Loading More Spinner: Show when loading subsequent pages -->
 {#if loading && initialLoadAttempted && posts.length > 0}
 	<div class="flex justify-center py-6" aria-live="polite">
 		<div
@@ -457,21 +288,11 @@
 		{:else if !errorMessage}
 			No posts found.
 		{/if}
+		<!-- Error message handled separately above -->
 	</div>
 {/if}
 
-<!-- Intersection Observer Trigger -->
+<!-- Intersection Observer Trigger: Rendered when more posts might exist and initial load is done -->
 {#if hasMore && initialLoadAttempted}
-	<div
-		bind:this={loadMoreTrigger}
-		class="h-10 mt-8 bg-gray-100 bg-opacity-25"
-		aria-hidden="true"
-		data-testid="load-more-trigger"
-	>
-		{#if debugMode}
-			<div class="text-center text-xs text-gray-400">
-				Observer Trigger Point
-			</div>
-		{/if}
-	</div>
+	<div bind:this={loadMoreTrigger} class="h-10 mt-8" aria-hidden="true"></div>
 {/if}
