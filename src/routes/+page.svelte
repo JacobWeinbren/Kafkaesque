@@ -51,7 +51,7 @@
 					class="flex items-center mb-6 text-green-50/90 text-sm font-medium"
 				>
 					<MapPin class="h-4 w-4 mr-2" />
-					<span>London, United Kingdom</span>
+					<span>Exeter, United Kingdom</span>
 				</div>
 				<h1
 					class="font-display text-4xl sm:text-5xl md:text-6xl font-bold mb-5 tracking-tight text-white"

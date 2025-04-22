@@ -54,27 +54,7 @@
 					xmlns="http://www.w3.org/2000/svg"
 				>
 					<path
-						d="M3 19V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19Z"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					/>
-					<path
-						d="M9 10C10.1046 10 11 9.10457 11 8C11 6.89543 10.1046 6 9 6C7.89543 6 7 6.89543 7 8C7 9.10457 7.89543 10 9 10Z"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					/>
-					<path
-						d="M15 8L17 10"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-					/>
-					<path
-						d="M7 18V16L10 13L12 15L17 10"
+						d="M9 20L3 17V4L9 7M9 20L15 17M9 20V7M15 17L21 20V7L15 4M15 17V4M9 7L15 4"
 						stroke="currentColor"
 						stroke-width="2"
 						stroke-linecap="round"
