@@ -2,8 +2,6 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 
-console.log("--- Loading vite.config.ts ---");
-
 export default defineConfig({
 	plugins: [sveltekit()],
 	ssr: {

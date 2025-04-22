@@ -103,9 +103,6 @@ export async function getPosts(
 		}
 
 		const variables = { first: limit, after, host: HASHNODE_HOST };
-		console.log(
-			`[hashnode.ts] getPosts: Attempting fetch with variables: ${JSON.stringify(variables)}`
-		);
 
 		const response: Response = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
@@ -214,9 +211,6 @@ export async function getPost(slug: string): Promise<HashnodePost | null> {
 		}
 
 		const variables = { slug, host: HASHNODE_HOST };
-		console.log(
-			`[hashnode.ts] getPost: Attempting fetch with variables: ${JSON.stringify(variables)}`
-		);
 
 		const response: Response = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
@@ -323,7 +317,6 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
         }
       `;
 
-	console.log("getAllPosts: Starting fetch loop...");
 
 	// Check if HASHNODE_HOST was loaded correctly via dotenv
 	if (typeof HASHNODE_HOST === "undefined" || !HASHNODE_HOST) {
@@ -340,9 +333,6 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 			after: cursor,
 			host: HASHNODE_HOST,
 		};
-		console.log(
-			`getAllPosts: Attempt ${attempts}, variables: ${JSON.stringify(variables)}`
-		);
 
 		try {
 			const response: Response = await fetch(HASHNODE_ENDPOINT, {
@@ -389,10 +379,6 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 
 			const edges = publicationData.posts.edges || [];
 			const pageInfo = publicationData.posts.pageInfo || {};
-
-			console.log(
-				`getAllPosts: Fetched ${edges.length} posts in batch ${attempts}. HasMore: ${pageInfo.hasNextPage}`
-			);
 
 			if (edges.length > 0) {
 				const batchPosts: HashnodePost[] = edges.map(
@@ -443,8 +429,5 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 		);
 	}
 
-	console.log(
-		`getAllPosts: Finished fetch loop. Total posts fetched: ${allPosts.length}`
-	);
 	return allPosts;
 }

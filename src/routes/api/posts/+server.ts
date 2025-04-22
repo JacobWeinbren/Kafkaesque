@@ -6,15 +6,10 @@ export async function GET({ url }) {
 	const postsPerPage = 6; // Or make configurable
 
 	try {
-		console.log(`API /api/posts: Fetching posts with cursor: ${cursor}`);
 		const responseData: OriginalPostsResponse = await getPosts({
 			limit: postsPerPage,
 			after: cursor,
 		});
-
-		console.log(
-			`API /api/posts: Fetched ${responseData.posts.length} posts. HasMore: ${responseData.hasMore}`
-		);
 
 		// Return the raw data including original image URLs
 		return json(responseData, {

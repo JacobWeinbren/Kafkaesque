@@ -30,7 +30,6 @@
 
 	// Optional: Log received data
 	onMount(() => {
-		console.log("+page.svelte received data:", data);
 		if (!post) console.error("Post data is missing!");
 	});
 </script>
