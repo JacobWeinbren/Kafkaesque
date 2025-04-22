@@ -148,11 +148,12 @@
 								src={post.coverImage}
 								alt={post.title}
 								class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-								loading={i < 3 ? "eager" : "lazy"}
+								loading={i < 2 ? "eager" : "lazy"}
 								decoding="async"
 								width="400"
 								height="225"
-								fetchpriority={i < 3 ? "high" : null}
+								fetchpriority={i < 2 ? "high" : "auto"}
+								style="aspect-ratio: 16/9;"
 							/>
 						</div>
 					{/if}

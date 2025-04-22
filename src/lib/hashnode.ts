@@ -83,7 +83,9 @@ export async function getPosts(
 			subtitle: edge.node.subtitle || "",
 			content: "",
 			brief: "",
-			coverImage: edge.node.coverImage?.url || null,
+			coverImage: edge.node.coverImage?.url
+				? `${edge.node.coverImage.url}?format=webp&w=800&h=450&fit=crop`
+				: null,
 			publishedAt: edge.node.publishedAt,
 			tags: edge.node.tags || [],
 		}));
@@ -156,7 +158,9 @@ export async function getPost(slug: string): Promise<HashnodePost | null> {
 			subtitle: postData.subtitle || "",
 			content: postData.content?.html || "",
 			brief: postData.brief || "",
-			coverImage: postData.coverImage?.url || null,
+			coverImage: postData.coverImage?.url
+				? `${postData.coverImage.url}?format=webp&w=1200&h=675&fit=crop`
+				: null,
 			publishedAt: postData.publishedAt,
 			tags: postData.tags || [],
 		};

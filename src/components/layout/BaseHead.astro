@@ -15,13 +15,6 @@ const { title, description, image, article = false } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const defaultImage = `${Astro.url.origin}/img/logo_white.webp`;
 const ogImage = image || defaultImage;
-
-// Define the critical font file URL
-const criticalFontUrl =
-	"https://fonts.gstatic.com/s/inter/v18/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw.woff2";
-// Define the Google Fonts CSS API URL
-const googleFontsCssUrl =
-	"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap";
 ---
 
 <head>
@@ -31,21 +24,32 @@ const googleFontsCssUrl =
 	<meta name="description" content={description} />
 	<link rel="canonical" href={canonicalURL.toString()} />
 
-	<!-- Preconnect to the domain hosting the font files -->
+	<!-- Font optimization -->
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-	<!-- Preload the *critical* font file itself -->
+	<!-- Preload only the most critical font weight -->
 	<link
 		rel="preload"
-		href={criticalFontUrl}
+		href="https://fonts.gstatic.com/s/inter/v18/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw.woff2"
 		as="font"
 		type="font/woff2"
-		crossorigin="anonymous"
+		crossorigin
 	/>
-
-	<!-- Link the Google Fonts CSS file normally (don't preload this as style AND link it) -->
-	<!-- The browser will fetch this after the critical font preload starts -->
-	<link rel="stylesheet" href={googleFontsCssUrl} />
+	<!-- Use font-display:swap for non-blocking font rendering -->
+	<style>
+		@font-face {
+			font-family: "Inter";
+			font-style: normal;
+			font-weight: 400;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/inter/v18/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw.woff2)
+				format("woff2");
+			unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+				U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074,
+				U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+		/* Load additional fonts with lower priority */
+		@import url("https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+	</style>
 
 	<!-- Favicons -->
 	<link rel="icon" href="/favicon/favicon-32x32.png" sizes="32x32" />
@@ -63,18 +67,14 @@ const googleFontsCssUrl =
 	<meta property="og:description" content={description} />
 	<meta property="og:image" content={ogImage} />
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:url" content={canonicalURL.toString()} />
-	<meta name="twitter:title" content={title} />
-	<meta name="twitter:description" content={description} />
-	<meta name="twitter:image" content={ogImage} />
+	<meta property="twitter:url" content={canonicalURL.toString()} />
+	<meta property="twitter:title" content={title} />
+	<meta property="twitter:description" content={description} />
+	<meta property="twitter:image" content={ogImage} />
 
-	<!-- Theme color -->
 	<meta name="theme-color" content="#2e7d32" />
 
-	<!-- Vercel Analytics -->
 	<SpeedInsights />
 	<Analytics />
-
-	<!-- Allow Astro to inject its head content (styles, scripts) -->
 	<slot name="head" />
 </head>

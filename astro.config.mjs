@@ -24,6 +24,9 @@ export default defineConfig({
 		domains: ["cdn.hashnode.com"],
 		remotePatterns: [{ protocol: "https", hostname: "cdn.hashnode.com" }],
 		format: ["avif", "webp"],
+		quality: 75,
+		densities: [1, 2],
+		serviceEntryPoint: "@astrojs/image/sharp",
 	},
 	prefetch: {
 		defaultStrategy: "hover",
@@ -32,6 +35,7 @@ export default defineConfig({
 		build: {
 			cssMinify: "lightningcss",
 			minify: true,
+			cssCodeSplit: true, // Enable CSS code splitting
 		},
 		ssr: {
 			noExternal: ["@heroicons/react", "@heroicons/react/24/outline"],
