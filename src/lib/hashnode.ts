@@ -3,24 +3,22 @@ import type {
 	HashnodePost,
 	GetPostsOptions,
 	PostsResponse,
-} from "@/types/hashnode"; // Assuming types are defined correctly
+} from "@/types/hashnode";
 
 const HASHNODE_ENDPOINT = "https://gql.hashnode.com";
-const HASHNODE_HOST = "kafkaesque.hashnode.dev"; // Define host once
+const HASHNODE_HOST = "kafkaesque.hashnode.dev";
 
-// Headers without aggressive no-cache directives
 const getHeaders = () => ({
 	"Content-Type": "application/json",
 	Authorization: `Bearer ${import.meta.env.HASHNODE_ACCESS_TOKEN}`,
 });
 
-// Fetch a list of posts (NOW INCLUDES SUBTITLE)
+// Fix the getPosts function to handle potential pagination issues
 export async function getPosts(
 	options: GetPostsOptions = {}
 ): Promise<PostsResponse> {
 	const { limit = 6, after = null } = options;
 
-	// Query now includes subtitle, removed brief
 	const postsQuery = `
       query Publication($first: Int!, $after: String, $host: String!) {
         publication(host: $host) {
@@ -30,7 +28,7 @@ export async function getPosts(
               node {
                 id
                 title
-                subtitle # ADDED subtitle back
+                subtitle
                 slug
                 coverImage { url }
                 publishedAt
@@ -55,7 +53,8 @@ export async function getPosts(
 					host: HASHNODE_HOST,
 				},
 			}),
-			// Vercel's fetch handles caching based on API route headers
+			// Add cache busting to prevent stale responses causing pagination issues
+			cache: "no-store",
 		});
 
 		if (!response.ok) {
@@ -88,37 +87,40 @@ export async function getPosts(
 		const edges = publicationData.posts.edges || [];
 		const pageInfo = publicationData.posts.pageInfo;
 
-		// Map fields, including subtitle, remove brief
+		// Map fields
 		const posts: HashnodePost[] = edges.map((edge: any) => ({
 			id: edge.node.id,
 			slug: edge.node.slug,
 			title: edge.node.title,
-			subtitle: edge.node.subtitle || "", // Map subtitle, provide fallback
-			content: "", // Not fetched in this query
-			brief: "", // Not fetched in this query
+			subtitle: edge.node.subtitle || "",
+			content: "",
+			brief: "",
 			coverImage: edge.node.coverImage?.url || null,
 			publishedAt: edge.node.publishedAt,
 			tags: edge.node.tags || [],
 		}));
 
+		// FIXED: Check if cursor is the same as endCursor, which indicates no actual advancement
+		const isSameCursor = after && after === pageInfo?.endCursor;
+
+		// FIXED: If no posts returned or cursor didn't advance, don't report hasMore
+		const actuallyHasMore =
+			pageInfo?.hasNextPage && posts.length > 0 && !isSameCursor;
+
 		return {
 			posts,
-			hasMore: pageInfo?.hasNextPage || false,
+			hasMore: actuallyHasMore,
 			endCursor: pageInfo?.endCursor || null,
 		};
 	} catch (error) {
-		// Keep essential error logging
 		console.error("Failed to fetch posts due to exception:", error);
 		return { posts: [], hasMore: false, endCursor: null };
 	}
 }
 
-// --- getPost and getAllPosts remain the same as the previous version ---
-// getPost already fetches subtitle and content
-// getAllPosts uses getPosts internally, so it will now get summaries with subtitles
-
-// Fetch a single post by slug (includes full content) - NO CHANGES NEEDED HERE
+// Keep the rest of the file as is
 export async function getPost(slug: string): Promise<HashnodePost | null> {
+	// Existing function body...
 	const query = `
       query GetPostBySlug($slug: String!, $host: String!) {
         publication(host: $host) {
@@ -189,8 +191,8 @@ export async function getPost(slug: string): Promise<HashnodePost | null> {
 	}
 }
 
-// Fetch ALL posts (primarily for build-time use) - NO CHANGES NEEDED HERE
 export async function getAllPosts(): Promise<HashnodePost[]> {
+	// Existing function body...
 	let allPosts: HashnodePost[] = [];
 	let hasMore = true;
 	let cursor: string | null = null;
@@ -201,7 +203,6 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 	while (hasMore && fetchAttempts < maxAttempts) {
 		fetchAttempts++;
 		try {
-			// Internally calls the updated getPosts, so summaries will have subtitles
 			const {
 				posts: batchPosts,
 				hasMore: more,
