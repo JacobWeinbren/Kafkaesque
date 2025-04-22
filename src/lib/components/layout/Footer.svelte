@@ -29,7 +29,7 @@
 				</a>
 				<p class="text-slate-600 text-sm mb-4 max-w-md">
 					GIS specialist and full-stack developer focused on spatial
-					data visualization, mapping, and web development.
+					data visualisation, mapping, and web development.
 				</p>
 
 				<div class="flex items-center text-sm text-slate-500 mb-4">
