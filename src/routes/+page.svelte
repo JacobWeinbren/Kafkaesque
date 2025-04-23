@@ -1,352 +1,305 @@
 <script lang="ts">
-	// --- SCRIPT SECTION (UNCHANGED from your last version) ---
-	import { onMount, onDestroy } from "svelte";
-	import { fade } from "svelte/transition";
-	import { formatDate } from "$lib/utils/helpers";
+	import type { LayoutData } from "./$types";
+	import {
+		FileText,
+		Briefcase,
+		Rss,
+		ArrowRight,
+		Download,
+		MapPin,
+	} from "lucide-svelte";
 
-	interface BlogPost {
-		id: string;
-		slug: string;
-		title: string;
-		subtitle: string;
-		coverImage: { src: string } | null;
-		publishedAt: string;
-	}
-
-	interface PostsApiResponse {
-		posts: BlogPost[];
-		hasMore: boolean;
-		endCursor: string | null;
-	}
-
-	let posts: BlogPost[] = [];
-	let currentCursor: string | null = null;
-	let hasMore: boolean = true;
-	let loading = false;
-	let initialLoadAttempted = false;
-	let errorMessage: string | null = null;
-
-	let loadMoreTrigger: HTMLDivElement | undefined = undefined;
-	let observer: IntersectionObserver | null = null;
-
-	async function loadPosts(cursor: string | null = null) {
-		if (loading || (!hasMore && cursor !== null)) return;
-
-		loading = true;
-		errorMessage = null;
-		const isInitialLoad = cursor === null;
-
-		try {
-			const timestamp = Date.now();
-			const apiUrl = `/api/posts${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}${cursor ? "&" : "?"}t=${timestamp}`;
-
-			const res = await fetch(apiUrl);
-
-			if (!res.ok) {
-				let errorText = `HTTP error ${res.status}`;
-				try {
-					const errorData = await res.json();
-					errorText = errorData.error || errorText;
-				} catch {
-					/* Ignore if response body is not JSON */
-				}
-				throw new Error(`Failed to load posts: ${errorText}`);
-			}
-
-			const data: PostsApiResponse = await res.json();
-
-			if (data.posts?.length > 0) {
-				posts = isInitialLoad ? data.posts : [...posts, ...data.posts];
-				currentCursor = data.endCursor;
-				hasMore = data.hasMore;
-			} else {
-				if (isInitialLoad) posts = [];
-				hasMore = false;
-			}
-		} catch (e: any) {
-			errorMessage = e.message || "An unknown error occurred.";
-			console.error("Error loading posts:", e);
-			hasMore = false; // Stop trying if there's an error
-		} finally {
-			loading = false;
-			initialLoadAttempted = true;
-		}
-	}
-
-	function setupObserver() {
-		if (!loadMoreTrigger || observer) return;
-
-		observer = new IntersectionObserver(
-			(entries) => {
-				if (entries[0].isIntersecting && hasMore && !loading) {
-					loadPosts(currentCursor);
-				}
-			},
-			{ rootMargin: "300px", threshold: 0.01 } // Load slightly before it enters viewport
-		);
-		observer.observe(loadMoreTrigger);
-	}
-
-	// Reactive statement to manage the observer
-	$: if (
-		loadMoreTrigger &&
-		initialLoadAttempted &&
-		hasMore &&
-		!loading &&
-		!observer
-	) {
-		setupObserver();
-	} else if (observer && (!hasMore || loading)) {
-		// Disconnect if no more posts or currently loading
-		observer.disconnect();
-		observer = null;
-	}
-
-	onMount(() => loadPosts(null));
-	onDestroy(() => {
-		if (observer) observer.disconnect();
-	});
-	// --- END SCRIPT SECTION ---
+	export let data: LayoutData;
 </script>
 
-<!-- Container to stabilize layout -->
-<div class="min-h-[60vh]">
-	<!-- Initial Skeleton Loader - Refined for Layout Stability -->
-	{#if loading && !initialLoadAttempted}
-		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-			{#each Array(6) as _}
+<svelte:head>
+	<title>Jacob Weinbren | GIS Specialist & Full-Stack Developer</title>
+	<meta
+		name="description"
+		content="Specialising in geospatial data visualisation and full-stack web development."
+	/>
+	{#if data.url}
+		<link rel="canonical" href={data.url.href} />
+		<meta property="og:url" content={data.url.href} />
+	{/if}
+	<meta
+		property="og:title"
+		content="Jacob Weinbren | GIS Specialist & Full-Stack Developer"
+	/>
+	<meta
+		property="og:description"
+		content="Specialising in geospatial data visualisation and full-stack web development."
+	/>
+	<meta property="og:type" content="website" />
+	<meta name="twitter:card" content="summary_large_image" />
+</svelte:head>
+
+<!-- Hero Section -->
+<section
+	class="relative min-h-[85vh] flex items-center bg-gradient-to-br from-green-800 via-green-700 to-green-600 text-white overflow-hidden py-16"
+>
+	<!-- Background pattern -->
+	<div
+		class="absolute inset-0 opacity-10"
+		style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.2\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"
+	></div>
+
+	<div class="relative z-10 container mx-auto px-4 sm:px-6">
+		<div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+			<div>
 				<div
-					class="bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm flex flex-col animate-pulse"
-					aria-hidden="true"
+					class="flex items-center mb-6 text-green-50/90 text-sm font-medium"
 				>
-					<!-- 1. Image Placeholder: Use aspect-ratio -->
-					<div
-						class="relative w-full bg-slate-200"
-						style="aspect-ratio: 16 / 9;"
-					></div>
-					<!-- 2. Text Content Area: Mimic padding and flex structure -->
-					<div class="p-5 flex-grow flex flex-col">
-						<!-- Mimic Time -->
-						<div class="h-4 w-24 bg-slate-200 mb-2 rounded"></div>
-						<!-- Mimic Title (2 lines, now Inter) -->
-						<div class="space-y-1.5 mb-2">
-							<div
-								class="h-5 w-full bg-slate-200 rounded-md"
-							></div>
-							<div
-								class="h-5 w-5/6 bg-slate-200 rounded-md"
-							></div>
-						</div>
-						<!-- Mimic Subtitle (3 lines, now Inter) + flex-grow -->
-						<div class="flex-grow mb-4 space-y-1.5">
-							<div class="h-4 w-full bg-slate-200 rounded"></div>
-							<div class="h-4 w-full bg-slate-200 rounded"></div>
-							<div class="h-4 w-3/4 bg-slate-200 rounded"></div>
-						</div>
-						<!-- Mimic "Read article" link -->
-						<div
-							class="h-4 w-28 bg-slate-200 rounded mt-auto"
-						></div>
-					</div>
+					<MapPin class="h-4 w-4 mr-2" />
+					<span>Exeter, United Kingdom</span>
 				</div>
-			{/each}
-		</div>
-	{/if}
-
-	<!-- Error Message -->
-	{#if errorMessage && posts.length === 0}
-		<div
-			class="text-center py-6 text-red-600 border border-red-100 bg-red-50/50 p-6 rounded-xl"
-			role="alert"
-		>
-			<!-- Error SVG -->
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				class="h-12 w-12 mx-auto mb-3 text-red-500"
-				fill="none"
-				viewBox="0 0 24 24"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-				/>
-			</svg>
-			<p class="font-medium text-lg">Could not load posts</p>
-			<p class="text-sm mt-1">{errorMessage}</p>
-		</div>
-	{/if}
-
-	<!-- Post Grid -->
-	{#if posts.length > 0}
-		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-			{#each posts as post, i (post.id)}
-				{@const coverImageUrl = post.coverImage?.src
-					? `/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=800&h=450&q=75`
-					: null}
-				<article
-					in:fade={{ duration: 300, delay: (i % 6) * 75 }}
-					class="group bg-white rounded-xl overflow-hidden border border-slate-100 hover:border-green-200 hover:shadow-md shadow-sm transition-all duration-300 h-full flex flex-col"
+				<h1
+					class="font-display text-4xl sm:text-5xl md:text-6xl font-bold mb-5 tracking-tight text-white"
 				>
-					<a href={`/post/${post.slug}`} class="h-full flex flex-col">
-						{#if coverImageUrl}
-							<div
-								class="relative overflow-hidden bg-slate-100"
-								style="aspect-ratio: 16 / 9;"
-							>
-								<!-- Applied aspect-ratio here too for consistency -->
-								<img
-									src={coverImageUrl}
-									alt={post.title}
-									class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-									loading={i < 3 ? "eager" : "lazy"}
-									decoding="async"
-									fetchpriority={i < 3 ? "high" : "auto"}
-									width="800"
-									height="450"
-								/>
-								<div
-									class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-								></div>
-							</div>
-						{:else}
-							<!-- Placeholder for posts without cover images -->
-							<div
-								class="relative bg-gradient-to-br from-green-50 to-slate-100 flex items-center justify-center text-slate-400"
-								style="aspect-ratio: 16 / 9;"
-							>
-								<!-- Applied aspect-ratio here too -->
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="h-16 w-16 opacity-30"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-									stroke-width="1.5"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-									/>
-								</svg>
-							</div>
-						{/if}
-						<div class="p-5 flex-grow flex flex-col">
-							<time
-								class="text-sm text-green-600 font-medium block mb-2 h-5"
-								datetime={post.publishedAt}
-							>
-								{formatDate(post.publishedAt)}
-							</time>
-							<h2
-								class="text-lg font-display font-bold text-slate-800 mb-2 group-hover:text-green-700 transition line-clamp-2 min-h-[3.5rem]"
-							>
-								{post.title}
-							</h2>
-							{#if post.subtitle}
-								<p
-									class="text-slate-600 text-sm line-clamp-3 mb-4 flex-grow min-h-[3rem]"
-								>
-									{post.subtitle}
-								</p>
-							{:else}
-								<!-- Add placeholder div to maintain consistent height when no subtitle -->
-								<div class="mb-4 flex-grow min-h-[3rem]"></div>
-							{/if}
-							<div
-								class="flex items-center text-green-600 text-sm font-medium mt-auto group-hover:text-green-700 transition h-5"
-							>
-								Read article
-								<svg
-									class="ml-1 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-									stroke-width="2"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										d="M14 5l7 7m0 0l-7 7m7-7H3"
-									/>
-								</svg>
-							</div>
-						</div>
+					Jacob Weinbren
+				</h1>
+				<p class="text-xl max-w-xl mb-8 text-green-50 leading-relaxed">
+					Full-stack developer & GIS specialist crafting dynamic
+					spatial data visualisations and robust web applications.
+				</p>
+				<div class="flex flex-wrap gap-4 mb-8">
+					<a
+						href="/portfolio"
+						class="btn bg-white text-green-800 hover:bg-green-50 shadow-md hover:shadow-lg transition-all duration-300"
+					>
+						View Portfolio
+						<ArrowRight class="h-4 w-4 ml-1.5" />
 					</a>
-				</article>
-			{/each}
-		</div>
-	{/if}
+					<a
+						href="/blog"
+						class="btn bg-green-600/60 backdrop-blur-sm text-white hover:bg-green-600/80 border border-green-500/50"
+					>
+						Read Blog
+					</a>
+				</div>
+			</div>
 
-	<!-- Loading More Spinner -->
-	{#if loading && initialLoadAttempted && posts.length > 0}
-		<div class="flex justify-center py-8 h-[58px]" aria-live="polite">
-			<div class="relative h-10 w-10">
+			<div class="hidden md:block">
+				<!-- Keeping the original Technical/Map-inspired decorative graphic -->
 				<div
-					class="absolute animate-spin rounded-full h-full w-full border-4 border-slate-200"
-				></div>
-				<div
-					class="absolute animate-spin rounded-full h-full w-full border-4 border-green-600 border-t-transparent"
-				></div>
+					class="relative rounded-xl overflow-hidden border border-white/20 shadow-xl opacity-90"
+				>
+					<svg
+						viewBox="0 0 500 380"
+						xmlns="http://www.w3.org/2000/svg"
+						class="w-full h-auto"
+					>
+						<!-- SVG content unchanged -->
+						<defs>
+							<pattern
+								id="grid"
+								width="40"
+								height="40"
+								patternUnits="userSpaceOnUse"
+							>
+								<path
+									d="M 40 0 L 0 0 0 40"
+									fill="none"
+									stroke="rgba(255,255,255,0.1)"
+									stroke-width="1"
+								></path>
+							</pattern>
+							<linearGradient
+								id="mapGradient"
+								x1="0%"
+								y1="0%"
+								x2="100%"
+								y2="100%"
+							>
+								<stop
+									offset="0%"
+									stop-color="rgba(20,83,45,0.7)"
+								></stop>
+								<stop
+									offset="100%"
+									stop-color="rgba(21,128,61,0.7)"
+								></stop>
+							</linearGradient>
+						</defs>
+						<rect width="500" height="380" fill="url(#mapGradient)"
+						></rect>
+						<rect width="500" height="380" fill="url(#grid)"></rect>
+						<path
+							d="M100,80 L240,120 L320,60 L420,180 L380,240 L280,220 L200,300 L80,240 Z"
+							fill="rgba(255,255,255,0.1)"
+							stroke="rgba(255,255,255,0.6)"
+							stroke-width="2"
+						></path>
+						<circle cx="180" cy="150" r="5" fill="#fff"></circle>
+						<circle cx="320" cy="200" r="5" fill="#fff"></circle>
+						<circle cx="120" cy="220" r="5" fill="#fff"></circle>
+						<path
+							d="M180,150 L320,200 L120,220 Z"
+							stroke="rgba(255,255,255,0.6)"
+							stroke-width="2"
+							fill="none"
+							stroke-dasharray="4,4"
+						></path>
+						<rect
+							x="380"
+							y="60"
+							width="80"
+							height="20"
+							fill="rgba(255,255,255,0.2)"
+						></rect>
+						<rect
+							x="380"
+							y="90"
+							width="40"
+							height="20"
+							fill="rgba(255,255,255,0.2)"
+						></rect>
+						<rect
+							x="380"
+							y="120"
+							width="60"
+							height="20"
+							fill="rgba(255,255,255,0.2)"
+						></rect>
+						<text
+							x="40"
+							y="40"
+							fill="rgba(255,255,255,0.6)"
+							font-family="monospace"
+							font-size="12">&lt;visualisation&gt;</text
+						>
+						<text
+							x="40"
+							y="340"
+							fill="rgba(255,255,255,0.6)"
+							font-family="monospace"
+							font-size="12">&lt;/visualisation&gt;</text
+						>
+					</svg>
+				</div>
 			</div>
 		</div>
-	{/if}
+	</div>
+</section>
 
-	<!-- End of Posts / No Posts Message -->
-	{#if !loading && !hasMore && initialLoadAttempted}
-		<div class="text-center py-8 text-slate-500 min-h-[58px]">
-			{#if posts.length > 0}
-				<div class="border-t border-slate-100 pt-6 mt-4">
-					<!-- End Icon -->
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="h-6 w-6 mx-auto mb-2 text-slate-400"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-						/>
-					</svg>
-					<p>You've reached the end of the posts</p>
-				</div>
-			{:else if !errorMessage}
+<!-- Quick Links Section -->
+<section class="py-16 bg-slate-50 border-y border-slate-100">
+	<div class="max-w-5xl mx-auto px-4 sm:px-6">
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+			<!-- CV/Resume Card -->
+			<a
+				href="/Jacob Weinbren - Resume.pdf"
+				download
+				class="group bg-white rounded-xl border border-slate-100 p-6 hover:border-green-200 hover:shadow-md transition-all duration-300 flex flex-col"
+			>
 				<div
-					class="py-16 bg-slate-50 rounded-xl border border-slate-200"
+					class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-100 transition-colors"
 				>
-					<!-- No Posts Icon -->
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="h-12 w-12 mx-auto mb-3 text-slate-400"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-						stroke-width="1.5"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
-						/>
-					</svg>
-					<p class="font-medium">No posts found</p>
-					<p class="text-sm mt-1">Check back soon for new content</p>
+					<FileText class="h-6 w-6 text-green-600" />
 				</div>
-			{/if}
-		</div>
-	{/if}
+				<h3 class="text-lg font-display font-bold text-slate-800 mb-2">
+					CV / Resume
+				</h3>
+				<p class="text-slate-600 text-sm mb-4 flex-grow">
+					Download my professional experience, skills, and
+					qualifications.
+				</p>
+				<span
+					class="inline-flex items-center text-green-600 text-sm font-medium group-hover:text-green-700 transition-colors"
+				>
+					Download PDF
+					<Download
+						class="h-4 w-4 ml-1.5 group-hover:translate-y-0.5 transition-transform"
+					/>
+				</span>
+			</a>
 
-	<!-- Intersection Observer Trigger -->
-	{#if hasMore && initialLoadAttempted && !loading}
-		<div bind:this={loadMoreTrigger} class="h-10 mt-8 invisible"></div>
-	{/if}
-</div>
-<!-- End Container -->
+			<!-- Portfolio Card -->
+			<a
+				href="/portfolio"
+				class="group bg-white rounded-xl border border-slate-100 p-6 hover:border-green-200 hover:shadow-md transition-all duration-300 flex flex-col"
+			>
+				<div
+					class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-100 transition-colors"
+				>
+					<Briefcase class="h-6 w-6 text-green-600" />
+				</div>
+				<h3 class="text-lg font-display font-bold text-slate-800 mb-2">
+					Portfolio
+				</h3>
+				<p class="text-slate-600 text-sm mb-4 flex-grow">
+					Explore my projects in GIS, data visualisation, and web
+					development.
+				</p>
+				<span
+					class="inline-flex items-center text-green-600 text-sm font-medium group-hover:text-green-700 transition-colors"
+				>
+					View Projects
+					<ArrowRight
+						class="h-4 w-4 ml-1.5 group-hover:translate-x-0.5 transition-transform"
+					/>
+				</span>
+			</a>
+
+			<!-- Blog Card -->
+			<a
+				href="/blog"
+				class="group bg-white rounded-xl border border-slate-100 p-6 hover:border-green-200 hover:shadow-md transition-all duration-300 flex flex-col"
+			>
+				<div
+					class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-100 transition-colors"
+				>
+					<Rss class="h-6 w-6 text-green-600" />
+				</div>
+				<h3 class="text-lg font-display font-bold text-slate-800 mb-2">
+					Blog
+				</h3>
+				<p class="text-slate-600 text-sm mb-4 flex-grow">
+					Articles and insights on GIS, spatial analysis, and
+					development.
+				</p>
+				<span
+					class="inline-flex items-center text-green-600 text-sm font-medium group-hover:text-green-700 transition-colors"
+				>
+					Read Articles
+					<ArrowRight
+						class="h-4 w-4 ml-1.5 group-hover:translate-x-0.5 transition-transform"
+					/>
+				</span>
+			</a>
+		</div>
+	</div>
+</section>
+
+<!-- Contact Section -->
+<section class="py-16 bg-white">
+	<div class="max-w-4xl mx-auto px-4 sm:px-6">
+		<div
+			class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-8 border border-green-200 shadow-sm"
+		>
+			<div class="text-center">
+				<h2
+					class="text-2xl md:text-3xl font-bold text-slate-900 mb-4 font-display"
+				>
+					Let's Work Together
+				</h2>
+				<p class="text-slate-700 mb-6 max-w-xl mx-auto">
+					Looking for expertise in spatial data visualisation or
+					full-stack development? I'm available for projects and
+					consultations.
+				</p>
+				<div class="flex flex-col sm:flex-row justify-center gap-4">
+					<a
+						href="mailto:jacobweinbren@gmail.com"
+						class="btn btn-primary"
+					>
+						Get in Touch
+					</a>
+					<a href="/portfolio" class="btn btn-outline">
+						View My Work
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

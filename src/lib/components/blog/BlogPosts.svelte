@@ -110,7 +110,6 @@
 </script>
 
 <!-- Container to stabilize layout -->
-<!-- Adjust min-h value if needed. 60vh is a starting point. -->
 <div class="min-h-[60vh]">
 	<!-- Initial Skeleton Loader - Refined for Layout Stability -->
 	{#if loading && !initialLoadAttempted}
@@ -237,25 +236,28 @@
 						{/if}
 						<div class="p-5 flex-grow flex flex-col">
 							<time
-								class="text-sm text-green-600 font-medium block mb-2"
+								class="text-sm text-green-600 font-medium block mb-2 h-5"
 								datetime={post.publishedAt}
 							>
 								{formatDate(post.publishedAt)}
 							</time>
 							<h2
-								class="text-lg font-display font-bold text-slate-800 mb-2 group-hover:text-green-700 transition line-clamp-2"
+								class="text-lg font-display font-bold text-slate-800 mb-2 group-hover:text-green-700 transition line-clamp-2 min-h-[3.5rem]"
 							>
 								{post.title}
 							</h2>
 							{#if post.subtitle}
 								<p
-									class="text-slate-600 text-sm line-clamp-3 mb-4 flex-grow"
+									class="text-slate-600 text-sm line-clamp-3 mb-4 flex-grow min-h-[3rem]"
 								>
 									{post.subtitle}
 								</p>
+							{:else}
+								<!-- Add placeholder div to maintain consistent height when no subtitle -->
+								<div class="mb-4 flex-grow min-h-[3rem]"></div>
 							{/if}
 							<div
-								class="flex items-center text-green-600 text-sm font-medium mt-auto group-hover:text-green-700 transition"
+								class="flex items-center text-green-600 text-sm font-medium mt-auto group-hover:text-green-700 transition h-5"
 							>
 								Read article
 								<svg
@@ -282,7 +284,7 @@
 
 	<!-- Loading More Spinner -->
 	{#if loading && initialLoadAttempted && posts.length > 0}
-		<div class="flex justify-center py-8" aria-live="polite">
+		<div class="flex justify-center py-8 h-[58px]" aria-live="polite">
 			<div class="relative h-10 w-10">
 				<div
 					class="absolute animate-spin rounded-full h-full w-full border-4 border-slate-200"
@@ -296,7 +298,7 @@
 
 	<!-- End of Posts / No Posts Message -->
 	{#if !loading && !hasMore && initialLoadAttempted}
-		<div class="text-center py-8 text-slate-500">
+		<div class="text-center py-8 text-slate-500 min-h-[58px]">
 			{#if posts.length > 0}
 				<div class="border-t border-slate-100 pt-6 mt-4">
 					<!-- End Icon -->
@@ -344,11 +346,7 @@
 
 	<!-- Intersection Observer Trigger -->
 	{#if hasMore && initialLoadAttempted && !loading}
-		<div
-			bind:this={loadMoreTrigger}
-			class="h-10 mt-8"
-			aria-hidden="true"
-		></div>
+		<div bind:this={loadMoreTrigger} class="h-10 mt-8 invisible"></div>
 	{/if}
 </div>
 <!-- End Container -->
