@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Mail, Github, Linkedin, MapPin } from "lucide-svelte";
+	import { Mail, Github, Linkedin, MapPin, Map } from "lucide-svelte"; // Added Map
 	const currentYear = new Date().getFullYear();
 </script>
 
@@ -11,20 +11,7 @@
 					href="/"
 					class="flex items-center text-green-700 font-display font-bold text-xl mb-3"
 				>
-					<svg
-						viewBox="0 0 24 24"
-						class="h-6 w-6 mr-2"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<path
-							d="M9 20L3 17V4L9 7M9 20L15 17M9 20V7M15 17L21 20V7L15 4M15 17V4M9 7L15 4"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						/>
-					</svg>
+					<Map class="h-6 w-6 mr-2" stroke-width={2} />
 					Jacob Weinbren
 				</a>
 				<p class="text-slate-600 text-sm mb-4 max-w-md">

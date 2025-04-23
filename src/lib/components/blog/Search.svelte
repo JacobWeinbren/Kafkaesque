@@ -4,6 +4,7 @@
 	import { page } from "$app/stores";
 	import { goto } from "$app/navigation";
 	import { fade } from "svelte/transition";
+	import { Search, X, ArrowRight, AlertCircle } from "lucide-svelte";
 
 	interface SearchResult {
 		id: string;
@@ -169,20 +170,7 @@
 			<div
 				class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none"
 			>
-				<svg
-					class="w-5 h-5"
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke="currentColor"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-					/>
-				</svg>
+				<Search class="w-5 h-5" />
 			</div>
 
 			{#if query && !isLoading}
@@ -196,20 +184,7 @@
 					}}
 				>
 					<span class="sr-only">Clear search</span>
-					<svg
-						class="w-5 h-5"
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M6 18L18 6M6 6l12 12"
-						/>
-					</svg>
+					<X class="w-5 h-5" />
 				</button>
 			{/if}
 		</div>
@@ -222,20 +197,7 @@
 				class="text-center text-red-600 py-4 px-6 bg-red-50 rounded-xl border border-red-100 mb-4"
 				role="alert"
 			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					class="h-5 w-5 inline-block mr-1 mb-0.5"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke="currentColor"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-					/>
-				</svg>
+				<AlertCircle class="h-5 w-5 inline-block mr-1 mb-0.5" />
 				<span>{error}</span>
 			</div>
 		{/if}
@@ -296,20 +258,9 @@
 									class="text-green-600 flex items-center text-xs font-medium group-hover:text-green-700 transition"
 								>
 									View post
-									<svg
+									<ArrowRight
 										class="ml-1 w-3.5 h-3.5 transition transform group-hover:translate-x-0.5"
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke="currentColor"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M14 5l7 7m0 0l-7 7m7-7H3"
-										/>
-									</svg>
+									/>
 								</span>
 							</div>
 						</div>
@@ -321,20 +272,7 @@
 				in:fade={{ duration: 200 }}
 				class="text-center py-12 bg-slate-50 rounded-xl border border-slate-100"
 			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					class="h-16 w-16 mx-auto mb-4 text-slate-300"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke="currentColor"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="1.5"
-						d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-					/>
-				</svg>
+				<Search class="h-16 w-16 mx-auto mb-4 text-slate-300" />
 				<p class="text-slate-700 text-lg font-medium mb-1">
 					No results found
 				</p>
@@ -348,20 +286,7 @@
 				in:fade={{ duration: 200 }}
 				class="text-center py-12 bg-green-50 rounded-xl border border-green-100"
 			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					class="h-16 w-16 mx-auto mb-4 text-green-300"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke="currentColor"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="1.5"
-						d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-					/>
-				</svg>
+				<Search class="h-16 w-16 mx-auto mb-4 text-green-300" />
 				<p class="text-slate-800 text-lg font-medium mb-1">
 					Looking for something?
 				</p>

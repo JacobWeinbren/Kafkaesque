@@ -1,5 +1,13 @@
 <script lang="ts">
-	import { Home, Archive, FileText, Search, Menu, X } from "lucide-svelte";
+	import {
+		Home,
+		Archive,
+		FileText,
+		Search,
+		Menu,
+		X,
+		Map, // Added Map
+	} from "lucide-svelte";
 	import { slide, fade } from "svelte/transition";
 	import { quintOut } from "svelte/easing";
 
@@ -24,8 +32,6 @@
 	function toggleMobileMenu() {
 		mobileMenuOpen = !mobileMenuOpen;
 	}
-
-	// Remove scroll tracking to reduce glitchiness
 </script>
 
 <nav
@@ -39,20 +45,8 @@
 				class="flex items-center font-display font-bold text-xl tracking-tight text-green-700 hover:text-green-600 transition duration-200"
 			>
 				<span class="sr-only">Jacob Weinbren</span>
-				<svg
-					viewBox="0 0 24 24"
-					class="h-6 w-6 mr-2"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-				>
-					<path
-						d="M9 20L3 17V4L9 7M9 20L15 17M9 20V7M15 17L21 20V7L15 4M15 17V4M9 7L15 4"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					/>
-				</svg>
+				<!-- Replaced SVG with Lucide Map icon -->
+				<Map class="h-6 w-6 mr-2" stroke-width={2} />
 				Jacob W
 			</a>
 

@@ -3,79 +3,77 @@ import { error } from "@sveltejs/kit";
 import sharp from "sharp";
 
 const ALLOWED_DOMAIN = "cdn.hashnode.com";
+// Cache duration for Vercel's Edge and browser caches (1 week)
 const CACHE_DURATION_SECONDS = 60 * 60 * 24 * 7;
 
-// Simple memory cache for frequently accessed images
-const memoryCache = new Map();
-const MAX_CACHE_SIZE = 100;
+// No Redis or in-memory cache needed here - relying on Vercel's Edge Cache
 
-export async function GET({ url, request }) {
+export async function GET({ url }) {
 	const imageUrl = url.searchParams.get("url");
 	const width = url.searchParams.get("w");
 	const height = url.searchParams.get("h");
-	const quality = url.searchParams.get("q") || "75";
+	const quality = url.searchParams.get("q") || "75"; // Default quality
 
 	if (!imageUrl) {
 		error(400, "Missing image URL parameter");
 	}
 
+	let targetUrl: URL;
 	try {
-		const targetUrl = new URL(imageUrl);
+		targetUrl = new URL(imageUrl);
+	} catch (e) {
+		error(400, "Invalid image URL parameter");
+	}
 
-		// Security check
-		if (targetUrl.hostname !== ALLOWED_DOMAIN) {
-			console.warn(
-				`Image proxy denied for domain: ${targetUrl.hostname}`
-			);
-			error(403, "Image host not allowed");
-		}
+	// Security check: Only allow images from the specified domain
+	if (targetUrl.hostname !== ALLOWED_DOMAIN) {
+		console.warn(`Image proxy denied for domain: ${targetUrl.hostname}`);
+		error(403, "Image host not allowed");
+	}
 
-		// Create cache key based on all parameters
-		const cacheKey = `${imageUrl}|w=${width || "auto"}|h=${height || "auto"}|q=${quality}`;
+	// Vercel's cache key is automatically derived from the full URL,
+	// including query parameters (url, w, h, q). No manual key needed here.
 
-		// Check memory cache
-		if (memoryCache.has(cacheKey)) {
-			const { buffer, contentType } = memoryCache.get(cacheKey);
-			return new Response(buffer, {
-				status: 200,
-				headers: {
-					"Content-Type": contentType,
-					"Cache-Control": `public, max-age=${CACHE_DURATION_SECONDS}, immutable`,
-					"Content-Length": buffer.length.toString(),
-				},
-			});
-		}
-
-		console.log(`Processing image: ${imageUrl}`);
-
-		// Fetch the image with appropriate timeout
+	try {
+		// Fetch the original image
+		// Increased timeout slightly for potentially slower upstream fetches
+		const fetchSignal = AbortSignal.timeout(15000); // 15 second timeout
 		const response = await fetch(targetUrl.toString(), {
-			headers: { "User-Agent": "Blog-ImageOptimizer/1.0" },
-			signal: AbortSignal.timeout(10000), // 10 second timeout
+			headers: {
+				// Identify our proxy to the source server
+				"User-Agent": "Blog-ImageOptimizer/1.0 (Vercel Proxy)",
+			},
+			signal: fetchSignal,
 		});
 
 		if (!response.ok) {
 			console.error(
-				`Failed to fetch image: ${response.status} ${response.statusText}`
+				`Failed to fetch image: ${response.status} ${response.statusText} from ${imageUrl}`
 			);
+			// Return 502 Bad Gateway for upstream server errors
 			error(
-				response.status,
+				response.status >= 500 ? 502 : response.status,
 				`Failed to fetch image: ${response.statusText}`
 			);
 		}
 
-		const contentType = response.headers.get("content-type");
-		if (!contentType?.startsWith("image/")) {
-			console.error(`URL did not return an image: ${contentType}`);
+		const sourceContentType = response.headers.get("content-type");
+		if (!sourceContentType?.startsWith("image/")) {
+			console.error(
+				`URL did not return an image: ${sourceContentType} from ${imageUrl}`
+			);
 			error(400, "URL is not an image");
 		}
 
-		// Process the image with Sharp
+		// Get the image data as a Buffer
 		const imageBuffer = Buffer.from(await response.arrayBuffer());
 
-		// Parse parameters
+		// --- Image Processing with Sharp ---
+
+		// Parse and sanitize parameters
 		const widthInt = width ? parseInt(width, 10) : null;
 		const heightInt = height ? parseInt(height, 10) : null;
+		// Ensure quality is between 10 and 100
 		const qualityInt = Math.max(
 			10,
 			Math.min(100, parseInt(quality, 10) || 75)
@@ -83,42 +81,58 @@ export async function GET({ url, request }) {
 
 		let transformer = sharp(imageBuffer);
 
-		// Apply resize if dimensions provided
+		// Apply resize transformation if width or height is provided
 		if (widthInt || heightInt) {
 			transformer = transformer.resize(widthInt, heightInt, {
-				fit: "cover",
-				withoutEnlargement: true,
+				fit: "cover", // Crop to cover dimensions without distorting aspect ratio
+				withoutEnlargement: true, // Don't upscale smaller images
 			});
 		}
 
-		// Convert to WebP for best compression/quality ratio
+		// Convert to WebP format for optimal compression and quality
+		const outputContentType = "image/webp";
 		const outputBuffer = await transformer
 			.webp({ quality: qualityInt })
 			.toBuffer();
 
-		// Update memory cache with LRU eviction
-		if (memoryCache.size >= MAX_CACHE_SIZE) {
-			const firstKey = memoryCache.keys().next().value;
-			memoryCache.delete(firstKey);
-		}
+		// --- End Image Processing ---
 
-		memoryCache.set(cacheKey, {
-			buffer: outputBuffer,
-			contentType: "image/webp",
-		});
+		console.log(
+			`Successfully processed: ${imageUrl} (w=${widthInt}, h=${heightInt}, q=${qualityInt})`
+		);
 
-		console.log(`Successfully processed: ${imageUrl}`);
-
-		// Return the processed image
+		// Return the processed image with appropriate caching headers
+		// Vercel's Edge Network will respect these headers
 		return new Response(outputBuffer, {
 			status: 200,
 			headers: {
-				"Content-Type": "image/webp",
-				"Cache-Control": `public, max-age=${CACHE_DURATION_SECONDS}, immutable`,
+				"Content-Type": outputContentType,
 				"Content-Length": outputBuffer.length.toString(),
+				// This header instructs Vercel Edge & browsers to cache
+				"Cache-Control": `public, max-age=${CACHE_DURATION_SECONDS}, immutable`,
+				// Optional: Add header to indicate it was processed (useful for debugging)
+				"X-Image-Processed": "true",
 			},
 		});
-	} catch (err) {
+	} catch (err: any) {
+		// Handle specific errors for better feedback
+		if (err.name === "TimeoutError" || err.name === "AbortError") {
+			console.error(`Fetch timeout for ${imageUrl}:`, err);
+			error(504, "Timeout fetching the upstream image"); // 504 Gateway Timeout
+		}
+		// Handle Sharp processing errors (e.g., unsupported format)
+		if (
+			err.message.includes("Input buffer") ||
+			err.message.includes("format")
+		) {
+			console.error(
+				`Sharp processing error for ${imageUrl}:`,
+				err.message
+			);
+			error(400, "Unsupported or invalid image format");
+		}
+
+		// Generic error handler
 		console.error(`Image processing error for ${imageUrl}:`, err);
 		error(500, "Failed to process image");
 	}
