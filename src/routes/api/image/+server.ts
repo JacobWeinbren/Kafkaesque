@@ -4,15 +4,16 @@ import sharp from "sharp";
 
 const ALLOWED_DOMAIN = "cdn.hashnode.com";
 const CACHE_DURATION_SECONDS = 60 * 60 * 24 * 7;
-const IS_PRODUCTION = process.env.NODE_ENV === "production";
+
+// Simple memory cache for frequently accessed images
 const memoryCache = new Map();
+const MAX_CACHE_SIZE = 100;
 
 export async function GET({ url, request }) {
 	const imageUrl = url.searchParams.get("url");
-	const width = url.searchParams.get("w") || "800";
-	const height = url.searchParams.get("h") || "0";
+	const width = url.searchParams.get("w");
+	const height = url.searchParams.get("h");
 	const quality = url.searchParams.get("q") || "75";
-	const fit = url.searchParams.get("fit") || "cover";
 
 	if (!imageUrl) {
 		error(400, "Missing image URL parameter");
@@ -21,35 +22,16 @@ export async function GET({ url, request }) {
 	try {
 		const targetUrl = new URL(imageUrl);
 
-		// Security: Check allowed domains
+		// Security check
 		if (targetUrl.hostname !== ALLOWED_DOMAIN) {
+			console.warn(
+				`Image proxy denied for domain: ${targetUrl.hostname}`
+			);
 			error(403, "Image host not allowed");
 		}
 
-		// In production, redirect to Vercel's image optimization service
-		if (IS_PRODUCTION) {
-			const vercelImageUrl = new URL("/_vercel/image", url.origin);
-			vercelImageUrl.searchParams.set("url", imageUrl);
-			vercelImageUrl.searchParams.set("w", width);
-			vercelImageUrl.searchParams.set("q", quality);
-
-			if (height !== "0") {
-				vercelImageUrl.searchParams.set("h", height);
-			}
-
-			vercelImageUrl.searchParams.set("fit", fit);
-			vercelImageUrl.searchParams.set("format", "webp");
-
-			return new Response(null, {
-				status: 302,
-				headers: {
-					Location: vercelImageUrl.toString(),
-				},
-			});
-		}
-
-		// In development, use optimized Sharp implementation
-		const cacheKey = `${imageUrl}|w=${width}|h=${height}|q=${quality}`;
+		// Create cache key based on all parameters
+		const cacheKey = `${imageUrl}|w=${width || "auto"}|h=${height || "auto"}|q=${quality}`;
 
 		// Check memory cache
 		if (memoryCache.has(cacheKey)) {
@@ -59,16 +41,23 @@ export async function GET({ url, request }) {
 				headers: {
 					"Content-Type": contentType,
 					"Cache-Control": `public, max-age=${CACHE_DURATION_SECONDS}, immutable`,
-					"X-Cache-Status": "HIT-MEMORY",
+					"Content-Length": buffer.length.toString(),
 				},
 			});
 		}
 
+		console.log(`Processing image: ${imageUrl}`);
+
+		// Fetch the image with appropriate timeout
 		const response = await fetch(targetUrl.toString(), {
-			headers: { "User-Agent": "Blog-ImageProxy/1.0" },
+			headers: { "User-Agent": "Blog-ImageOptimizer/1.0" },
+			signal: AbortSignal.timeout(10000), // 10 second timeout
 		});
 
 		if (!response.ok) {
+			console.error(
+				`Failed to fetch image: ${response.status} ${response.statusText}`
+			);
 			error(
 				response.status,
 				`Failed to fetch image: ${response.statusText}`
@@ -77,39 +66,50 @@ export async function GET({ url, request }) {
 
 		const contentType = response.headers.get("content-type");
 		if (!contentType?.startsWith("image/")) {
+			console.error(`URL did not return an image: ${contentType}`);
 			error(400, "URL is not an image");
 		}
 
+		// Process the image with Sharp
 		const imageBuffer = Buffer.from(await response.arrayBuffer());
+
+		// Parse parameters
 		const widthInt = width ? parseInt(width, 10) : null;
-		const heightInt = height !== "0" ? parseInt(height, 10) : null;
+		const heightInt = height ? parseInt(height, 10) : null;
 		const qualityInt = Math.max(
 			10,
 			Math.min(100, parseInt(quality, 10) || 75)
 		);
 
 		let transformer = sharp(imageBuffer);
+
+		// Apply resize if dimensions provided
 		if (widthInt || heightInt) {
 			transformer = transformer.resize(widthInt, heightInt, {
-				fit: fit as keyof sharp.FitEnum,
+				fit: "cover",
 				withoutEnlargement: true,
 			});
 		}
 
+		// Convert to WebP for best compression/quality ratio
 		const outputBuffer = await transformer
 			.webp({ quality: qualityInt })
 			.toBuffer();
 
-		// Store in memory cache (manage cache size as needed)
-		if (memoryCache.size > 50) {
+		// Update memory cache with LRU eviction
+		if (memoryCache.size >= MAX_CACHE_SIZE) {
 			const firstKey = memoryCache.keys().next().value;
 			memoryCache.delete(firstKey);
 		}
+
 		memoryCache.set(cacheKey, {
 			buffer: outputBuffer,
 			contentType: "image/webp",
 		});
 
+		console.log(`Successfully processed: ${imageUrl}`);
+
+		// Return the processed image
 		return new Response(outputBuffer, {
 			status: 200,
 			headers: {
@@ -119,7 +119,7 @@ export async function GET({ url, request }) {
 			},
 		});
 	} catch (err) {
-		console.error(`Image processing error:`, err);
+		console.error(`Image processing error for ${imageUrl}:`, err);
 		error(500, "Failed to process image");
 	}
 }
