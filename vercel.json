@@ -1,0 +1,7 @@
+{
+	"images": {
+		"domains": ["cdn.hashnode.com"],
+		"formats": ["image/webp"],
+		"minimumCacheTTL": 604800
+	}
+}
