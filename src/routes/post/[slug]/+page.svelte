@@ -18,7 +18,7 @@
 
 	// Construct the image proxy URL if a cover image exists
 	const coverImageUrl = post?.coverImage?.src
-		? `/api/image-proxy?url=${encodeURIComponent(post.coverImage.src)}`
+		? `/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80`
 		: null;
 
 	// OG Image URL - use data.url from layout data, provide fallback

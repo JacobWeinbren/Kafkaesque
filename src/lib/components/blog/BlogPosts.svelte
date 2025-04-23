@@ -185,7 +185,7 @@
 		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 			{#each posts as post, i (post.id)}
 				{@const coverImageUrl = post.coverImage?.src
-					? `/api/image-proxy?url=${encodeURIComponent(post.coverImage.src)}&w=800&h=450`
+					? `/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=800&h=450&q=75`
 					: null}
 				<article
 					in:fade={{ duration: 300, delay: (i % 6) * 75 }}
