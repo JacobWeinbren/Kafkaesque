@@ -19,7 +19,7 @@ export interface HashnodePost {
 	content: string; // For full post
 	brief: string; // For summaries/all posts
 	coverImage: { src: string } | null;
-	publishedAt: string;
+	publishedAt: string; // Should be a valid date string or empty string
 	tags: HashnodeTag[];
 }
 export interface GetPostsOptions {
@@ -85,8 +85,6 @@ export async function getPosts(
         }
       `;
 
-	// console.log(`[hashnode.ts getPosts] Called with options:`, options);
-
 	try {
 		if (typeof HASHNODE_HOST === "undefined" || !HASHNODE_HOST) {
 			throw new Error(
@@ -106,21 +104,14 @@ export async function getPosts(
 		});
 		const requestHeaders = getHeaders();
 
-		// console.log("--- Fetch Request Details (getPosts) ---");
-		// console.log("Body:", requestBody);
-		// console.log("---------------------------");
-
-		// --- APPLY THE FIX HERE ---
 		const response: Response = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
 			headers: requestHeaders,
 			body: requestBody,
 			cache: "no-cache", // Prevent SvelteKit/Node fetch cache
 		});
-		// --- END FIX ---
 
 		const responseText = await response.text();
-		// console.log(`[hashnode.ts getPosts] Raw response status: ${response.status}`);
 
 		if (!response.ok) {
 			console.error(
@@ -130,7 +121,6 @@ export async function getPosts(
 		}
 
 		const json: any = JSON.parse(responseText);
-		// console.log(`[hashnode.ts getPosts] Parsed JSON response:`, json);
 
 		if (json.errors) {
 			console.error(
@@ -156,15 +146,15 @@ export async function getPosts(
 			(edge: any): HashnodePost => ({
 				id: edge.node.id,
 				slug: edge.node.slug,
-				title: edge.node.title,
+				title: edge.node.title || "Untitled", // Fallback
 				subtitle: edge.node.subtitle || "",
-				content: "",
-				brief: "",
+				content: "", // Not fetched in this query
+				brief: "", // Not fetched in this query
 				coverImage: edge.node.coverImage?.url
 					? { src: edge.node.coverImage.url }
 					: null,
-				publishedAt: edge.node.publishedAt,
-				tags: [],
+				publishedAt: edge.node.publishedAt || "", // Fallback
+				tags: [], // Not fetched in this query
 			})
 		);
 
@@ -218,22 +208,67 @@ export async function getPost(slug: string): Promise<HashnodePost | null> {
 		});
 		// --- END FIX ---
 
+		// Check response.ok FIRST
 		if (!response.ok) {
-			/* ... error handling ... */ return null;
+			const errorBody = await response
+				.text()
+				.catch(() => "Could not read error body");
+			console.error(
+				`[hashnode.ts] getPost: API request failed fetching post ${slug}: ${response.status} ${response.statusText}. Variables sent: ${JSON.stringify(variables)}. Body: ${errorBody}`
+			);
+			return null; // Return null on fetch failure
 		}
+
 		const json: any = await response.json();
+
+		// Check for GraphQL errors AFTER parsing JSON
 		if (json.errors) {
-			/* ... error handling ... */ return null;
+			console.error(
+				`[hashnode.ts] getPost: GraphQL Errors for slug ${slug}:`,
+				JSON.stringify(json.errors, null, 2)
+			);
+			// Check if it's specifically a "not found" error
+			if (
+				json.errors.some((e: any) =>
+					e.message?.toLowerCase().includes("not found")
+				)
+			) {
+				return null; // Return null if Hashnode explicitly says not found
+			}
+			// For other GraphQL errors, maybe still return null or throw
+			return null;
 		}
+
 		const postData = json.data?.publication?.post;
-		if (!postData) return null;
-		// Map data...
+		if (!postData) {
+			console.warn(
+				`[hashnode.ts] getPost: No post data found in response for slug ${slug}`
+			);
+			return null; // Return null if post data structure is missing
+		}
+
+		// Map data carefully
 		return {
-			/* ... post object ... */
-		} as HashnodePost; // Added type assertion for clarity
+			id: postData.id,
+			slug, // slug comes from input param
+			title: postData.title || "Untitled", // Add fallback
+			subtitle: postData.subtitle || "",
+			// Ensure content is always a string, default to empty
+			content: postData.content?.html || "",
+			brief: postData.brief || "",
+			coverImage: postData.coverImage?.url
+				? { src: postData.coverImage.url }
+				: null,
+			// IMPORTANT: Check publishedAt exists before assigning
+			publishedAt: postData.publishedAt || "", // Default to empty string if null/undefined
+			tags: postData.tags || [],
+		};
 	} catch (error) {
-		console.error(`[hashnode.ts] Failed to fetch post "${slug}":`, error);
-		return null;
+		console.error(
+			`[hashnode.ts] Failed to fetch post "${slug}" (outer catch):`,
+			error
+		);
+		return null; // Return null on any unexpected error
 	}
 }
 
@@ -253,7 +288,7 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
         query PublicationAllPosts($first: Int!, $after: String, $host: String!) {
           publication(host: $host) {
             posts(first: $first, after: $after) {
-              edges { node { /* fields needed for search */ id title subtitle slug brief publishedAt coverImage { url } tags { name slug } } }
+              edges { node { id title subtitle slug brief publishedAt coverImage { url } tags { name slug } } }
               pageInfo { hasNextPage endCursor }
             }
           }
@@ -290,15 +325,30 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 			// --- END FIX ---
 
 			if (!response.ok) {
-				/* ... error handling ... */ throw new Error(/* ... */);
+				const errorBody = await response
+					.text()
+					.catch(() => "Could not read error body");
+				console.error(
+					`getAllPosts: API request failed attempt ${attempts}: ${response.status} ${response.statusText}. Variables sent: ${JSON.stringify(variables)}. Body: ${errorBody}`
+				);
+				throw new Error(
+					`API request failed: ${response.status} ${response.statusText}`
+				);
 			}
 			const json: any = await response.json();
 			if (json.errors) {
-				/* ... error handling ... */ throw new Error(/* ... */);
+				console.error(
+					`GraphQL Errors (getAllPosts attempt ${attempts}):`,
+					JSON.stringify(json.errors, null, 2)
+				);
+				throw new Error(`GraphQL errors occurred during getAllPosts.`);
 			}
 
 			const publicationData = json.data?.publication;
 			if (!publicationData?.posts) {
+				console.warn(
+					`getAllPosts: No posts data found in attempt ${attempts}.`
+				);
 				hasNext = false;
 				break;
 			}
@@ -307,8 +357,21 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 			const pageInfo = publicationData.posts.pageInfo || {};
 
 			if (edges.length > 0) {
-				const batchPosts: HashnodePost[] =
-					edges.map(/* ... mapping ... */);
+				const batchPosts: HashnodePost[] = edges.map(
+					(edge: any): HashnodePost => ({
+						id: edge.node.id,
+						slug: edge.node.slug,
+						title: edge.node.title || "Untitled",
+						subtitle: edge.node.subtitle || "",
+						content: "", // Not fetched here
+						brief: edge.node.brief || "",
+						coverImage: edge.node.coverImage?.url
+							? { src: edge.node.coverImage.url }
+							: null,
+						publishedAt: edge.node.publishedAt || "",
+						tags: edge.node.tags || [],
+					})
+				);
 				allPosts = [...allPosts, ...batchPosts];
 			}
 
@@ -317,6 +380,9 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 			} else {
 				cursor = pageInfo.endCursor;
 				if (!cursor) {
+					console.warn(
+						"getAllPosts: HasMore is true but endCursor is null. Breaking loop."
+					);
 					hasNext = false;
 				}
 			}
@@ -334,7 +400,9 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 	}
 
 	if (hasNext && attempts >= maxAttempts) {
-		/* ... warning ... */
+		console.warn(
+			`getAllPosts: Reached max attempts limit (${maxAttempts}) before fetching all posts.`
+		);
 	}
 	return allPosts;
 }

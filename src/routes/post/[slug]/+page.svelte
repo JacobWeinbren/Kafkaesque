@@ -1,58 +1,59 @@
+<!-- src/routes/post/[slug]/+page.svelte -->
 <script lang="ts">
-	// Import PageData type for this route's data
 	import type { PageData } from "./$types";
-	// Import necessary helpers/components
 	import SignupForm from "$lib/components/blog/SignupForm.svelte";
 	import { formatDate } from "$lib/utils/helpers";
-	// Import the correct icon from lucide-svelte
 	import { ChevronLeft } from "lucide-svelte";
-	// Import the HashnodePost type if needed (already present)
 	import type { HashnodePost } from "$lib/server/hashnode";
-	import { onMount } from "svelte"; // Keep onMount if used elsewhere
+	import { onMount } from "svelte";
 
-	// Use PageData type for the data prop
 	export let data: PageData;
-	// Destructure post from data (data.post is defined by +page.server.ts)
-	// Add a check in case post is somehow undefined, though error() should prevent this
-	const post = data.post as HashnodePost; // Assert type if confident it exists
+	// The load function ensures post is valid if we reach here, so direct assertion is okay
+	const post = data.post as HashnodePost;
 
-	// Construct the image proxy URL if a cover image exists
 	const coverImageUrl = post?.coverImage?.src
 		? `/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80`
 		: null;
 
-	// OG Image URL - use data.url from layout data, provide fallback
+	// Use optional chaining and nullish coalescing for safety
 	const ogImageUrl =
-		post?.coverImage?.src ||
-		(data.url
+		post?.coverImage?.src ??
+		(data.url?.origin
 			? `${data.url.origin}/default-og-image.png`
 			: "/default-og-image.png");
+	const postTitle = post?.title ?? "Blog Post"; // Fallback title
+	const postDescription =
+		post?.subtitle || post?.brief || "Read this blog post."; // Fallback description
+	const postPublishedAt = post?.publishedAt; // Store raw value (might be "" from getPost)
 
-	// Optional: Log received data
+	// Optional: Log received data on mount
 	onMount(() => {
-		if (!post) console.error("Post data is missing!");
+		// This check should ideally never fail if +page.server.ts works
+		if (!post) console.error("[+page.svelte] Post data is missing!");
+		// Log the date specifically
+		console.log(
+			"[+page.svelte] Rendering post:",
+			postTitle,
+			"PublishedAt:",
+			postPublishedAt
+		);
 	});
 </script>
 
 <svelte:head>
-	<title>{post?.title || "Blog Post"}</title>
-	<meta
-		name="description"
-		content={post?.subtitle || post?.brief || "Read this blog post."}
-	/>
+	<title>{postTitle}</title>
+	<meta name="description" content={postDescription} />
 	{#if data.url}
 		<link rel="canonical" href={data.url.href} />
 		<meta property="og:url" content={data.url.href} />
 	{/if}
-	<meta property="og:title" content={post?.title || "Blog Post"} />
-	<meta
-		property="og:description"
-		content={post?.subtitle || post?.brief || "Read this blog post."}
-	/>
+	<meta property="og:title" content={postTitle} />
+	<meta property="og:description" content={postDescription} />
 	<meta property="og:type" content="article" />
 	<meta property="og:image" content={ogImageUrl} />
-	{#if post?.publishedAt}
-		<meta property="article:published_time" content={post.publishedAt} />
+	<!-- Check postPublishedAt is a non-empty string before adding meta tag -->
+	{#if postPublishedAt}
+		<meta property="article:published_time" content={postPublishedAt} />
 	{/if}
 	{#if post?.tags?.length > 0}
 		{#each post.tags as tag}
@@ -63,14 +64,14 @@
 	<meta property="twitter:image" content={ogImageUrl} />
 </svelte:head>
 
+<!-- Outer check should be redundant if load function works, but keep for safety -->
 {#if post}
 	<article class="max-w-3xl mx-auto px-4 py-8">
-		<!-- Optimized Cover Image via Proxy -->
 		{#if coverImageUrl}
 			<div class="mb-8 overflow-hidden rounded-lg shadow bg-gray-100">
 				<img
 					src={coverImageUrl}
-					alt={post.title}
+					alt={post.title ?? "Cover Image"}
 					width="896"
 					height="504"
 					class="w-full h-auto object-cover aspect-[16/9]"
@@ -81,18 +82,23 @@
 			</div>
 		{/if}
 
-		<!-- Header -->
 		<header class="mb-8">
+			<!-- Check postPublishedAt is a non-empty string before formatting -->
 			<time
 				class="text-green-700 text-sm font-medium"
-				datetime={post.publishedAt}
+				datetime={postPublishedAt || undefined}
 			>
-				{formatDate(post.publishedAt)}
+				{#if postPublishedAt}
+					{formatDate(postPublishedAt)}
+				{:else}
+					<span class="text-gray-500 italic">Date Unavailable</span>
+				{/if}
 			</time>
 			<h1
 				class="text-3xl md:text-4xl font-bold mt-2 mb-3 font-display text-gray-900"
 			>
 				{post.title}
+				<!-- Already has fallback via postTitle -->
 			</h1>
 			{#if post.subtitle}
 				<p class="text-lg text-gray-600">{post.subtitle}</p>
@@ -110,37 +116,35 @@
 			{/if}
 		</header>
 
-		<!-- Content -->
-		{#if post.content}
+		<!-- Content - Check if content string is non-empty -->
+		{#if post.content && post.content.trim() !== ""}
 			<div class="prose prose-custom max-w-none">
 				{@html post.content}
 			</div>
 		{:else}
+			<!-- This message now shows if content is null, undefined, or empty string -->
 			<p class="text-gray-500 italic">
-				Post content could not be loaded.
+				Post content is empty or could not be loaded.
 			</p>
 		{/if}
 
-		<!-- Signup Form -->
 		<div class="mt-10 border-t pt-8">
 			<SignupForm />
 		</div>
 
-		<!-- Back Link -->
 		<div class="mt-6 text-center">
 			<a
 				href="/blog"
 				class="inline-flex items-center text-green-700 hover:text-green-800 transition text-sm"
 			>
-				<!-- Render icon directly -->
 				<ChevronLeft class="w-4 h-4 mr-1" />
 				Back to Blog
 			</a>
 		</div>
 	</article>
 {:else}
-	<!-- Optional: Show a loading state or error if post data is missing -->
+	<!-- This part should ideally never be reached if load function works -->
 	<p class="text-center py-10 text-red-600">
-		Error: Post data not available.
+		Error: Post data could not be loaded for rendering.
 	</p>
 {/if}

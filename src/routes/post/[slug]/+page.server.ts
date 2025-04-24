@@ -1,28 +1,41 @@
+// src/routes/post/[slug]/+page.server.ts
+import { getPost } from "$lib/server/hashnode";
 import { error } from "@sveltejs/kit";
-// 1. Import the correct type for the server load function
+// Import the specific type for this load function
 import type { PageServerLoad } from "./$types";
-import { getPost, type HashnodePost } from "$lib/server/hashnode"; // Use server path
+// Import the type for the parent layout's data (adjust path if needed)
+import type { LayoutData } from "../../$types"; // Adjust path if layout is deeper
 
-// 2. Apply the PageServerLoad type to the function
-export const load: PageServerLoad = async ({ params }) => {
-	// TypeScript now knows 'params' has a 'slug' property (string | undefined)
-	const slug = params.slug;
-
-	if (!slug) {
-		// Use SvelteKit's error helper, which correctly throws
-		error(400, "Missing post slug");
-	}
-
-	const post = await getPost(slug);
+export const load: PageServerLoad = async ({ params, parent }) => {
+	console.log(`[+page.server.ts] Loading post with slug: ${params.slug}`);
+	const post = await getPost(params.slug);
 
 	if (!post) {
-		console.error(`+page.server.ts: Post not found for slug: ${slug}`);
-		error(404, "Post not found");
+		console.error(
+			`[+page.server.ts] Post not found for slug: ${params.slug}. Throwing 404.`
+		);
+		error(404, {
+			message: `Post not found: ${params.slug}`,
+		});
 	}
 
-	// Return the raw post data. Image optimization happens via proxy.
-	// The 'post' key here defines the shape of the 'data.post' prop in +page.svelte
+	// Await parent data and cast it to the expected type
+	// Note: SvelteKit might infer this automatically in newer versions,
+	// but explicit casting can help TypeScript.
+	const layoutData = (await parent()) as LayoutData; // Cast to LayoutData
+
+	// Now TypeScript knows layoutData should have a 'url' property
+	if (!layoutData.url) {
+		console.warn("[+page.server.ts] URL object not found in layout data!");
+		// Decide how to handle this - maybe provide a default or log error
+	}
+
+	console.log(
+		`[+page.server.ts] Post found for slug: ${params.slug}. Title: ${post.title}`
+	);
 	return {
-		post: post, // No need to cast here if getPost returns HashnodePost | null and we checked for null
+		post,
+		// Access url safely, provide fallback if needed, though layout should provide it
+		url: layoutData.url, // Now TypeScript should be happy
 	};
 };
