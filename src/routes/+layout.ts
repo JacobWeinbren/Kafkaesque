@@ -15,6 +15,7 @@ export const load: LayoutLoad = ({ url }) => {
 		url: {
 			href: url.href,
 			pathname: url.pathname,
+			origin: url.origin,
 			// Add other url properties if needed (searchParams, hash, etc.)
 		},
 	};

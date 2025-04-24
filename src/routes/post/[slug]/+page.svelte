@@ -11,41 +11,43 @@
 	const post = data.post as HashnodePost; // Asserting type as load function handles errors
 
 	// --- Image URLs ---
-	// Define the default image URL (should match layout default)
-	const defaultOgImage = "https://kafkaesque.blog/img/logo_white.png";
+	// Define the default image URL (MUST be absolute)
+	const defaultOgImage = "https://kafkaesque.blog/img/logo_white.webp"; // Ensure this path is correct and publicly accessible
 
-	// URL for the image displayed *within* the post body (optimized via API)
+	// Base URL needed for absolute paths (comes from +layout.ts -> LayoutData)
+	const baseUrl = data.url.origin; // e.g., "https://kafkaesque.blog"
+
+	// URL for the image displayed *within* the post body (can be relative)
 	const coverImageUrl = post?.coverImage?.src
 		? `/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80`
 		: null;
 
-	// URL for the preview image (og:image, twitter:image)
-	// Use the optimized cover image if available, otherwise use the default logo
-	// This value will be used to override the default image set in +layout.svelte
+	// --- ABSOLUTE URL for the preview image (og:image, twitter:image) ---
+	// Use the post's cover image (via API) if available, otherwise use the default logo.
+	// CRITICAL: Prepend baseUrl to the API path to make it absolute.
 	const ogImageUrl = post?.coverImage?.src
-		? `/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80` // Use optimized version
-		: defaultOgImage; // Fallback to the specified default logo
+		? `${baseUrl}/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80` // ABSOLUTE URL
+		: defaultOgImage; // Default is already absolute
 
 	// --- Post Metadata ---
 	const postTitle = post?.title ?? "Blog Post";
 	const postDescription =
 		post?.subtitle || post?.brief || "Read this blog post.";
-	const postPublishedAt = post?.publishedAt; // Can be null/undefined if not available
+	const postPublishedAt = post?.publishedAt;
 
 	// --- Debugging ---
 	onMount(() => {
 		if (!post) {
 			console.error(
-				"[+page.svelte] Post data is missing! This shouldn't happen if load function is correct."
+				"[+page.svelte] Post data is missing! Check load function."
 			);
 		}
+		console.log("[+page.svelte] Rendering post:", postTitle);
+		console.log("[+page.svelte] Base URL:", baseUrl);
 		console.log(
-			"[+page.svelte] Rendering post:",
-			postTitle,
-			"Published:",
-			postPublishedAt || "N/A"
+			"[+page.svelte] Determined ABSOLUTE OG Image URL:",
+			ogImageUrl
 		);
-		console.log("[+page.svelte] Determined OG Image URL:", ogImageUrl);
 	});
 </script>
 
@@ -56,19 +58,17 @@
 
 	<!-- Canonical and OG URL are inherited from layout via data.url -->
 
+	<!-- Open Graph Tags -->
 	<meta property="og:title" content={postTitle} />
 	<meta property="og:description" content={postDescription} />
 	<meta property="og:type" content="article" />
-
-	<!-- Override the default og:image and twitter:image from the layout -->
 	<meta property="og:image" content={ogImageUrl} />
 	{#if ogImageUrl.startsWith("https")}
-		<!-- Add secure_url if using HTTPS -->
 		<meta property="og:image:secure_url" content={ogImageUrl} />
 	{/if}
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
-	<!-- Determine image type based on URL -->
+	<!-- Assuming API aims for ~1.91:1 ratio -->
 	{#if ogImageUrl.includes(".png") || ogImageUrl.endsWith(".png")}
 		<meta property="og:image:type" content="image/png" />
 	{:else if ogImageUrl.includes(".jpg") || ogImageUrl.includes(".jpeg") || ogImageUrl.endsWith(".jpg") || ogImageUrl.endsWith(".jpeg")}
@@ -77,12 +77,15 @@
 		<meta property="og:image:type" content="image/webp" />
 	{/if}
 
+	<!-- Twitter Card Tags -->
 	<meta name="twitter:card" content="summary_large_image" />
-	<!-- Inherited from layout, but good to be explicit if needed -->
-	<meta property="twitter:image" content={ogImageUrl} />
-	<!-- Optional: Override Twitter title/description if different from OG -->
-	<!-- <meta name="twitter:title" content={postTitle}> -->
-	<!-- <meta name="twitter:description" content={postDescription}> -->
+	<!-- Explicitly set Twitter title and description -->
+	<meta name="twitter:title" content={postTitle} />
+	<meta name="twitter:description" content={postDescription} />
+	<meta name="twitter:image" content={ogImageUrl} />
+	<!-- Optional: Add Twitter site/creator handles if applicable -->
+	<!-- <meta name="twitter:site" content="@YourSiteHandle"> -->
+	<!-- <meta name="twitter:creator" content="@AuthorHandle"> -->
 
 	<!-- Article Specific Tags -->
 	{#if postPublishedAt}
@@ -95,11 +98,12 @@
 	{/if}
 </svelte:head>
 
+<!-- Rest of the component remains the same -->
+
 {#if post}
 	<article class="max-w-3xl mx-auto px-4 py-8">
 		{#if coverImageUrl}
 			<div class="mb-8 overflow-hidden rounded-lg shadow bg-gray-100">
-				<!-- Display the optimized cover image within the post -->
 				<img
 					src={coverImageUrl}
 					alt={post.title ?? "Cover Image"}
@@ -170,7 +174,6 @@
 		</div>
 	</article>
 {:else}
-	<!-- Fallback if post data is somehow null/undefined despite load function -->
 	<div class="text-center py-16 px-4">
 		<h1 class="text-2xl font-bold text-red-600 mb-4">Error Loading Post</h1>
 		<p class="text-gray-600">
