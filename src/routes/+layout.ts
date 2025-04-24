@@ -1,15 +1,21 @@
 import { dev } from "$app/environment";
 import type { LayoutLoad } from "./$types";
 import { injectAnalytics } from "@vercel/analytics/sveltekit";
-import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
- 
-injectSpeedInsights();
+import { injectSpeedInsights } from "@vercel/speed-insights/sveltekit";
+
+// Inject Vercel Analytics and Speed Insights
+injectSpeedInsights(); // Call it early
 injectAnalytics({ mode: dev ? "development" : "production" });
 
-// Explicitly type the function parameter using LayoutLoad
+// This load function runs for every page unless overridden by a child layout/page load
 export const load: LayoutLoad = ({ url }) => {
-	// The 'url' parameter is now correctly typed because LayoutLoad defines it
+	// Pass the url object to the layout and potentially child pages
+	// This allows access to pathname, href, etc. in components
 	return {
-		url: url, // This defines the shape of LayoutData
+		url: {
+			href: url.href,
+			pathname: url.pathname,
+			// Add other url properties if needed (searchParams, hash, etc.)
+		},
 	};
 };

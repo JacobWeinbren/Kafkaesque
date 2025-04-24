@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type { LayoutData } from "./$types";
+	// Import LayoutData if you need access to data.url here, otherwise remove
+	// import type { LayoutData } from './$types';
 	import {
 		FileText,
 		Briefcase,
@@ -9,19 +10,16 @@
 		MapPin,
 	} from "lucide-svelte";
 
-	export let data: LayoutData;
+	// export let data: LayoutData; // Only needed if you use data.url below
 </script>
 
 <svelte:head>
+	<!-- Override layout defaults specifically for the homepage -->
 	<title>Jacob Weinbren | GIS Specialist & Full-Stack Developer</title>
 	<meta
 		name="description"
 		content="Specialising in geospatial data visualisation and full-stack web development."
 	/>
-	{#if data.url}
-		<link rel="canonical" href={data.url.href} />
-		<meta property="og:url" content={data.url.href} />
-	{/if}
 	<meta
 		property="og:title"
 		content="Jacob Weinbren | GIS Specialist & Full-Stack Developer"
@@ -30,8 +28,8 @@
 		property="og:description"
 		content="Specialising in geospatial data visualisation and full-stack web development."
 	/>
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary_large_image" />
+	<!-- og:url, og:image, twitter:image, twitter:card are inherited from layout -->
+	<!-- og:type="website" is also inherited and correct for the homepage -->
 </svelte:head>
 
 <!-- Hero Section -->
@@ -72,7 +70,7 @@
 					</a>
 					<a
 						href="/blog"
-						class="btn bg-green-600/60 backdrop-blur-sm-sm text-white hover:bg-green-600/80 border border-green-500/50"
+						class="btn bg-green-600/60 backdrop-blur-sm text-white hover:bg-green-600/80 border border-green-500/50"
 					>
 						Read Blog
 					</a>
@@ -80,7 +78,7 @@
 			</div>
 
 			<div class="hidden md:block">
-				<!-- Keeping the original Technical/Map-inspired decorative graphic -->
+				<!-- Technical/Map-inspired decorative graphic -->
 				<div
 					class="relative rounded-xl overflow-hidden border border-white/20 shadow-lg opacity-90"
 				>
@@ -89,10 +87,10 @@
 						xmlns="http://www.w3.org/2000/svg"
 						class="w-full h-auto"
 					>
-						<!-- SVG content unchanged -->
+						<!-- SVG content -->
 						<defs>
 							<pattern
-								id="grid"
+								id="grid-homepage"
 								width="40"
 								height="40"
 								patternUnits="userSpaceOnUse"
@@ -105,7 +103,7 @@
 								></path>
 							</pattern>
 							<linearGradient
-								id="mapGradient"
+								id="mapGradient-homepage"
 								x1="0%"
 								y1="0%"
 								x2="100%"
@@ -121,9 +119,16 @@
 								></stop>
 							</linearGradient>
 						</defs>
-						<rect width="500" height="380" fill="url(#mapGradient)"
+						<rect
+							width="500"
+							height="380"
+							fill="url(#mapGradient-homepage)"
 						></rect>
-						<rect width="500" height="380" fill="url(#grid)"></rect>
+						<rect
+							width="500"
+							height="380"
+							fill="url(#grid-homepage)"
+						></rect>
 						<path
 							d="M100,80 L240,120 L320,60 L420,180 L380,240 L280,220 L200,300 L80,240 Z"
 							fill="rgba(255,255,255,0.1)"
@@ -190,7 +195,7 @@
 			<a
 				href="/Jacob Weinbren - Resume.pdf"
 				download
-				class="group bg-white rounded-xl border border-slate-100 p-6 hover:border-green-200 hover:shadow transition-all duration-300 flex flex-col"
+				class="group bg-white rounded-xl border border-slate-100 p-6 hover:border-green-200 hover:shadow-md transition-all duration-300 flex flex-col"
 			>
 				<div
 					class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-100 transition-colors"
@@ -217,7 +222,7 @@
 			<!-- Portfolio Card -->
 			<a
 				href="/portfolio"
-				class="group bg-white rounded-xl border border-slate-100 p-6 hover:border-green-200 hover:shadow transition-all duration-300 flex flex-col"
+				class="group bg-white rounded-xl border border-slate-100 p-6 hover:border-green-200 hover:shadow-md transition-all duration-300 flex flex-col"
 			>
 				<div
 					class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-100 transition-colors"
@@ -244,7 +249,7 @@
 			<!-- Blog Card -->
 			<a
 				href="/blog"
-				class="group bg-white rounded-xl border border-slate-100 p-6 hover:border-green-200 hover:shadow transition-all duration-300 flex flex-col"
+				class="group bg-white rounded-xl border border-slate-100 p-6 hover:border-green-200 hover:shadow-md transition-all duration-300 flex flex-col"
 			>
 				<div
 					class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-100 transition-colors"
@@ -275,7 +280,7 @@
 <section class="py-16 bg-white">
 	<div class="max-w-4xl mx-auto px-4 sm:px-6">
 		<div
-			class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-8 border border-green-200 shadow-xs"
+			class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-8 border border-green-200 shadow-sm"
 		>
 			<div class="text-center">
 				<h2
