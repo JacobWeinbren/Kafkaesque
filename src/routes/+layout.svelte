@@ -10,16 +10,14 @@
 	export let data: LayoutData; // Expects { url: { href, pathname, origin } }
 
 	// --- Default Meta Values ---
-	const defaultOgImage = "https://kafkaesque.blog/img/logo_white.png"; // Or your preferred default
+	const defaultOgImage = "https://kafkaesque.blog/img/logo_white.png";
 	const defaultTitle =
 		"Jacob Weinbren | GIS Specialist & Full-Stack Developer";
 	const defaultDescription =
 		"Specialising in geospatial data visualisation and full-stack web development.";
 
 	// --- Determine if we are on a post page using the route ID ---
-	// This is generally more reliable than regex on pathname
 	let isPostPage = false;
-	// Use reactive statement to update when the page store changes
 	$: isPostPage = $page.route.id === "/post/[slug]";
 
 	// --- Back to Top Button Logic ---
@@ -38,7 +36,6 @@
 
 	// --- Logging ---
 	console.log("[+layout.svelte] Received data:", data);
-	// Log the reactive check whenever $page.route.id changes
 	$: console.log(
 		"[+layout.svelte] Current route ID:",
 		$page.route.id,
@@ -48,8 +45,8 @@
 </script>
 
 <svelte:head>
-	<!-- Site-wide defaults - Render title/desc always, images conditionally -->
-	<!-- These title/description tags will still be overridden by the page if the page defines them -->
+	<!-- Site-wide defaults - Title/Desc are overridden by page -->
+	<!-- Image/OG/Twitter tags are conditional -->
 	<title>{defaultTitle}</title>
 	<meta name="description" content={defaultDescription} />
 
@@ -58,40 +55,40 @@
 		<meta property="og:url" content={data.url.href} />
 	{/if}
 
-	<meta property="og:title" content={defaultTitle} />
-	<meta property="og:description" content={defaultDescription} />
+	<!-- Default OG Type -->
 	<meta property="og:type" content="website" />
 
-	<!-- *** Conditionally render default image tags *** -->
+	<!-- *** Conditionally render default OG/Twitter tags *** -->
 	{#if !isPostPage}
 		<!-- Only render these if NOT on a post page -->
+
+		<!-- Default OG Title/Description -->
+		<meta property="og:title" content={defaultTitle} />
+		<meta property="og:description" content={defaultDescription} />
+
+		<!-- Default OG Image -->
 		<meta property="og:image" content={defaultOgImage} />
 		<meta property="og:image:secure_url" content={defaultOgImage} />
 		<meta property="og:image:type" content="image/png" />
 		<meta property="og:image:width" content="1200" />
 		<meta property="og:image:height" content="630" />
 
+		<!-- Default Twitter Card -->
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:image" content={defaultOgImage} />
-		<!-- Also conditionally render default twitter title/desc if page should override -->
 		<meta name="twitter:title" content={defaultTitle} />
 		<meta name="twitter:description" content={defaultDescription} />
 	{/if}
 	<!-- If it *is* a post page, this block is skipped, leaving the responsibility -->
-	<!-- entirely to the +page.svelte component for these specific tags. -->
+	<!-- entirely to the +page.svelte component for OG/Twitter title, desc, image. -->
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-slate-50 antialiased">
-	<!-- Pass only the pathname needed by Navbar -->
 	<Navbar currentPathname={data.url?.pathname ?? ""} />
-
 	<main class="flex-grow">
-		<!-- Child pages will render here. Their <svelte:head> will merge with/override -->
 		<slot />
 	</main>
-
 	<Footer />
-
 	{#if showBackToTop}
 		<button
 			id="backToTop"
