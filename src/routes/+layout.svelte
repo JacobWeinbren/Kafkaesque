@@ -45,10 +45,9 @@
 </script>
 
 <svelte:head>
-	<!-- Site-wide defaults - Title/Desc are overridden by page -->
-	<!-- Image/OG/Twitter tags are conditional -->
+	<!-- Site-wide defaults -->
+	<!-- Title is overridden by page -->
 	<title>{defaultTitle}</title>
-	<meta name="description" content={defaultDescription} />
 
 	{#if data.url?.href}
 		<link rel="canonical" href={data.url.href} />
@@ -58,9 +57,12 @@
 	<!-- Default OG Type -->
 	<meta property="og:type" content="website" />
 
-	<!-- *** Conditionally render default OG/Twitter tags *** -->
+	<!-- *** Conditionally render default Meta/OG/Twitter tags *** -->
 	{#if !isPostPage}
 		<!-- Only render these if NOT on a post page -->
+
+		<!-- Default Description -->
+		<meta name="description" content={defaultDescription} />
 
 		<!-- Default OG Title/Description -->
 		<meta property="og:title" content={defaultTitle} />
@@ -80,7 +82,7 @@
 		<meta name="twitter:description" content={defaultDescription} />
 	{/if}
 	<!-- If it *is* a post page, this block is skipped, leaving the responsibility -->
-	<!-- entirely to the +page.svelte component for OG/Twitter title, desc, image. -->
+	<!-- entirely to the +page.svelte component for description, OG/Twitter title, desc, image. -->
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-slate-50 antialiased">
