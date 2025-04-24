@@ -12,7 +12,7 @@
 
 	// --- Image URLs ---
 	// Define the default image URL (MUST be absolute)
-	const defaultOgImage = "https://kafkaesque.blog/img/logo_white.webp"; // Ensure this path is correct and publicly accessible
+	const defaultOgImage = `${data.url.origin}/img/logo_white.webp`; // Ensure this path is correct and publicly accessible
 
 	// Base URL needed for absolute paths (comes from +layout.ts -> LayoutData)
 	const baseUrl = data.url.origin; // e.g., "https://kafkaesque.blog"
