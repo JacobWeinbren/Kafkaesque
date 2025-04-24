@@ -16,7 +16,7 @@ export interface HashnodePost {
 	slug: string;
 	title: string;
 	subtitle: string;
-	content: string; // For full post
+	content: string; // For full post OR search index
 	brief: string; // For summaries/all posts
 	coverImage: { src: string } | null;
 	publishedAt: string; // Should be a valid date string or empty string
@@ -62,6 +62,7 @@ export async function getPosts(
 ): Promise<OriginalPostsResponse> {
 	const { limit = 6, after = null } = options;
 
+	// This query remains unchanged - it only fetches summaries
 	const postsQuery = `
         query Publication($first: Int!, $after: String, $host: String!) {
           publication(host: $host) {
@@ -176,6 +177,7 @@ export async function getPosts(
  * Fetches a single full post by slug from Hashnode.
  */
 export async function getPost(slug: string): Promise<HashnodePost | null> {
+	// This query remains unchanged
 	const query = `
         query GetPostBySlug($slug: String!, $host: String!) {
           publication(host: $host) {
@@ -199,14 +201,12 @@ export async function getPost(slug: string): Promise<HashnodePost | null> {
 		}
 		const variables = { slug, host: HASHNODE_HOST };
 
-		// --- APPLY THE FIX HERE ---
 		const response: Response = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
 			headers: getHeaders(),
 			body: JSON.stringify({ query: query, variables: variables }),
 			cache: "no-cache", // Prevent SvelteKit/Node fetch cache
 		});
-		// --- END FIX ---
 
 		// Check response.ok FIRST
 		if (!response.ok) {
@@ -227,7 +227,6 @@ export async function getPost(slug: string): Promise<HashnodePost | null> {
 				`[hashnode.ts] getPost: GraphQL Errors for slug ${slug}:`,
 				JSON.stringify(json.errors, null, 2)
 			);
-			// Check if it's specifically a "not found" error
 			if (
 				json.errors.some((e: any) =>
 					e.message?.toLowerCase().includes("not found")
@@ -235,7 +234,6 @@ export async function getPost(slug: string): Promise<HashnodePost | null> {
 			) {
 				return null; // Return null if Hashnode explicitly says not found
 			}
-			// For other GraphQL errors, maybe still return null or throw
 			return null;
 		}
 
@@ -253,14 +251,12 @@ export async function getPost(slug: string): Promise<HashnodePost | null> {
 			slug, // slug comes from input param
 			title: postData.title || "Untitled", // Add fallback
 			subtitle: postData.subtitle || "",
-			// Ensure content is always a string, default to empty
-			content: postData.content?.html || "",
+			content: postData.content?.html || "", // Ensure content is always a string
 			brief: postData.brief || "",
 			coverImage: postData.coverImage?.url
 				? { src: postData.coverImage.url }
 				: null,
-			// IMPORTANT: Check publishedAt exists before assigning
-			publishedAt: postData.publishedAt || "", // Default to empty string if null/undefined
+			publishedAt: postData.publishedAt || "", // Default to empty string
 			tags: postData.tags || [],
 		};
 	} catch (error) {
@@ -273,32 +269,51 @@ export async function getPost(slug: string): Promise<HashnodePost | null> {
 }
 
 /**
- * Fetches ALL post summaries from Hashnode for search index.
+ * Fetches ALL posts from Hashnode including content for search index.
  * Uses default Hashnode sort order.
+ * NOTE: Fetching full content for all posts can be slower and use more data.
  */
 export async function getAllPosts(): Promise<HashnodePost[]> {
-	const batchSize = 50;
+	const batchSize = 50; // Keep batch size reasonable
 	const maxAttempts = 20;
 	let allPosts: HashnodePost[] = [];
 	let cursor: string | null = null;
 	let hasNext = true;
 	let attempts = 0;
 
+	// --- MODIFIED QUERY: Added content { html } ---
 	const allPostsQuery = `
         query PublicationAllPosts($first: Int!, $after: String, $host: String!) {
           publication(host: $host) {
             posts(first: $first, after: $after) {
-              edges { node { id title subtitle slug brief publishedAt coverImage { url } tags { name slug } } }
+              edges {
+                node {
+                  id
+                  title
+                  subtitle
+                  slug
+                  brief
+                  content { html } # <-- Added this line
+                  publishedAt
+                  coverImage { url }
+                  tags { name slug }
+                }
+              }
               pageInfo { hasNextPage endCursor }
             }
           }
         }
       `;
+	// --- END QUERY MODIFICATION ---
 
 	if (typeof HASHNODE_HOST === "undefined" || !HASHNODE_HOST) {
 		console.error("[hashnode.ts] getAllPosts: HASHNODE_HOST is missing!");
 		return [];
 	}
+
+	console.log(
+		"[hashnode.ts] getAllPosts: Starting fetch for search index (including content)..."
+	);
 
 	while (hasNext && attempts < maxAttempts) {
 		attempts++;
@@ -315,14 +330,12 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 			});
 			const requestHeaders = getHeaders();
 
-			// --- APPLY THE FIX HERE ---
 			const response: Response = await fetch(HASHNODE_ENDPOINT, {
 				method: "POST",
 				headers: requestHeaders,
 				body: requestBody,
 				cache: "no-cache", // Prevent SvelteKit/Node fetch cache
 			});
-			// --- END FIX ---
 
 			if (!response.ok) {
 				const errorBody = await response
@@ -357,26 +370,38 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 			const pageInfo = publicationData.posts.pageInfo || {};
 
 			if (edges.length > 0) {
+				// --- MODIFIED MAPPING: Added content ---
 				const batchPosts: HashnodePost[] = edges.map(
 					(edge: any): HashnodePost => ({
 						id: edge.node.id,
 						slug: edge.node.slug,
 						title: edge.node.title || "Untitled",
 						subtitle: edge.node.subtitle || "",
-						content: "", // Not fetched here
+						content: edge.node.content?.html || "", // <-- Map content.html
 						brief: edge.node.brief || "",
 						coverImage: edge.node.coverImage?.url
 							? { src: edge.node.coverImage.url }
 							: null,
 						publishedAt: edge.node.publishedAt || "",
-						tags: edge.node.tags || [],
+						tags: edge.node.tags || [], // Tags were already fetched
 					})
 				);
+				// --- END MAPPING MODIFICATION ---
 				allPosts = [...allPosts, ...batchPosts];
+				console.log(
+					`[hashnode.ts] getAllPosts: Fetched batch ${attempts}, total posts: ${allPosts.length}`
+				);
+			} else {
+				console.log(
+					`[hashnode.ts] getAllPosts: Batch ${attempts} returned 0 posts.`
+				);
 			}
 
 			if (!pageInfo.hasNextPage) {
 				hasNext = false;
+				console.log(
+					"[hashnode.ts] getAllPosts: No more pages according to pageInfo."
+				);
 			} else {
 				cursor = pageInfo.endCursor;
 				if (!cursor) {
@@ -387,8 +412,9 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 				}
 			}
 
+			// Add a small delay to avoid hitting rate limits, especially when fetching content
 			if (hasNext)
-				await new Promise((resolve) => setTimeout(resolve, 200)); // Rate limiting
+				await new Promise((resolve) => setTimeout(resolve, 300));
 		} catch (error) {
 			console.error(
 				`getAllPosts: Error during fetch attempt ${attempts}:`,
@@ -404,5 +430,8 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 			`getAllPosts: Reached max attempts limit (${maxAttempts}) before fetching all posts.`
 		);
 	}
+	console.log(
+		`[hashnode.ts] getAllPosts: Finished fetching. Total posts indexed: ${allPosts.length}`
+	);
 	return allPosts;
 }

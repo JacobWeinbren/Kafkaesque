@@ -225,7 +225,7 @@
 			<div class="grid gap-4 md:grid-cols-2">
 				{#each results as post, index (post.id)}
 					<a
-						href={`/blog/post/${post.slug}`}
+						href={`/post/${post.slug}`}
 						class="group flex flex-col h-full bg-white rounded-xl border border-slate-100 hover:border-green-200 hover:shadow transition-all duration-300 animate-fade-in-fast"
 						style="animation-delay: {index * 50}ms"
 						in:fade={{ duration: 300, delay: index * 50 }}
