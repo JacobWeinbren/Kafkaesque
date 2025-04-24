@@ -74,7 +74,7 @@ export async function getPosts(
 	const postsQuery = `
         query Publication($first: Int!, $after: String, $host: String!) {
           publication(host: $host) {
-            posts(first: $first, after: $after) { # No sortBy or PostSortBy here
+            posts(first: $first, after: $after) {
               edges {
                 node {
                   id
@@ -95,7 +95,7 @@ export async function getPosts(
       `;
 	// --- END QUERY REVERSION ---
 
-	// console.log(`[hashnode.ts getPosts] Called with options:`, options);
+	console.log(`[hashnode.ts getPosts] Called with options:`, options);
 	// console.log(`[hashnode.ts getPosts] Using host: ${HASHNODE_HOST}`);
 
 	try {
@@ -123,8 +123,8 @@ export async function getPosts(
 		const requestHeaders = getHeaders();
 
 		// Keep detailed logs temporarily if still debugging the order difference
-		// console.log("--- Fetch Request Details (getPosts - Reverted) ---");
-		// console.log("Body:", requestBody);
+		console.log("--- Fetch Request Details (getPosts - Reverted) ---");
+		console.log("Body:", requestBody);
 		// console.log("---------------------------");
 
 		const response: Response = await fetch(HASHNODE_ENDPOINT, {
@@ -144,7 +144,10 @@ export async function getPosts(
 		}
 
 		const json: any = JSON.parse(responseText);
-		// console.log(`[hashnode.ts getPosts] Parsed JSON response:`, JSON.stringify(json, null, 2));
+		console.log(
+			`[hashnode.ts getPosts] Parsed JSON response:`,
+			JSON.stringify(json, null, 2)
+		);
 
 		if (json.errors) {
 			console.error(

@@ -27,38 +27,49 @@
 	}
 
 	let posts: BlogPost[] = [];
-	let currentCursor: string | null = null;
+	let currentCursor: string | null = null; // Start with null for initial load
 	let hasMore: boolean = true;
 	let loading = false;
-	let initialLoadAttempted = false;
+	let initialLoadAttempted = false; // Tracks if the first fetch attempt happened
 	let errorMessage: string | null = null;
 
 	let loadMoreTrigger: HTMLDivElement | undefined = undefined;
 	let observer: IntersectionObserver | null = null;
 
-	async function loadPosts(cursor: string | null = null) {
+	async function loadPosts(cursor: string | null) {
+		// Prevent concurrent loads or loading when no more posts exist
 		if (loading || (!hasMore && cursor !== null)) return;
 
 		loading = true;
 		errorMessage = null;
 		const isInitialLoad = cursor === null;
 
-		// console.log(`[BlogPosts] Fetching from API. Cursor: ${cursor}`); // Keep or remove debug logs
+		console.log(
+			`[BlogPosts] Fetching posts. ${
+				isInitialLoad ? "Initial load" : `Cursor: ${cursor}`
+			}`
+		);
 
 		try {
 			const timestamp = Date.now();
+			// Construct URL: Add cursor only if it exists, always add timestamp
 			const apiUrl = `/api/posts${
 				cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""
-			}${cursor ? "&" : "?"}t=${timestamp}`;
+			}${cursor ? "&" : "?"}t=${timestamp}`; // Cache-busting timestamp
+
+			console.log("URL", apiUrl);
 
 			const res = await fetch(apiUrl);
 
-			// console.log(`[BlogPosts] API Response Status: ${res.status}`); // Keep or remove debug logs
+			console.log(
+				`[BlogPosts] API Response Status: ${res.status} for ${
+					isInitialLoad ? "initial load" : `cursor: ${cursor}`
+				}`
+			);
 			if (!res.ok) {
 				let errorText = `HTTP error ${res.status}`;
 				try {
 					const errorData = await res.json();
-					// console.error("[BlogPosts] API Error Response Body:", errorData); // Keep or remove debug logs
 					errorText = errorData.error || errorText;
 				} catch {
 					/* Ignore */
@@ -67,80 +78,112 @@
 			}
 
 			const data: PostsApiResponse = await res.json();
+			console.log(
+				`[BlogPosts] Data received for ${
+					isInitialLoad ? "initial load" : `cursor: ${cursor}`
+				}:`,
+				data
+			);
 
-			// console.log("[BlogPosts] Data received from API:", JSON.stringify(data, null, 2)); // Keep or remove debug logs
-			// if (data.posts && data.posts.length > 0) {
-			// 	console.log(`[BlogPosts] First post title received: ${data.posts[0].title}`);
-			// } else {
-			// 	console.log("[BlogPosts] No posts received in API data.");
-			// }
-
-			// --- SORTING LOGIC ADDED HERE ---
+			// Sorting and state update logic
 			if (data.posts?.length > 0) {
 				const combinedPosts = isInitialLoad
-					? data.posts
-					: [...posts, ...data.posts];
-				// Sort the combined list by publishedAt descending
+					? data.posts // Replace on initial load
+					: [...posts, ...data.posts]; // Append on subsequent loads
+
+				// Always sort the combined list to ensure order
 				combinedPosts.sort(
 					(a, b) =>
 						new Date(b.publishedAt).getTime() -
 						new Date(a.publishedAt).getTime()
 				);
-				posts = combinedPosts; // Update the reactive variable
-				currentCursor = data.endCursor;
+				posts = combinedPosts;
+				currentCursor = data.endCursor; // Update cursor from response
 				hasMore = data.hasMore;
 			} else {
-				if (isInitialLoad) posts = []; // Clear posts if initial load returns none
-				hasMore = false;
+				// No posts received
+				if (isInitialLoad) posts = []; // Clear posts if initial load is empty
+				hasMore = false; // No more posts available
+				// If initial load returned nothing, ensure cursor is null
+				if (isInitialLoad) currentCursor = null;
 			}
-			// --- END SORTING LOGIC ---
 		} catch (e: any) {
 			errorMessage = e.message || "An unknown error occurred.";
 			console.error(
-				"[BlogPosts] Error during loadPosts fetch/processing:",
+				`[BlogPosts] Error during loadPosts (${
+					isInitialLoad ? "initial" : `cursor: ${cursor}`
+				}):`,
 				e
 			);
-			hasMore = false;
+			hasMore = false; // Stop loading on error
+			if (isInitialLoad) currentCursor = null; // Reset cursor on initial load error
 		} finally {
 			loading = false;
-			initialLoadAttempted = true;
+			if (isInitialLoad) {
+				initialLoadAttempted = true; // Mark initial attempt complete
+			}
+			// Re-evaluate observer setup after loading state changes
+			setupObserver();
 		}
 	}
 
 	function setupObserver() {
-		if (!loadMoreTrigger || observer) return;
-		observer = new IntersectionObserver(
-			(entries) => {
-				if (entries[0].isIntersecting && hasMore && !loading) {
-					loadPosts(currentCursor);
-				}
-			},
-			{ rootMargin: "300px", threshold: 0.01 }
-		);
-		observer.observe(loadMoreTrigger);
+		if (observer) {
+			observer.disconnect();
+			observer = null;
+		}
+
+		// Setup only if initial load is done, more posts exist, not loading, and trigger is present
+		if (initialLoadAttempted && hasMore && !loading && loadMoreTrigger) {
+			console.log("[BlogPosts] Setting up IntersectionObserver.");
+			observer = new IntersectionObserver(
+				(entries) => {
+					// Trigger load only if intersecting and we have a valid cursor for the *next* page
+					if (entries[0].isIntersecting && currentCursor) {
+						console.log(
+							"[BlogPosts] Observer triggered loadPosts with cursor:",
+							currentCursor
+						);
+						loadPosts(currentCursor);
+					} else if (entries[0].isIntersecting) {
+						console.log(
+							"[BlogPosts] Observer triggered but no valid cursor:",
+							currentCursor
+						);
+					}
+				},
+				{ rootMargin: "300px", threshold: 0.01 }
+			);
+			observer.observe(loadMoreTrigger);
+		} else {
+			// Optional detailed logging for debugging observer setup
+			// console.log("[BlogPosts] Observer conditions not met:", { initialLoadAttempted, hasMore, loading, triggerExists: !!loadMoreTrigger });
+		}
 	}
 
-	$: if (
-		loadMoreTrigger &&
-		initialLoadAttempted &&
-		hasMore &&
-		!loading &&
-		!observer
-	) {
+	// Reactive statement to ensure observer is correctly setup/removed when state changes
+	$: if (loadMoreTrigger || hasMore || loading || initialLoadAttempted) {
 		setupObserver();
-	} else if (observer && (!hasMore || loading)) {
-		observer.disconnect();
-		observer = null;
 	}
 
-	onMount(() => loadPosts(null));
+	// Call loadPosts with null on mount for the initial fetch
+	onMount(() => {
+		// Reset state on mount in case of HMR or navigation
+		posts = [];
+		currentCursor = null;
+		hasMore = true;
+		initialLoadAttempted = false;
+		errorMessage = null;
+		loading = false; // Ensure loading is false initially
+		loadPosts(null); // Trigger initial load
+	});
+
 	onDestroy(() => {
 		if (observer) observer.disconnect();
 	});
 </script>
 
-<!-- TEMPLATE REMAINS EXACTLY THE SAME AS YOUR LAST VERSION -->
-<!-- Container to stabilize layout -->
+<!-- TEMPLATE REMAINS EXACTLY THE SAME AS BEFORE -->
 <div class="min-h-[60vh]">
 	<!-- Initial Skeleton Loader -->
 	{#if loading && !initialLoadAttempted}
@@ -302,6 +345,7 @@
 	{/if}
 
 	<!-- Intersection Observer Trigger -->
+	<!-- Render trigger only after initial load attempt and if more might exist -->
 	{#if hasMore && initialLoadAttempted && !loading}
 		<div bind:this={loadMoreTrigger} class="h-10 mt-8 invisible"></div>
 	{/if}
