@@ -2,79 +2,27 @@
 import { error } from "@sveltejs/kit";
 import { getPost } from "$lib/server/hashnode";
 import type { PageServerLoad } from "./$types";
-// Import the type for assertion
-import type { LayoutDataShape } from "../../+layout";
+// No longer need LayoutDataShape here if we don't re-process the url
 
 export const load: PageServerLoad = async ({ params, parent }) => {
 	const { slug } = params;
 	console.log(`[+page.server.ts] Loading post with slug: ${slug}`);
 
-	let layoutUrlData: LayoutDataShape["url"] | null = null; // Initialize as null
-
-	try {
-		console.log("[+page.server.ts] Calling await parent()...");
-		const rawParentData = await parent(); // Get the raw data
-		console.log(
-			"[+page.server.ts] RAW data received from parent():",
-			JSON.stringify(rawParentData)
-		);
-
-		// First, check if it's a non-null object
-		if (
-			rawParentData &&
-			typeof rawParentData === "object" &&
-			rawParentData !== null
-		) {
-			// Assert the type AFTER confirming it's an object to help TypeScript
-			const potentialParentData =
-				rawParentData as Partial<LayoutDataShape>;
-
-			// Now check if the 'url' property and its nested properties exist and are valid
-			if (
-				potentialParentData.url && // Check url exists
-				typeof potentialParentData.url === "object" && // Check url is object
-				potentialParentData.url !== null && // Check url is not null
-				potentialParentData.url.origin && // Check origin is truthy
-				potentialParentData.url.href && // Check href is truthy
-				potentialParentData.url.pathname // Check pathname is truthy
-			) {
-				// If valid, store the url object
-				layoutUrlData =
-					potentialParentData.url as LayoutDataShape["url"]; // Can safely cast here
-				console.log(
-					"[+page.server.ts] Parent data appears valid:",
-					layoutUrlData
-				);
-			} else {
-				// If structure is invalid, log warning
-				console.warn(
-					"[+page.server.ts] Parent data received is not the expected shape or missing origin/href/pathname:",
-					rawParentData
-				);
-				layoutUrlData = null;
-			}
-		} else {
-			// If rawParentData isn't even an object, log warning
-			console.warn(
-				"[+page.server.ts] Parent data received is not an object:",
-				rawParentData
-			);
-			layoutUrlData = null;
-		}
-	} catch (err: any) {
-		// Log error during parent() call but don't throw 500 here for this specific reason
-		console.error(
-			"[+page.server.ts] Error during await parent() call:",
-			err
-		);
-		layoutUrlData = null; // Ensure layoutUrlData is null on error
-	}
+	// --- Optional: You can still call parent() if you need other layout data ---
+	// try {
+	//  console.log("[+page.server.ts] Calling await parent()...");
+	//  const parentData = await parent();
+	//  console.log("[+page.server.ts] Data received from parent():", parentData);
+	//  // Use parentData if needed for something *other* than the URL
+	// } catch (err: any) {
+	//  console.error("[+page.server.ts] Error during await parent() call:", err);
+	//  // Handle error if necessary, but don't let it block post loading unless required
+	// }
 
 	// --- Fetch the post ---
 	try {
 		const post = await getPost(slug);
 		if (!post) {
-			// Still throw 404 if post itself isn't found
 			error(404, "Post not found");
 		}
 
@@ -82,17 +30,15 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 			`[+page.server.ts] Post found for slug: ${slug}. Title: ${post.title}`
 		);
 
-		// Return post and whatever layoutUrlData we determined (could be null)
-		console.log(
-			"[+page.server.ts] Returning post and layoutUrlData:",
-			layoutUrlData
-		);
+		// --- Return ONLY the data specific to this page ---
+		// The 'url' object from +layout.ts will be automatically merged
+		// into the 'data' prop for +page.svelte by SvelteKit.
+		console.log("[+page.server.ts] Returning post data.");
 		return {
 			post: post,
-			url: layoutUrlData, // Pass the url object (or null) to the page
+			// DO NOT return a 'url' key here, let it come from the layout
 		};
 	} catch (err: any) {
-		// Throw 500 only if fetching the actual post fails
 		console.error(`[+page.server.ts] Error fetching post ${slug}:`, err);
 		error(500, `Failed to load post: ${err.message || "Unknown error"}`);
 	}

@@ -1,82 +1,97 @@
 <!-- src/routes/post/[slug]/+page.svelte -->
 <script lang="ts">
-	import type { PageData } from "./$types"; // PageData includes { post, url: { ... } | null }
+	// Import the layout data shape to merge it into PageData expectation
+	import type { LayoutDataShape } from "../../+layout";
+	import type { PageData as ServerPageData } from "./$types"; // Type from +page.server.ts
 	import SignupForm from "$lib/components/blog/SignupForm.svelte";
 	import { formatDate } from "$lib/utils/helpers";
 	import { ChevronLeft } from "lucide-svelte";
 	import type { HashnodePost } from "$lib/server/hashnode";
-	import { onMount } from "svelte"; // Keep onMount for logging if needed
+	import { onMount } from "svelte";
 
-	export let data: PageData;
-	// Assert post type as server load handles 404/500 for the post itself
+	// Define the combined data type expected by the page component
+	type PageData = ServerPageData & LayoutDataShape;
+
+	export let data: PageData; // Expects { post: ..., url: { ... } }
+
+	// --- Derive page-specific values from MERGED data ---
 	const post = data.post as HashnodePost;
+	const baseUrl = data.url?.origin ?? "";
 
-	// --- Image URLs ---
-	const defaultOgImage = "https://kafkaesque.blog/img/logo_white.png"; // Verify path
+	// --- Page Specific Meta Values ---
+	const postTitle = post?.title ?? "Blog Post";
+	const postDescription =
+		post?.subtitle || post?.brief || "Read this blog post.";
+	const postUrl = data.url?.href ?? "";
 
-	// data.url might be null if parent load failed or returned unexpected data
-	const baseUrl = data.url?.origin ?? ""; // Safely get origin or empty string
+	// --- Calculate OG Image URL ---
+	const defaultOgImage = "https://kafkaesque.blog/img/logo_white.png";
+	const ogImageUrl = post?.coverImage?.src
+		? baseUrl
+			? `${baseUrl}/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80`
+			: `/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80`
+		: defaultOgImage;
 
-	onMount(() => {
-		// Optional: Log received url data for confirmation during development
-		console.log("[+page.svelte] Received data.url:", data.url);
-		if (!baseUrl && post?.coverImage?.src) {
-			// Warn only if base URL is missing AND there's a cover image to make absolute
-			console.warn(
-				"[+page.svelte] Warning: Base URL (origin) could not be determined from data.url. OG/Twitter image URL will be relative or default."
-			);
-		}
-	});
+	// --- Calculate Secure URL Content ---
+	const secureOgImageUrlContent = ogImageUrl.startsWith("https")
+		? ogImageUrl
+		: "";
 
-	// URL for the image displayed *within* the post body (can be relative)
+	// Helper function to determine image type
+	function getImageType(url: string): string {
+		if (!url) return "image/png";
+		const lowerUrl = url.toLowerCase();
+		if (lowerUrl.endsWith(".png")) return "image/png";
+		if (lowerUrl.endsWith(".jpg") || lowerUrl.endsWith(".jpeg"))
+			return "image/jpeg";
+		if (lowerUrl.endsWith(".webp")) return "image/webp";
+		if (url.includes("/api/image")) return "image/jpeg";
+		return "image/png";
+	}
+	const imageType = getImageType(ogImageUrl);
+
+	// --- Image URL for content display ---
 	const coverImageUrl = post?.coverImage?.src
 		? `/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80`
 		: null;
 
-	// --- ABSOLUTE URL for the preview image (og:image, twitter:image) ---
-	// Construct ogImageUrl: Use absolute path if baseUrl exists, otherwise use relative path or default
-	const ogImageUrl = post?.coverImage?.src // Does the post have a cover image?
-		? baseUrl // Is the baseUrl available?
-			? `${baseUrl}/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80` // Yes: Absolute URL
-			: `/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80` // No baseUrl: Relative URL (might not work for external crawlers)
-		: defaultOgImage; // No cover image: Use default (which is absolute)
-
-	// --- Post Metadata ---
-	const postTitle = post?.title ?? "Blog Post";
-	const postDescription =
-		post?.subtitle || post?.brief || "Read this blog post.";
+	// --- Other Post Metadata ---
 	const postPublishedAt = post?.publishedAt;
+
+	onMount(() => {
+		console.log("[+page.svelte] Received merged data:", data);
+		console.log("[+page.svelte] Using OG Image URL:", ogImageUrl);
+		console.log(
+			"[+page.svelte] Secure OG Image URL Content:",
+			secureOgImageUrlContent
+		);
+	});
 </script>
 
 <svelte:head>
+	<!-- These tags will OVERRIDE the layout's title/description -->
+	<!-- And they will be the *only* source for image/twitter tags on post pages -->
+
 	<title>{postTitle}</title>
 	<meta name="description" content={postDescription} />
 
-	<!-- Canonical and OG URL only if data.url exists and has href -->
-	{#if data.url?.href}
-		<link rel="canonical" href={data.url.href} />
-		<meta property="og:url" content={data.url.href} />
+	{#if postUrl}
+		<link rel="canonical" href={postUrl} />
+		<meta property="og:url" content={postUrl} />
 	{/if}
 
-	<!-- Open Graph Tags (ogImageUrl adapts based on baseUrl) -->
 	<meta property="og:title" content={postTitle} />
 	<meta property="og:description" content={postDescription} />
 	<meta property="og:type" content="article" />
+
+	<!-- OG Image Block - Always Rendered -->
 	<meta property="og:image" content={ogImageUrl} />
-	{#if ogImageUrl.startsWith("https")}
-		<meta property="og:image:secure_url" content={ogImageUrl} />
-	{/if}
+	<meta property="og:image:secure_url" content={secureOgImageUrlContent} />
+	<meta property="og:image:type" content={imageType} />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
-	{#if ogImageUrl.includes(".png") || ogImageUrl.endsWith(".png")}
-		<meta property="og:image:type" content="image/png" />
-	{:else if ogImageUrl.includes(".jpg") || ogImageUrl.includes(".jpeg") || ogImageUrl.endsWith(".jpg") || ogImageUrl.endsWith(".jpeg")}
-		<meta property="og:image:type" content="image/jpeg" />
-	{:else if ogImageUrl.includes(".webp") || ogImageUrl.endsWith(".webp")}
-		<meta property="og:image:type" content="image/webp" />
-	{/if}
 
-	<!-- Twitter Card Tags -->
+	<!-- Twitter Card Block - Always Rendered -->
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={postTitle} />
 	<meta name="twitter:description" content={postDescription} />
@@ -168,7 +183,7 @@
 		</div>
 	</article>
 {:else}
-	<!-- Fallback if post data is somehow null/undefined despite server checks -->
+	<!-- Fallback -->
 	<div class="text-center py-16 px-4">
 		<h1 class="text-2xl font-bold text-red-600 mb-4">Error Loading Post</h1>
 		<p class="text-gray-600">
