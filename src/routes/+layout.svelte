@@ -22,19 +22,7 @@
 	});
 
 	export let data: LayoutData;
-
-	// Construct the default OG image URL
-	const defaultOgImageUrl = data.url
-		? `${data.url.origin}/image/logo.webp`
-		: "/image/logo.webp";
 </script>
-
-<svelte:head>
-	<!-- Default meta tags - can be overridden by child pages -->
-	<meta property="og:image" content={defaultOgImageUrl} />
-	<meta name="twitter:image" content={defaultOgImageUrl} />
-	<meta name="twitter:card" content="summary_large_image" />
-</svelte:head>
 
 <div class="min-h-screen flex flex-col bg-gray-50">
 	<Navbar currentPathname={data.url.pathname} />
