@@ -1,22 +1,43 @@
+// src/routes/+layout.ts
 import { dev } from "$app/environment";
 import type { LayoutLoad } from "./$types";
 import { injectAnalytics } from "@vercel/analytics/sveltekit";
 import { injectSpeedInsights } from "@vercel/speed-insights/sveltekit";
 
-// Inject Vercel Analytics and Speed Insights
-injectSpeedInsights(); // Call it early
+injectSpeedInsights();
 injectAnalytics({ mode: dev ? "development" : "production" });
 
-// This load function runs for every page unless overridden by a child layout/page load
-export const load: LayoutLoad = ({ url }) => {
-	// Pass the url object to the layout and potentially child pages
-	// This allows access to pathname, href, etc. in components
-	return {
+// Define the shape of the data this load function returns
+export type LayoutDataShape = {
+	url: {
+		href: string;
+		pathname: string;
+		origin: string;
+	};
+};
+
+// Use the defined type as the return type for the load function
+export const load: LayoutLoad = ({ url }): LayoutDataShape => {
+	// --- Add Logging ---
+	console.log("[src/routes/+layout.ts] Load function executing...");
+	console.log(
+		"[src/routes/+layout.ts] Received URL object:",
+		JSON.stringify(url)
+	);
+
+	const dataToReturn: LayoutDataShape = {
 		url: {
 			href: url.href,
 			pathname: url.pathname,
 			origin: url.origin,
-			// Add other url properties if needed (searchParams, hash, etc.)
 		},
 	};
+
+	console.log(
+		"[src/routes/+layout.ts] Returning data:",
+		JSON.stringify(dataToReturn)
+	);
+	// --- End Logging ---
+
+	return dataToReturn;
 };

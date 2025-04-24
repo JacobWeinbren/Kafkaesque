@@ -1,62 +1,71 @@
 <!-- src/routes/post/[slug]/+page.svelte -->
 <script lang="ts">
-	import type { PageData } from "./$types";
+	import type { PageData } from "./$types"; // PageData now includes { post, layoutData }
 	import SignupForm from "$lib/components/blog/SignupForm.svelte";
 	import { formatDate } from "$lib/utils/helpers";
 	import { ChevronLeft } from "lucide-svelte";
 	import type { HashnodePost } from "$lib/server/hashnode";
 	import { onMount } from "svelte";
 
-	export let data: PageData; // Contains post data and url from load functions
-	const post = data.post as HashnodePost; // Asserting type as load function handles errors
+	export let data: PageData;
+	const post = data.post as HashnodePost;
 
 	// --- Image URLs ---
-	// Define the default image URL (MUST be absolute)
-	const defaultOgImage = `${data.url.origin}/img/logo_white.webp`; // Ensure this path is correct and publicly accessible
+	const defaultOgImage = "https://kafkaesque.blog/img/logo_white.png";
 
-	// Base URL needed for absolute paths (comes from +layout.ts -> LayoutData)
-	const baseUrl = data.url.origin; // e.g., "https://kafkaesque.blog"
+	// --- Access layoutData ---
+	// Check if layoutData exists and has the expected structure 'url.origin'
+	const layoutUrlData =
+		data.layoutData &&
+		typeof data.layoutData === "object" &&
+		data.layoutData.url &&
+		typeof data.layoutData.url === "object"
+			? data.layoutData.url
+			: null;
+	const baseUrl = layoutUrlData?.origin ?? ""; // Get origin if layoutData.url exists
 
-	// URL for the image displayed *within* the post body (can be relative)
+	// Log what the page received for debugging
+	onMount(() => {
+		console.log("[+page.svelte] Received layoutData:", data.layoutData);
+		console.log("[+page.svelte] Extracted layoutUrlData:", layoutUrlData);
+		console.log("[+page.svelte] Determined baseUrl:", baseUrl);
+		if (!baseUrl) {
+			console.warn(
+				"[+page.svelte] Warning: Base URL (origin) could not be determined from layoutData. Absolute image URLs might be incorrect."
+			);
+		}
+		console.log(
+			"[+page.svelte] Determined ABSOLUTE OG Image URL:",
+			ogImageUrl
+		);
+	});
+
 	const coverImageUrl = post?.coverImage?.src
 		? `/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80`
 		: null;
 
-	// --- ABSOLUTE URL for the preview image (og:image, twitter:image) ---
-	// Use the post's cover image (via API) if available, otherwise use the default logo.
-	// CRITICAL: Prepend baseUrl to the API path to make it absolute.
+	// Use baseUrl if available, otherwise the image URL might be relative/broken
+	// Ensure baseUrl is prepended only if it's not empty
 	const ogImageUrl = post?.coverImage?.src
-		? `${baseUrl}/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80` // ABSOLUTE URL
-		: defaultOgImage; // Default is already absolute
+		? `${baseUrl ? baseUrl : ""}/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80`
+		: defaultOgImage;
 
 	// --- Post Metadata ---
 	const postTitle = post?.title ?? "Blog Post";
 	const postDescription =
 		post?.subtitle || post?.brief || "Read this blog post.";
 	const postPublishedAt = post?.publishedAt;
-
-	// --- Debugging ---
-	onMount(() => {
-		if (!post) {
-			console.error(
-				"[+page.svelte] Post data is missing! Check load function."
-			);
-		}
-		console.log("[+page.svelte] Rendering post:", postTitle);
-		console.log("[+page.svelte] Base URL:", baseUrl);
-		console.log(
-			"[+page.svelte] Determined ABSOLUTE OG Image URL:",
-			ogImageUrl
-		);
-	});
 </script>
 
 <svelte:head>
-	<!-- Override layout defaults with post-specific information -->
 	<title>{postTitle}</title>
 	<meta name="description" content={postDescription} />
 
-	<!-- Canonical and OG URL are inherited from layout via data.url -->
+	<!-- Use layoutUrlData if available -->
+	{#if layoutUrlData?.href}
+		<link rel="canonical" href={layoutUrlData.href} />
+		<meta property="og:url" content={layoutUrlData.href} />
+	{/if}
 
 	<!-- Open Graph Tags -->
 	<meta property="og:title" content={postTitle} />
@@ -68,7 +77,6 @@
 	{/if}
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
-	<!-- Assuming API aims for ~1.91:1 ratio -->
 	{#if ogImageUrl.includes(".png") || ogImageUrl.endsWith(".png")}
 		<meta property="og:image:type" content="image/png" />
 	{:else if ogImageUrl.includes(".jpg") || ogImageUrl.includes(".jpeg") || ogImageUrl.endsWith(".jpg") || ogImageUrl.endsWith(".jpeg")}
@@ -79,13 +87,9 @@
 
 	<!-- Twitter Card Tags -->
 	<meta name="twitter:card" content="summary_large_image" />
-	<!-- Explicitly set Twitter title and description -->
 	<meta name="twitter:title" content={postTitle} />
 	<meta name="twitter:description" content={postDescription} />
 	<meta name="twitter:image" content={ogImageUrl} />
-	<!-- Optional: Add Twitter site/creator handles if applicable -->
-	<!-- <meta name="twitter:site" content="@YourSiteHandle"> -->
-	<!-- <meta name="twitter:creator" content="@AuthorHandle"> -->
 
 	<!-- Article Specific Tags -->
 	{#if postPublishedAt}
@@ -98,8 +102,7 @@
 	{/if}
 </svelte:head>
 
-<!-- Rest of the component remains the same -->
-
+<!-- Rest of the component body remains the same -->
 {#if post}
 	<article class="max-w-3xl mx-auto px-4 py-8">
 		{#if coverImageUrl}
