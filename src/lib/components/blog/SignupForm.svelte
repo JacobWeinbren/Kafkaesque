@@ -84,7 +84,7 @@
 </script>
 
 <div
-	class="bg-green-50 border border-green-100 rounded-xl p-6 shadow-sm transition hover:shadow-md"
+	class="bg-green-50 border border-green-100 rounded-xl p-6 shadow-xs transition hover:shadow"
 >
 	<div class="mb-5">
 		<h3 class="text-xl font-display font-bold text-slate-800 mb-2">
@@ -114,7 +114,7 @@
 				name="email"
 				required
 				placeholder="you@example.com"
-				class="w-full px-3 py-2 text-sm border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 transition {customErrorMessage
+				class="w-full px-3 py-2 text-sm border rounded-md shadow-xs focus:ring-green-500 focus:border-green-500 transition {customErrorMessage
 					? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50'
 					: 'border-slate-200'}"
 				aria-describedby="email-error-message"

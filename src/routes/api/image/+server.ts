@@ -97,10 +97,6 @@ export async function GET({ url }) {
 
 		// --- End Image Processing ---
 
-		console.log(
-			`Successfully processed: ${imageUrl} (w=${widthInt}, h=${heightInt}, q=${qualityInt})`
-		);
-
 		// Return the processed image with appropriate caching headers
 		// Vercel's Edge Network will respect these headers
 		return new Response(outputBuffer, {

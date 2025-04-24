@@ -65,14 +65,14 @@
 				<div class="flex flex-wrap gap-4 mb-8">
 					<a
 						href="/portfolio"
-						class="btn bg-white text-green-800 hover:bg-green-50 shadow-md hover:shadow-lg transition-all duration-300"
+						class="btn bg-white text-green-800 hover:bg-green-50 shadow hover:shadow-md transition-all duration-300"
 					>
 						View Portfolio
 						<ArrowRight class="h-4 w-4 ml-1.5" />
 					</a>
 					<a
 						href="/blog"
-						class="btn bg-green-600/60 backdrop-blur-sm text-white hover:bg-green-600/80 border border-green-500/50"
+						class="btn bg-green-600/60 backdrop-blur-sm-sm text-white hover:bg-green-600/80 border border-green-500/50"
 					>
 						Read Blog
 					</a>
@@ -82,7 +82,7 @@
 			<div class="hidden md:block">
 				<!-- Keeping the original Technical/Map-inspired decorative graphic -->
 				<div
-					class="relative rounded-xl overflow-hidden border border-white/20 shadow-xl opacity-90"
+					class="relative rounded-xl overflow-hidden border border-white/20 shadow-lg opacity-90"
 				>
 					<svg
 						viewBox="0 0 500 380"
@@ -190,7 +190,7 @@
 			<a
 				href="/Jacob Weinbren - Resume.pdf"
 				download
-				class="group bg-white rounded-xl border border-slate-100 p-6 hover:border-green-200 hover:shadow-md transition-all duration-300 flex flex-col"
+				class="group bg-white rounded-xl border border-slate-100 p-6 hover:border-green-200 hover:shadow transition-all duration-300 flex flex-col"
 			>
 				<div
 					class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-100 transition-colors"
@@ -217,7 +217,7 @@
 			<!-- Portfolio Card -->
 			<a
 				href="/portfolio"
-				class="group bg-white rounded-xl border border-slate-100 p-6 hover:border-green-200 hover:shadow-md transition-all duration-300 flex flex-col"
+				class="group bg-white rounded-xl border border-slate-100 p-6 hover:border-green-200 hover:shadow transition-all duration-300 flex flex-col"
 			>
 				<div
 					class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-100 transition-colors"
@@ -244,7 +244,7 @@
 			<!-- Blog Card -->
 			<a
 				href="/blog"
-				class="group bg-white rounded-xl border border-slate-100 p-6 hover:border-green-200 hover:shadow-md transition-all duration-300 flex flex-col"
+				class="group bg-white rounded-xl border border-slate-100 p-6 hover:border-green-200 hover:shadow transition-all duration-300 flex flex-col"
 			>
 				<div
 					class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-100 transition-colors"
@@ -275,7 +275,7 @@
 <section class="py-16 bg-white">
 	<div class="max-w-4xl mx-auto px-4 sm:px-6">
 		<div
-			class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-8 border border-green-200 shadow-sm"
+			class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-8 border border-green-200 shadow-xs"
 		>
 			<div class="text-center">
 				<h2

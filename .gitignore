@@ -23,3 +23,5 @@ Thumbs.db
 .vercel/
 
 .svelte-kit/
+
+.houdini

@@ -144,7 +144,7 @@
 					class="group transition-all duration-300 block h-full"
 				>
 					<div
-						class="bg-white rounded-xl border border-slate-100 hover:border-green-200 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full"
+						class="bg-white rounded-xl border border-slate-100 hover:border-green-200 hover:shadow transition-all duration-300 overflow-hidden flex flex-col h-full"
 					>
 						<div class="p-6 flex flex-col flex-grow">
 							<div class="flex items-center mb-4">
@@ -205,7 +205,7 @@
 
 		<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
 			<div
-				class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300"
+				class="bg-white p-5 rounded-xl border border-slate-100 shadow-xs hover:shadow transition-all duration-300"
 			>
 				<h3
 					class="font-medium text-slate-800 mb-3 text-sm uppercase tracking-wide"
@@ -240,7 +240,7 @@
 				</ul>
 			</div>
 			<div
-				class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300"
+				class="bg-white p-5 rounded-xl border border-slate-100 shadow-xs hover:shadow transition-all duration-300"
 			>
 				<h3
 					class="font-medium text-slate-800 mb-3 text-sm uppercase tracking-wide"
@@ -275,7 +275,7 @@
 				</ul>
 			</div>
 			<div
-				class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300"
+				class="bg-white p-5 rounded-xl border border-slate-100 shadow-xs hover:shadow transition-all duration-300"
 			>
 				<h3
 					class="font-medium text-slate-800 mb-3 text-sm uppercase tracking-wide"
@@ -310,7 +310,7 @@
 				</ul>
 			</div>
 			<div
-				class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300"
+				class="bg-white p-5 rounded-xl border border-slate-100 shadow-xs hover:shadow transition-all duration-300"
 			>
 				<h3
 					class="font-medium text-slate-800 mb-3 text-sm uppercase tracking-wide"
@@ -350,7 +350,7 @@
 			<a
 				href="/Jacob Weinbren - Resume.pdf"
 				download
-				class="btn btn-primary inline-flex items-center text-sm shadow-sm"
+				class="btn btn-primary inline-flex items-center text-sm shadow-xs"
 			>
 				<Download class="h-4 w-4 mr-2" />
 				Download Full CV

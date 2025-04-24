@@ -1,25 +1,76 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+/* 1. Imports - MUST be first */
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* 2. Plugins (if applicable) */
+@plugin "@tailwindcss/typography";
 
-:root {
-	--green-50: #ecfdf5;
-	--green-100: #d1fae5;
-	--green-200: #a7f3d0;
-	--green-300: #6ee7b7;
-	--green-400: #34d399;
-	--green-500: #10b981;
-	--green-600: #059669;
-	--green-700: #047857;
-	--green-800: #065f46;
-	--green-900: #064e3b;
+/* 3. Theme Definitions */
+@theme {
+	/* Colors */
+	--color-green-50: #f0fdf4;
+	--color-green-100: #dcfce7;
+	--color-green-200: #bbf7d0;
+	--color-green-300: #86efac;
+	--color-green-400: #4ade80;
+	--color-green-500: #22c55e;
+	--color-green-600: #16a34a;
+	--color-green-700: #15803d;
+	--color-green-800: #166534;
+	--color-green-900: #14532d;
+	--color-slate-50: #f8fafc;
+	--color-slate-100: #f1f5f9;
+	--color-slate-200: #e2e8f0;
+	--color-slate-700: #334155;
+	--color-slate-800: #1e293b;
+	--color-slate-900: #0f172a;
+
+	/* Fonts */
+	--font-sans:
+		"Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+		"Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+		"Noto Color Emoji";
+	--font-display:
+		"Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+		"Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+		"Noto Color Emoji";
+
+	/* Keyframes */
+	@keyframes fadeInFast {
+		"0%": {
+			opacity: 0;
+			transform: scale(0.97);
+		}
+		"100%": {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+	@keyframes popUp {
+		"0%": {
+			opacity: 0;
+			transform: translateY(10px);
+		}
+		"100%": {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+	@keyframes shimmer {
+		"0%": {
+			background-position: -468px 0;
+		}
+		"100%": {
+			background-position: 468px 0;
+		}
+	}
 }
 
+/* 4. Base Layer Styles */
 @layer base {
 	html {
-		font-family: "Inter", system-ui, sans-serif;
+		font-family: var(--font-sans);
 		scroll-behavior: smooth;
 		-webkit-tap-highlight-color: transparent;
 		text-rendering: optimizeLegibility;
@@ -28,22 +79,20 @@
 
 	body {
 		@apply bg-slate-50 text-slate-800;
+		/* @apply dark:bg-gray-900 dark:text-slate-200; */
 	}
 
-	/* Elegant scrollbar */
+	/* Scrollbar */
 	::-webkit-scrollbar {
 		width: 6px;
 		height: 6px;
 	}
-
 	::-webkit-scrollbar-track {
 		@apply bg-slate-100;
 	}
-
 	::-webkit-scrollbar-thumb {
 		@apply bg-green-500/50 rounded-full;
 	}
-
 	::-webkit-scrollbar-thumb:hover {
 		@apply bg-green-600/60;
 	}
@@ -54,79 +103,83 @@
 	h4,
 	h5,
 	h6 {
-		@apply font-display tracking-tight;
+		@apply font-display font-bold tracking-tight;
 	}
 }
 
-@layer components {
-	.card {
-		@apply bg-white rounded-xl shadow-sm border border-slate-100 p-6 transition-all duration-300 hover:shadow-md;
-	}
+/* 5. Custom Utilities */
+@utility card {
+	@apply bg-white rounded-xl shadow-xs border border-slate-100 p-6 transition-all duration-300 hover:shadow;
+	/* @apply dark:bg-gray-800 dark:border-gray-700; */
+}
 
-	.btn {
-		@apply inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-all duration-200 hover:translate-y-[-1px] active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed gap-1.5;
-	}
+@utility btn {
+	@apply inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-all duration-200 hover:translate-y-[-1px] active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed gap-1.5;
+}
 
-	.btn-primary {
-		@apply bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-sm hover:shadow;
-	}
+@utility btn-primary {
+	@apply bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-xs hover:shadow-sm;
+}
 
-	.btn-secondary {
-		@apply bg-slate-700 text-white hover:bg-slate-800 focus:ring-slate-600;
-	}
+@utility btn-secondary {
+	@apply bg-slate-700 text-white hover:bg-slate-800 focus:ring-slate-600;
+}
 
-	.btn-outline {
-		@apply border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 focus:ring-slate-400;
-	}
+@utility btn-outline {
+	@apply border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 focus:ring-slate-400;
+}
 
-	.badge {
-		@apply px-2 py-0.5 rounded-md text-xs font-medium inline-flex items-center;
-	}
+@utility badge {
+	@apply px-2 py-0.5 rounded-md text-xs font-medium inline-flex items-center;
+}
 
-	.badge-primary {
-		@apply bg-green-100 text-green-800;
-	}
+@utility badge-primary {
+	@apply bg-green-100 text-green-800;
+}
 
-	.badge-secondary {
-		@apply bg-slate-100 text-slate-800;
-	}
+@utility badge-secondary {
+	@apply bg-slate-100 text-slate-800;
+}
 
-	.section {
-		@apply py-16 md:py-24;
-	}
+@utility section {
+	@apply py-16 md:py-24;
+}
 
-	.container-narrow {
-		@apply max-w-4xl mx-auto px-4 sm:px-6;
-	}
+@utility container-narrow {
+	@apply max-w-4xl mx-auto px-4 sm:px-6;
+}
 
-	.prose-custom {
-		@apply prose prose-lg prose-slate prose-headings:font-display prose-headings:font-bold prose-headings:text-slate-900 prose-a:text-green-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-pre:bg-slate-800 prose-pre:border prose-pre:border-slate-700 prose-code:text-slate-800 prose-code:bg-slate-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none;
-	}
+@utility prose-custom {
+	@apply prose prose-lg prose-slate; /* Add dark:prose-invert if needed */
+	@apply prose-headings:font-display prose-headings:font-bold prose-headings:text-slate-900;
+	@apply prose-a:text-green-600 prose-a:no-underline hover:prose-a:underline;
+	@apply prose-img:rounded-lg;
+	@apply prose-pre:bg-slate-800 prose-pre:border prose-pre:border-slate-700;
+	@apply prose-code:text-slate-800 prose-code:bg-slate-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none;
+}
 
-	.animate-fade-in-fast {
-		animation: fadeIn 0.4s ease-in-out forwards;
-	}
+/* Animation Utilities */
+@utility animate-fade-in-fast {
+	animation: fadeInFast 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@utility animate-pop-up {
+	animation: popUp 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@utility animate-shimmer {
+	animation: shimmer 1.5s infinite linear;
+	/* Consider adding background gradient/size here if needed for shimmer */
+}
 
-	@keyframes fadeIn {
-		from {
-			opacity: 0;
-			transform: translateY(10px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.line-clamp-2 {
-		display: -webkit-box;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-
-	.line-clamp-3 {
-		display: -webkit-box;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
+/* Line Clamp Utilities - FIX: Added missing -webkit-line-clamp */
+@utility line-clamp-2 {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2; /* Added this */
+	overflow: hidden;
+}
+@utility line-clamp-3 {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3; /* Added this */
+	overflow: hidden;
 }

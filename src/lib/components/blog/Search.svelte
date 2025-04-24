@@ -164,7 +164,7 @@
 				bind:this={inputRef}
 				on:input={handleInput}
 				placeholder="Search posts and projects..."
-				class="w-full px-4 py-3 pl-12 border border-slate-200 rounded-xl focus:ring-green-500 focus:border-green-500 transition shadow-sm text-slate-800 placeholder-slate-400"
+				class="w-full px-4 py-3 pl-12 border border-slate-200 rounded-xl focus:ring-green-500 focus:border-green-500 transition shadow-xs text-slate-800 placeholder-slate-400"
 				aria-label="Search posts and projects"
 			/>
 			<div
@@ -205,7 +205,7 @@
 		{#if isLoading}
 			<div
 				in:fade={{ duration: 200 }}
-				class="absolute inset-0 flex justify-center items-center bg-white/60 backdrop-blur-sm z-10 rounded-xl"
+				class="absolute inset-0 flex justify-center items-center bg-white/60 backdrop-blur-sm-sm z-10 rounded-xl"
 			>
 				<div class="text-center">
 					<div class="relative h-12 w-12 mx-auto mb-2">
@@ -226,7 +226,7 @@
 				{#each results as post, index (post.id)}
 					<a
 						href={`/blog/post/${post.slug}`}
-						class="group flex flex-col h-full bg-white rounded-xl border border-slate-100 hover:border-green-200 hover:shadow-md transition-all duration-300 animate-fade-in-fast"
+						class="group flex flex-col h-full bg-white rounded-xl border border-slate-100 hover:border-green-200 hover:shadow transition-all duration-300 animate-fade-in-fast"
 						style="animation-delay: {index * 50}ms"
 						in:fade={{ duration: 300, delay: index * 50 }}
 					>

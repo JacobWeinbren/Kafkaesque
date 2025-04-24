@@ -50,7 +50,7 @@
 		id="backToTop"
 		class="{showBackToTop
 			? 'opacity-100 pointer-events-auto'
-			: 'opacity-0 pointer-events-none'} fixed bottom-5 right-5 bg-green-700 text-white p-2 rounded-md shadow-md transition-opacity duration-300 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
+			: 'opacity-0 pointer-events-none'} fixed bottom-5 right-5 bg-green-700 text-white p-2 rounded-md shadow transition-opacity duration-300 hover:bg-green-800 focus:outline-hidden focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
 		aria-label="Back to top"
 		on:click={scrollToTop}
 	>

@@ -35,7 +35,7 @@
 </script>
 
 <nav
-	class="relative z-50 bg-white/95 shadow-sm transition-all duration-300"
+	class="relative z-50 bg-white/95 shadow-xs transition-all duration-300"
 	aria-label="Main navigation"
 >
 	<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -74,7 +74,7 @@
 			<div class="md:hidden">
 				<button
 					on:click={toggleMobileMenu}
-					class="p-2 rounded-md text-slate-600 hover:bg-slate-100 hover:text-green-700 transition focus:outline-none focus:ring-2 focus:ring-green-500"
+					class="p-2 rounded-md text-slate-600 hover:bg-slate-100 hover:text-green-700 transition focus:outline-hidden focus:ring-2 focus:ring-green-500"
 					aria-label="Toggle menu"
 					aria-expanded={mobileMenuOpen}
 				>
@@ -91,7 +91,7 @@
 		{#if mobileMenuOpen}
 			<div
 				transition:slide={{ duration: 250, easing: quintOut }}
-				class="md:hidden absolute left-0 right-0 bg-white shadow-lg border-b border-slate-200 p-4"
+				class="md:hidden absolute left-0 right-0 bg-white shadow-md border-b border-slate-200 p-4"
 				role="navigation"
 			>
 				<div class="flex flex-col space-y-1">

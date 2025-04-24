@@ -48,7 +48,7 @@
 <section class="py-16">
 	<div class="max-w-4xl mx-auto px-4">
 		<div
-			class="card p-6 sm:p-8 shadow-xl border border-gray-100 bg-white rounded-2xl"
+			class="card p-6 sm:p-8 shadow-lg border border-gray-100 bg-white rounded-2xl"
 		>
 			<SearchBox />
 		</div>

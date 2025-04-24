@@ -67,7 +67,7 @@
 	<article class="max-w-3xl mx-auto px-4 py-8">
 		<!-- Optimized Cover Image via Proxy -->
 		{#if coverImageUrl}
-			<div class="mb-8 overflow-hidden rounded-lg shadow-md bg-gray-100">
+			<div class="mb-8 overflow-hidden rounded-lg shadow bg-gray-100">
 				<img
 					src={coverImageUrl}
 					alt={post.title}

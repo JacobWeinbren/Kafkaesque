@@ -1,6 +1,5 @@
 <!-- BlogPosts.svelte -->
 <script lang="ts">
-	// --- SCRIPT SECTION (UNCHANGED from your last version) ---
 	import { onMount, onDestroy } from "svelte";
 	import { fade } from "svelte/transition";
 	import { formatDate } from "$lib/utils/helpers";
@@ -44,6 +43,8 @@
 		errorMessage = null;
 		const isInitialLoad = cursor === null;
 
+		// console.log(`[BlogPosts] Fetching from API. Cursor: ${cursor}`); // Keep or remove debug logs
+
 		try {
 			const timestamp = Date.now();
 			const apiUrl = `/api/posts${
@@ -52,31 +53,54 @@
 
 			const res = await fetch(apiUrl);
 
+			// console.log(`[BlogPosts] API Response Status: ${res.status}`); // Keep or remove debug logs
 			if (!res.ok) {
 				let errorText = `HTTP error ${res.status}`;
 				try {
 					const errorData = await res.json();
+					// console.error("[BlogPosts] API Error Response Body:", errorData); // Keep or remove debug logs
 					errorText = errorData.error || errorText;
 				} catch {
-					/* Ignore if response body is not JSON */
+					/* Ignore */
 				}
 				throw new Error(`Failed to load posts: ${errorText}`);
 			}
 
 			const data: PostsApiResponse = await res.json();
 
+			// console.log("[BlogPosts] Data received from API:", JSON.stringify(data, null, 2)); // Keep or remove debug logs
+			// if (data.posts && data.posts.length > 0) {
+			// 	console.log(`[BlogPosts] First post title received: ${data.posts[0].title}`);
+			// } else {
+			// 	console.log("[BlogPosts] No posts received in API data.");
+			// }
+
+			// --- SORTING LOGIC ADDED HERE ---
 			if (data.posts?.length > 0) {
-				posts = isInitialLoad ? data.posts : [...posts, ...data.posts];
+				const combinedPosts = isInitialLoad
+					? data.posts
+					: [...posts, ...data.posts];
+				// Sort the combined list by publishedAt descending
+				combinedPosts.sort(
+					(a, b) =>
+						new Date(b.publishedAt).getTime() -
+						new Date(a.publishedAt).getTime()
+				);
+				posts = combinedPosts; // Update the reactive variable
 				currentCursor = data.endCursor;
 				hasMore = data.hasMore;
 			} else {
-				if (isInitialLoad) posts = [];
+				if (isInitialLoad) posts = []; // Clear posts if initial load returns none
 				hasMore = false;
 			}
+			// --- END SORTING LOGIC ---
 		} catch (e: any) {
 			errorMessage = e.message || "An unknown error occurred.";
-			console.error("Error loading posts:", e);
-			hasMore = false; // Stop trying if there's an error
+			console.error(
+				"[BlogPosts] Error during loadPosts fetch/processing:",
+				e
+			);
+			hasMore = false;
 		} finally {
 			loading = false;
 			initialLoadAttempted = true;
@@ -85,19 +109,17 @@
 
 	function setupObserver() {
 		if (!loadMoreTrigger || observer) return;
-
 		observer = new IntersectionObserver(
 			(entries) => {
 				if (entries[0].isIntersecting && hasMore && !loading) {
 					loadPosts(currentCursor);
 				}
 			},
-			{ rootMargin: "300px", threshold: 0.01 } // Load slightly before it enters viewport
+			{ rootMargin: "300px", threshold: 0.01 }
 		);
 		observer.observe(loadMoreTrigger);
 	}
 
-	// Reactive statement to manage the observer
 	$: if (
 		loadMoreTrigger &&
 		initialLoadAttempted &&
@@ -107,7 +129,6 @@
 	) {
 		setupObserver();
 	} else if (observer && (!hasMore || loading)) {
-		// Disconnect if no more posts or currently loading
 		observer.disconnect();
 		observer = null;
 	}
@@ -116,29 +137,25 @@
 	onDestroy(() => {
 		if (observer) observer.disconnect();
 	});
-	// --- END SCRIPT SECTION ---
 </script>
 
+<!-- TEMPLATE REMAINS EXACTLY THE SAME AS YOUR LAST VERSION -->
 <!-- Container to stabilize layout -->
 <div class="min-h-[60vh]">
-	<!-- Initial Skeleton Loader - Refined for Layout Stability -->
+	<!-- Initial Skeleton Loader -->
 	{#if loading && !initialLoadAttempted}
 		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 			{#each Array(6) as _}
 				<div
-					class="bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm flex flex-col animate-pulse"
+					class="bg-white rounded-xl overflow-hidden border border-slate-100 shadow-xs flex flex-col animate-pulse"
 					aria-hidden="true"
 				>
-					<!-- 1. Image Placeholder: Use aspect-ratio -->
 					<div
 						class="relative w-full bg-slate-200"
 						style="aspect-ratio: 16 / 9;"
 					></div>
-					<!-- 2. Text Content Area: Mimic padding and flex structure -->
 					<div class="p-5 flex-grow flex flex-col">
-						<!-- Mimic Time -->
 						<div class="h-4 w-24 bg-slate-200 mb-2 rounded"></div>
-						<!-- Mimic Title (2 lines, now Inter) -->
 						<div class="space-y-1.5 mb-2">
 							<div
 								class="h-5 w-full bg-slate-200 rounded-md"
@@ -147,13 +164,11 @@
 								class="h-5 w-5/6 bg-slate-200 rounded-md"
 							></div>
 						</div>
-						<!-- Mimic Subtitle (3 lines, now Inter) + flex-grow -->
 						<div class="flex-grow mb-4 space-y-1.5">
 							<div class="h-4 w-full bg-slate-200 rounded"></div>
 							<div class="h-4 w-full bg-slate-200 rounded"></div>
 							<div class="h-4 w-3/4 bg-slate-200 rounded"></div>
 						</div>
-						<!-- Mimic "Read article" link -->
 						<div
 							class="h-4 w-28 bg-slate-200 rounded mt-auto"
 						></div>
@@ -186,7 +201,7 @@
 					: null}
 				<article
 					in:fade={{ duration: 300, delay: (i % 6) * 75 }}
-					class="group bg-white rounded-xl overflow-hidden border border-slate-100 hover:border-green-200 hover:shadow-md shadow-sm transition-all duration-300 h-full flex flex-col"
+					class="group bg-white rounded-xl overflow-hidden border border-slate-100 hover:border-green-200 hover:shadow shadow-xs transition-all duration-300 h-full flex flex-col"
 				>
 					<a href={`/post/${post.slug}`} class="h-full flex flex-col">
 						{#if coverImageUrl}
@@ -194,7 +209,6 @@
 								class="relative overflow-hidden bg-slate-100"
 								style="aspect-ratio: 16 / 9;"
 							>
-								<!-- Applied aspect-ratio here too for consistency -->
 								<img
 									src={coverImageUrl}
 									alt={post.title}
@@ -210,7 +224,6 @@
 								></div>
 							</div>
 						{:else}
-							<!-- Placeholder for posts without cover images -->
 							<div
 								class="relative bg-gradient-to-br from-green-50 to-slate-100 flex items-center justify-center text-slate-400"
 								style="aspect-ratio: 16 / 9;"
@@ -237,7 +250,6 @@
 									{post.subtitle}
 								</p>
 							{:else}
-								<!-- Add placeholder div to maintain consistent height when no subtitle -->
 								<div class="mb-4 flex-grow min-h-[3rem]"></div>
 							{/if}
 							<div
