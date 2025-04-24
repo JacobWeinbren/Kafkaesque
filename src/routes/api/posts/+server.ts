@@ -6,7 +6,7 @@ import { getPosts, type OriginalPostsResponse } from "$lib/server/hashnode";
 export async function GET({ url, setHeaders }) {
 	// Get cursor from query params
 	const cursorParam = url.searchParams.get("cursor");
-	const postsPerPage = 7; // Or make configurable
+	const postsPerPage = 9; // Or make configurable
 
 	// Determine if this is the initial load request (no cursor provided)
 	const isInitialLoadRequest = !cursorParam;

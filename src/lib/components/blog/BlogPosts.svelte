@@ -44,12 +44,6 @@
 		errorMessage = null;
 		const isInitialLoad = cursor === null;
 
-		console.log(
-			`[BlogPosts] Fetching posts. ${
-				isInitialLoad ? "Initial load" : `Cursor: ${cursor}`
-			}`
-		);
-
 		try {
 			const timestamp = Date.now();
 			// Construct URL: Add cursor only if it exists, always add timestamp
@@ -57,15 +51,8 @@
 				cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""
 			}${cursor ? "&" : "?"}t=${timestamp}`; // Cache-busting timestamp
 
-			console.log("URL", apiUrl);
-
 			const res = await fetch(apiUrl);
 
-			console.log(
-				`[BlogPosts] API Response Status: ${res.status} for ${
-					isInitialLoad ? "initial load" : `cursor: ${cursor}`
-				}`
-			);
 			if (!res.ok) {
 				let errorText = `HTTP error ${res.status}`;
 				try {
