@@ -1,54 +1,45 @@
 <!-- src/routes/post/[slug]/+page.svelte -->
 <script lang="ts">
-	import type { PageData } from "./$types"; // PageData now includes { post, layoutData }
+	import type { PageData } from "./$types"; // PageData includes { post, url: { ... } | null }
 	import SignupForm from "$lib/components/blog/SignupForm.svelte";
 	import { formatDate } from "$lib/utils/helpers";
 	import { ChevronLeft } from "lucide-svelte";
 	import type { HashnodePost } from "$lib/server/hashnode";
-	import { onMount } from "svelte";
+	import { onMount } from "svelte"; // Keep onMount for logging if needed
 
 	export let data: PageData;
+	// Assert post type as server load handles 404/500 for the post itself
 	const post = data.post as HashnodePost;
 
 	// --- Image URLs ---
-	const defaultOgImage = "https://kafkaesque.blog/img/logo_white.png";
+	const defaultOgImage = "https://kafkaesque.blog/img/logo_white.png"; // Verify path
 
-	// --- Access layoutData ---
-	// Check if layoutData exists and has the expected structure 'url.origin'
-	const layoutUrlData =
-		data.layoutData &&
-		typeof data.layoutData === "object" &&
-		data.layoutData.url &&
-		typeof data.layoutData.url === "object"
-			? data.layoutData.url
-			: null;
-	const baseUrl = layoutUrlData?.origin ?? ""; // Get origin if layoutData.url exists
+	// data.url might be null if parent load failed or returned unexpected data
+	const baseUrl = data.url?.origin ?? ""; // Safely get origin or empty string
 
-	// Log what the page received for debugging
 	onMount(() => {
-		console.log("[+page.svelte] Received layoutData:", data.layoutData);
-		console.log("[+page.svelte] Extracted layoutUrlData:", layoutUrlData);
-		console.log("[+page.svelte] Determined baseUrl:", baseUrl);
-		if (!baseUrl) {
+		// Optional: Log received url data for confirmation during development
+		console.log("[+page.svelte] Received data.url:", data.url);
+		if (!baseUrl && post?.coverImage?.src) {
+			// Warn only if base URL is missing AND there's a cover image to make absolute
 			console.warn(
-				"[+page.svelte] Warning: Base URL (origin) could not be determined from layoutData. Absolute image URLs might be incorrect."
+				"[+page.svelte] Warning: Base URL (origin) could not be determined from data.url. OG/Twitter image URL will be relative or default."
 			);
 		}
-		console.log(
-			"[+page.svelte] Determined ABSOLUTE OG Image URL:",
-			ogImageUrl
-		);
 	});
 
+	// URL for the image displayed *within* the post body (can be relative)
 	const coverImageUrl = post?.coverImage?.src
 		? `/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80`
 		: null;
 
-	// Use baseUrl if available, otherwise the image URL might be relative/broken
-	// Ensure baseUrl is prepended only if it's not empty
-	const ogImageUrl = post?.coverImage?.src
-		? `${baseUrl ? baseUrl : ""}/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80`
-		: defaultOgImage;
+	// --- ABSOLUTE URL for the preview image (og:image, twitter:image) ---
+	// Construct ogImageUrl: Use absolute path if baseUrl exists, otherwise use relative path or default
+	const ogImageUrl = post?.coverImage?.src // Does the post have a cover image?
+		? baseUrl // Is the baseUrl available?
+			? `${baseUrl}/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80` // Yes: Absolute URL
+			: `/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80` // No baseUrl: Relative URL (might not work for external crawlers)
+		: defaultOgImage; // No cover image: Use default (which is absolute)
 
 	// --- Post Metadata ---
 	const postTitle = post?.title ?? "Blog Post";
@@ -61,13 +52,13 @@
 	<title>{postTitle}</title>
 	<meta name="description" content={postDescription} />
 
-	<!-- Use layoutUrlData if available -->
-	{#if layoutUrlData?.href}
-		<link rel="canonical" href={layoutUrlData.href} />
-		<meta property="og:url" content={layoutUrlData.href} />
+	<!-- Canonical and OG URL only if data.url exists and has href -->
+	{#if data.url?.href}
+		<link rel="canonical" href={data.url.href} />
+		<meta property="og:url" content={data.url.href} />
 	{/if}
 
-	<!-- Open Graph Tags -->
+	<!-- Open Graph Tags (ogImageUrl adapts based on baseUrl) -->
 	<meta property="og:title" content={postTitle} />
 	<meta property="og:description" content={postDescription} />
 	<meta property="og:type" content="article" />
@@ -102,7 +93,7 @@
 	{/if}
 </svelte:head>
 
-<!-- Rest of the component body remains the same -->
+<!-- Component Body (article, header, content, etc.) -->
 {#if post}
 	<article class="max-w-3xl mx-auto px-4 py-8">
 		{#if coverImageUrl}
@@ -177,6 +168,7 @@
 		</div>
 	</article>
 {:else}
+	<!-- Fallback if post data is somehow null/undefined despite server checks -->
 	<div class="text-center py-16 px-4">
 		<h1 class="text-2xl font-bold text-red-600 mb-4">Error Loading Post</h1>
 		<p class="text-gray-600">
