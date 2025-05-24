@@ -1,90 +1,115 @@
-// src/lib/server/hashnode.ts
-
 import dotenv from "dotenv";
-dotenv.config(); // Load variables from .env into process.env
+dotenv.config();
 
-const HASHNODE_ACCESS_TOKEN = process.env["HASHNODE_ACCESS_TOKEN"];
-const HASHNODE_HOST = process.env["HASHNODE_HOST"];
+const HASHNODE_ACCESS_TOKEN = process.env.HASHNODE_ACCESS_TOKEN;
+const HASHNODE_HOST = process.env.HASHNODE_HOST;
 
-// --- Core Types ---
 interface HashnodeTag {
 	name: string;
 	slug: string;
 }
+
 export interface HashnodePost {
 	id: string;
 	slug: string;
 	title: string;
 	subtitle: string;
-	content: string; // For full post OR search index
-	brief: string; // For summaries/all posts
+	content: string;
+	brief: string;
 	coverImage: { src: string } | null;
-	publishedAt: string; // Should be a valid date string or empty string
+	publishedAt: string;
 	tags: HashnodeTag[];
 }
+
 export interface GetPostsOptions {
 	limit?: number;
 	after?: string | null;
 }
+
 export interface OriginalPostsResponse {
 	posts: HashnodePost[];
 	hasMore: boolean;
 	endCursor: string | null;
 }
 
-// --- Hashnode API Configuration ---
+interface GraphQLResponse {
+	data?: {
+		publication?: {
+			posts?: {
+				edges?: Array<{
+					node: {
+						id: string;
+						title: string;
+						subtitle: string;
+						slug: string;
+						coverImage?: { url: string };
+						publishedAt: string;
+						content?: { html: string };
+						brief: string;
+						tags: HashnodeTag[];
+					};
+				}>;
+				pageInfo: {
+					hasNextPage: boolean;
+					endCursor: string | null;
+				};
+			};
+			post?: {
+				id: string;
+				title: string;
+				subtitle: string;
+				content?: { html: string };
+				brief: string;
+				coverImage?: { url: string };
+				publishedAt: string;
+				tags: HashnodeTag[];
+			};
+		};
+	};
+	errors?: Array<{ message: string }>;
+}
+
 const HASHNODE_ENDPOINT = "https://gql.hashnode.com";
 
-// --- getHeaders function (no changes needed) ---
 const getHeaders = (): HeadersInit => {
 	const token = HASHNODE_ACCESS_TOKEN;
 	const headers: Record<string, string> = {
 		"Content-Type": "application/json",
-		"User-Agent": "curl/7.88.1", // Or your app's user agent
+		"User-Agent": "curl/7.88.1",
 	};
 	if (token) {
-		headers["Authorization"] = `Bearer ${token}`;
-	} else {
-		// console.warn("[hashnode.ts getHeaders] HASHNODE_ACCESS_TOKEN not set.");
+		headers.Authorization = `Bearer ${token}`;
 	}
 	return headers;
 };
 
-// --- API Functions ---
-
-/**
- * Fetches a batch of posts (summaries) from Hashnode.
- * Returns original image URLs.
- * Uses default Hashnode sort order.
- */
 export async function getPosts(
 	options: GetPostsOptions = {}
 ): Promise<OriginalPostsResponse> {
 	const { limit = 6, after = null } = options;
 
-	// This query remains unchanged - it only fetches summaries
 	const postsQuery = `
-        query Publication($first: Int!, $after: String, $host: String!) {
-          publication(host: $host) {
-            posts(first: $first, after: $after) {
-              edges {
-                node {
-                  id
-                  title
-                  subtitle
-                  slug
-                  coverImage { url }
-                  publishedAt
-                }
-              }
-              pageInfo {
-                hasNextPage
-                endCursor
-              }
+    query Publication($first: Int!, $after: String, $host: String!) {
+      publication(host: $host) {
+        posts(first: $first, after: $after) {
+          edges {
+            node {
+              id
+              title
+              subtitle
+              slug
+              coverImage { url }
+              publishedAt
             }
           }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
         }
-      `;
+      }
+    }
+  `;
 
 	try {
 		if (typeof HASHNODE_HOST === "undefined" || !HASHNODE_HOST) {
@@ -99,44 +124,35 @@ export async function getPosts(
 			host: HASHNODE_HOST,
 		};
 
-		const requestBody = JSON.stringify({
-			query: postsQuery,
-			variables: variables,
-		});
-		const requestHeaders = getHeaders();
-
 		const response: Response = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
-			headers: requestHeaders,
-			body: requestBody,
-			cache: "no-cache", // Prevent SvelteKit/Node fetch cache
+			headers: getHeaders(),
+			body: JSON.stringify({
+				query: postsQuery,
+				variables: variables,
+			}),
+			cache: "no-cache",
 		});
 
 		const responseText = await response.text();
 
 		if (!response.ok) {
 			console.error(
-				`[hashnode.ts getPosts] API request failed. Status: ${response.status}. Response text: ${responseText}`
+				`API request failed. Status: ${response.status}. Response: ${responseText}`
 			);
 			throw new Error(`API request failed: ${response.status}`);
 		}
 
-		const json: any = JSON.parse(responseText);
+		const json = JSON.parse(responseText) as GraphQLResponse;
 
 		if (json.errors) {
-			console.error(
-				"[hashnode.ts] getPosts: GraphQL Errors:",
-				json.errors
-			);
-			throw new Error(`GraphQL errors occurred fetching posts.`);
+			console.error("GraphQL Errors:", json.errors);
+			throw new Error("GraphQL errors occurred fetching posts.");
 		}
 
 		const publicationData = json.data?.publication;
 		if (!publicationData?.posts) {
-			console.warn(
-				"[hashnode.ts] No posts found in publication data for host:",
-				HASHNODE_HOST
-			);
+			console.warn("No posts found in publication data");
 			return { posts: [], hasMore: false, endCursor: null };
 		}
 
@@ -144,18 +160,18 @@ export async function getPosts(
 		const pageInfo = publicationData.posts.pageInfo || {};
 
 		const posts: HashnodePost[] = edges.map(
-			(edge: any): HashnodePost => ({
+			(edge): HashnodePost => ({
 				id: edge.node.id,
 				slug: edge.node.slug,
-				title: edge.node.title || "Untitled", // Fallback
+				title: edge.node.title || "Untitled",
 				subtitle: edge.node.subtitle || "",
-				content: "", // Not fetched in this query
-				brief: "", // Not fetched in this query
+				content: "",
+				brief: "",
 				coverImage: edge.node.coverImage?.url
 					? { src: edge.node.coverImage.url }
 					: null,
-				publishedAt: edge.node.publishedAt || "", // Fallback
-				tags: [], // Not fetched in this query
+				publishedAt: edge.node.publishedAt || "",
+				tags: [],
 			})
 		);
 
@@ -164,156 +180,128 @@ export async function getPosts(
 			hasMore: !!pageInfo.hasNextPage && posts.length > 0,
 			endCursor: pageInfo.endCursor,
 		};
-	} catch (error: any) {
-		console.error(
-			"[hashnode.ts] Failed to fetch posts (outer catch):",
-			error
+	} catch (error) {
+		console.error("Failed to fetch posts:", error);
+		throw new Error(
+			error instanceof Error
+				? error.message
+				: "Failed to fetch posts from source."
 		);
-		throw new Error(error.message || "Failed to fetch posts from source.");
 	}
 }
 
-/**
- * Fetches a single full post by slug from Hashnode.
- */
 export async function getPost(slug: string): Promise<HashnodePost | null> {
-	// This query remains unchanged
 	const query = `
-        query GetPostBySlug($slug: String!, $host: String!) {
-          publication(host: $host) {
-            post(slug: $slug) {
-              id
-              title
-              subtitle
-              content { html }
-              brief
-              coverImage { url }
-              publishedAt
-              tags { name slug }
-            }
-          }
+    query GetPostBySlug($slug: String!, $host: String!) {
+      publication(host: $host) {
+        post(slug: $slug) {
+          id
+          title
+          subtitle
+          content { html }
+          brief
+          coverImage { url }
+          publishedAt
+          tags { name slug }
         }
-      `;
+      }
+    }
+  `;
+
 	try {
 		if (typeof HASHNODE_HOST === "undefined" || !HASHNODE_HOST) {
-			console.error("[hashnode.ts] getPost: HASHNODE_HOST is missing!");
+			console.error("HASHNODE_HOST is missing!");
 			return null;
 		}
+
 		const variables = { slug, host: HASHNODE_HOST };
 
 		const response: Response = await fetch(HASHNODE_ENDPOINT, {
 			method: "POST",
 			headers: getHeaders(),
 			body: JSON.stringify({ query: query, variables: variables }),
-			cache: "no-cache", // Prevent SvelteKit/Node fetch cache
+			cache: "no-cache",
 		});
 
-		// Check response.ok FIRST
 		if (!response.ok) {
 			const errorBody = await response
 				.text()
 				.catch(() => "Could not read error body");
 			console.error(
-				`[hashnode.ts] getPost: API request failed fetching post ${slug}: ${response.status} ${response.statusText}. Variables sent: ${JSON.stringify(variables)}. Body: ${errorBody}`
+				`API request failed fetching post ${slug}: ${response.status} ${response.statusText}. Body: ${errorBody}`
 			);
-			return null; // Return null on fetch failure
+			return null;
 		}
 
-		const json: any = await response.json();
+		const json = (await response.json()) as GraphQLResponse;
 
-		// Check for GraphQL errors AFTER parsing JSON
 		if (json.errors) {
-			console.error(
-				`[hashnode.ts] getPost: GraphQL Errors for slug ${slug}:`,
-				JSON.stringify(json.errors, null, 2)
-			);
-			if (
-				json.errors.some((e: any) =>
-					e.message?.toLowerCase().includes("not found")
-				)
-			) {
-				return null; // Return null if Hashnode explicitly says not found
-			}
+			console.error(`GraphQL Errors for slug ${slug}:`, json.errors);
 			return null;
 		}
 
 		const postData = json.data?.publication?.post;
 		if (!postData) {
-			console.warn(
-				`[hashnode.ts] getPost: No post data found in response for slug ${slug}`
-			);
-			return null; // Return null if post data structure is missing
+			console.warn(`No post data found for slug ${slug}`);
+			return null;
 		}
 
-		// Map data carefully
 		return {
 			id: postData.id,
-			slug, // slug comes from input param
-			title: postData.title || "Untitled", // Add fallback
+			slug,
+			title: postData.title || "Untitled",
 			subtitle: postData.subtitle || "",
-			content: postData.content?.html || "", // Ensure content is always a string
+			content: postData.content?.html || "",
 			brief: postData.brief || "",
 			coverImage: postData.coverImage?.url
 				? { src: postData.coverImage.url }
 				: null,
-			publishedAt: postData.publishedAt || "", // Default to empty string
+			publishedAt: postData.publishedAt || "",
 			tags: postData.tags || [],
 		};
 	} catch (error) {
-		console.error(
-			`[hashnode.ts] Failed to fetch post "${slug}" (outer catch):`,
-			error
-		);
-		return null; // Return null on any unexpected error
+		console.error(`Failed to fetch post "${slug}":`, error);
+		return null;
 	}
 }
 
-/**
- * Fetches ALL posts from Hashnode including content for search index.
- * Uses default Hashnode sort order.
- * NOTE: Fetching full content for all posts can be slower and use more data.
- */
 export async function getAllPosts(): Promise<HashnodePost[]> {
-	const batchSize = 50; // Keep batch size reasonable
+	const batchSize = 50;
 	const maxAttempts = 20;
 	let allPosts: HashnodePost[] = [];
 	let cursor: string | null = null;
 	let hasNext = true;
 	let attempts = 0;
 
-	// --- MODIFIED QUERY: Added content { html } ---
 	const allPostsQuery = `
-        query PublicationAllPosts($first: Int!, $after: String, $host: String!) {
-          publication(host: $host) {
-            posts(first: $first, after: $after) {
-              edges {
-                node {
-                  id
-                  title
-                  subtitle
-                  slug
-                  brief
-                  content { html } # <-- Added this line
-                  publishedAt
-                  coverImage { url }
-                  tags { name slug }
-                }
-              }
-              pageInfo { hasNextPage endCursor }
+    query PublicationAllPosts($first: Int!, $after: String, $host: String!) {
+      publication(host: $host) {
+        posts(first: $first, after: $after) {
+          edges {
+            node {
+              id
+              title
+              subtitle
+              slug
+              brief
+              content { html }
+              publishedAt
+              coverImage { url }
+              tags { name slug }
             }
           }
+          pageInfo { hasNextPage endCursor }
         }
-      `;
-	// --- END QUERY MODIFICATION ---
+      }
+    }
+  `;
 
 	if (typeof HASHNODE_HOST === "undefined" || !HASHNODE_HOST) {
-		console.error("[hashnode.ts] getAllPosts: HASHNODE_HOST is missing!");
+		console.error("HASHNODE_HOST is missing!");
 		return [];
 	}
 
-	console.log(
-		"[hashnode.ts] getAllPosts: Starting fetch for search index (including content)..."
-	);
+	console.log("Starting fetch for search index...");
 
 	while (hasNext && attempts < maxAttempts) {
 		attempts++;
@@ -324,17 +312,14 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 		};
 
 		try {
-			const requestBody = JSON.stringify({
-				query: allPostsQuery,
-				variables: variables,
-			});
-			const requestHeaders = getHeaders();
-
 			const response: Response = await fetch(HASHNODE_ENDPOINT, {
 				method: "POST",
-				headers: requestHeaders,
-				body: requestBody,
-				cache: "no-cache", // Prevent SvelteKit/Node fetch cache
+				headers: getHeaders(),
+				body: JSON.stringify({
+					query: allPostsQuery,
+					variables: variables,
+				}),
+				cache: "no-cache",
 			});
 
 			if (!response.ok) {
@@ -342,26 +327,23 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 					.text()
 					.catch(() => "Could not read error body");
 				console.error(
-					`getAllPosts: API request failed attempt ${attempts}: ${response.status} ${response.statusText}. Variables sent: ${JSON.stringify(variables)}. Body: ${errorBody}`
+					`API request failed attempt ${attempts}: ${response.status} ${response.statusText}. Body: ${errorBody}`
 				);
-				throw new Error(
-					`API request failed: ${response.status} ${response.statusText}`
-				);
+				throw new Error(`API request failed: ${response.status}`);
 			}
-			const json: any = await response.json();
+
+			const json = (await response.json()) as GraphQLResponse;
 			if (json.errors) {
 				console.error(
-					`GraphQL Errors (getAllPosts attempt ${attempts}):`,
-					JSON.stringify(json.errors, null, 2)
+					`GraphQL Errors (attempt ${attempts}):`,
+					json.errors
 				);
-				throw new Error(`GraphQL errors occurred during getAllPosts.`);
+				throw new Error("GraphQL errors occurred during getAllPosts.");
 			}
 
 			const publicationData = json.data?.publication;
 			if (!publicationData?.posts) {
-				console.warn(
-					`getAllPosts: No posts data found in attempt ${attempts}.`
-				);
+				console.warn(`No posts data found in attempt ${attempts}.`);
 				hasNext = false;
 				break;
 			}
@@ -370,68 +352,49 @@ export async function getAllPosts(): Promise<HashnodePost[]> {
 			const pageInfo = publicationData.posts.pageInfo || {};
 
 			if (edges.length > 0) {
-				// --- MODIFIED MAPPING: Added content ---
 				const batchPosts: HashnodePost[] = edges.map(
-					(edge: any): HashnodePost => ({
+					(edge): HashnodePost => ({
 						id: edge.node.id,
 						slug: edge.node.slug,
 						title: edge.node.title || "Untitled",
 						subtitle: edge.node.subtitle || "",
-						content: edge.node.content?.html || "", // <-- Map content.html
+						content: edge.node.content?.html || "",
 						brief: edge.node.brief || "",
 						coverImage: edge.node.coverImage?.url
 							? { src: edge.node.coverImage.url }
 							: null,
 						publishedAt: edge.node.publishedAt || "",
-						tags: edge.node.tags || [], // Tags were already fetched
+						tags: edge.node.tags || [],
 					})
 				);
-				// --- END MAPPING MODIFICATION ---
 				allPosts = [...allPosts, ...batchPosts];
 				console.log(
-					`[hashnode.ts] getAllPosts: Fetched batch ${attempts}, total posts: ${allPosts.length}`
-				);
-			} else {
-				console.log(
-					`[hashnode.ts] getAllPosts: Batch ${attempts} returned 0 posts.`
+					`Fetched batch ${attempts}, total posts: ${allPosts.length}`
 				);
 			}
 
 			if (!pageInfo.hasNextPage) {
 				hasNext = false;
-				console.log(
-					"[hashnode.ts] getAllPosts: No more pages according to pageInfo."
-				);
+				console.log("No more pages according to pageInfo.");
 			} else {
 				cursor = pageInfo.endCursor;
 				if (!cursor) {
 					console.warn(
-						"getAllPosts: HasMore is true but endCursor is null. Breaking loop."
+						"HasMore is true but endCursor is null. Breaking loop."
 					);
 					hasNext = false;
 				}
 			}
 
-			// Add a small delay to avoid hitting rate limits, especially when fetching content
 			if (hasNext)
 				await new Promise((resolve) => setTimeout(resolve, 300));
 		} catch (error) {
-			console.error(
-				`getAllPosts: Error during fetch attempt ${attempts}:`,
-				error
-			);
-			hasNext = false; // Stop fetching on error
+			console.error(`Error during fetch attempt ${attempts}:`, error);
+			hasNext = false;
 			break;
 		}
 	}
 
-	if (hasNext && attempts >= maxAttempts) {
-		console.warn(
-			`getAllPosts: Reached max attempts limit (${maxAttempts}) before fetching all posts.`
-		);
-	}
-	console.log(
-		`[hashnode.ts] getAllPosts: Finished fetching. Total posts indexed: ${allPosts.length}`
-	);
+	console.log(`Finished fetching. Total posts indexed: ${allPosts.length}`);
 	return allPosts;
 }

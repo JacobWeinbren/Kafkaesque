@@ -59,7 +59,6 @@
 			clearTimeout(timeoutId);
 
 			if (response.status === 304) {
-				console.log("Search: Received 304 Not Modified");
 				isLoading = false;
 				return;
 			}
@@ -87,15 +86,13 @@
 				console.warn("Unexpected search API response structure:", data);
 				results = [];
 			}
-		} catch (err: any) {
-			if (err.name !== "AbortError") {
+		} catch (err: unknown) {
+			if (err instanceof Error && err.name !== "AbortError") {
 				console.error("Search error:", err);
 				error =
 					err.message ||
 					"An unexpected error occurred during search.";
 				results = [];
-			} else {
-				console.log("Search request aborted.");
 			}
 		} finally {
 			isLoading = false;
@@ -121,6 +118,22 @@
 		});
 	}
 
+	function clearSearch() {
+		query = "";
+		results = [];
+		hasSearched = false;
+		error = null;
+		inputRef?.focus();
+
+		const url = new URL($page.url);
+		url.searchParams.delete("q");
+		goto(url.toString(), {
+			replaceState: true,
+			keepFocus: true,
+			noScroll: true,
+		});
+	}
+
 	onMount(() => {
 		const initialQuery = $page.url.searchParams.get("q") || "";
 		query = initialQuery;
@@ -129,7 +142,6 @@
 			performSearch(initialQuery);
 		}
 
-		// Focus the search input on load
 		if (inputRef) {
 			setTimeout(() => inputRef.focus(), 100);
 		}
@@ -156,7 +168,8 @@
 </script>
 
 <div class="w-full max-w-2xl mx-auto">
-	<form on:submit|preventDefault class="mb-6 relative" role="search">
+	<!-- Search Form -->
+	<form on:submit|preventDefault class="mb-8 relative" role="search">
 		<div class="relative">
 			<input
 				type="search"
@@ -164,11 +177,12 @@
 				bind:this={inputRef}
 				on:input={handleInput}
 				placeholder="Search posts and projects..."
-				class="w-full px-4 py-3 pl-12 border border-slate-200 rounded-xl focus:ring-green-500 focus:border-green-500 transition shadow-xs text-slate-800 placeholder-slate-400"
+				class="w-full px-4 py-3 pl-12 pr-12 form-input text-lg"
 				aria-label="Search posts and projects"
 			/>
+
 			<div
-				class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none"
+				class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none"
 			>
 				<Search class="w-5 h-5" />
 			</div>
@@ -176,122 +190,121 @@
 			{#if query && !isLoading}
 				<button
 					type="button"
-					class="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
-					on:click={() => {
-						query = "";
-						results = [];
-						hasSearched = false;
-					}}
+					class="absolute right-4 top-1/2 transform -translate-y-1/2 p-1 rounded text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors duration-200"
+					on:click={clearSearch}
 				>
 					<span class="sr-only">Clear search</span>
 					<X class="w-5 h-5" />
 				</button>
 			{/if}
+
+			{#if isLoading}
+				<div
+					class="absolute right-4 top-1/2 transform -translate-y-1/2"
+				>
+					<div
+						class="w-5 h-5 border-2 border-slate-300 dark:border-slate-600 border-t-emerald-600 dark:border-t-emerald-400 rounded-full animate-spin"
+					></div>
+				</div>
+			{/if}
 		</div>
 	</form>
 
-	<div class="min-h-[300px] relative">
+	<!-- Results -->
+	<div class="min-h-[300px]">
 		{#if error}
 			<div
-				in:fade={{ duration: 200 }}
-				class="text-center text-red-600 py-4 px-6 bg-red-50 rounded-xl border border-red-100 mb-4"
+				class="card bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800 text-center"
 				role="alert"
 			>
-				<AlertCircle class="h-5 w-5 inline-block mr-1 mb-0.5" />
-				<span>{error}</span>
-			</div>
-		{/if}
-
-		{#if isLoading}
-			<div
-				in:fade={{ duration: 200 }}
-				class="absolute inset-0 flex justify-center items-center bg-white/60 backdrop-blur-sm-sm z-10 rounded-xl"
-			>
-				<div class="text-center">
-					<div class="relative h-12 w-12 mx-auto mb-2">
-						<div
-							class="absolute animate-spin rounded-full h-12 w-12 border-4 border-slate-200"
-						></div>
-						<div
-							class="absolute animate-spin rounded-full h-12 w-12 border-4 border-green-600 border-t-transparent"
-						></div>
-					</div>
-					<p class="text-slate-600">Searching...</p>
-				</div>
+				<AlertCircle
+					class="h-8 w-8 mx-auto mb-3 text-red-500 dark:text-red-400"
+				/>
+				<p class="font-medium text-red-800 dark:text-red-200 mb-2">
+					Search Error
+				</p>
+				<p class="text-red-600 dark:text-red-300 text-sm">{error}</p>
 			</div>
 		{/if}
 
 		{#if !isLoading && results.length > 0}
-			<div class="grid gap-4 md:grid-cols-2">
+			<div class="space-y-4">
+				<p class="text-sm text-slate-600 dark:text-slate-400 mb-4">
+					Found {results.length} result{results.length !== 1
+						? "s"
+						: ""}
+				</p>
+
 				{#each results as post, index (post.id)}
 					<a
 						href={`/post/${post.slug}`}
-						class="group flex flex-col h-full bg-white rounded-xl border border-slate-100 hover:border-green-200 hover:shadow transition-all duration-300 animate-fade-in-fast"
-						style="animation-delay: {index * 50}ms"
-						in:fade={{ duration: 300, delay: index * 50 }}
+						class="block card hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200 group"
+						in:fade={{ duration: 200, delay: index * 50 }}
 					>
-						<div class="p-5 flex flex-col h-full">
-							<h2
-								class="text-lg font-display font-semibold text-slate-800 mb-2 group-hover:text-green-600 transition line-clamp-2"
+						<div class="flex flex-col">
+							<h3
+								class="font-semibold text-slate-900 dark:text-slate-100 mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200"
 							>
 								{post.title}
-							</h2>
+							</h3>
+
 							{#if post.subtitle || post.brief}
 								<p
-									class="text-slate-600 text-sm line-clamp-2 mb-3 flex-grow"
+									class="text-slate-600 dark:text-slate-400 text-sm line-clamp-2 mb-3"
 								>
 									{post.subtitle || post.brief}
 								</p>
 							{/if}
+
 							<div
-								class="flex items-center mt-auto pt-3 border-t border-slate-100"
+								class="flex items-center justify-between mt-auto"
 							>
-								<div class="flex-1">
-									<time
-										class="text-xs text-slate-500"
-										datetime={post.publishedAt}
-									>
-										{formatResultDate(post.publishedAt)}
-									</time>
-								</div>
-								<span
-									class="text-green-600 flex items-center text-xs font-medium group-hover:text-green-700 transition"
+								<time
+									class="text-xs text-slate-500 dark:text-slate-400"
+									datetime={post.publishedAt}
+								>
+									{formatResultDate(post.publishedAt)}
+								</time>
+								<div
+									class="flex items-center text-emerald-600 dark:text-emerald-400 text-sm font-medium group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors duration-200"
 								>
 									View post
 									<ArrowRight
-										class="ml-1 w-3.5 h-3.5 transition transform group-hover:translate-x-0.5"
+										class="ml-1 w-3 h-3 transition-transform duration-200 group-hover:translate-x-0.5"
 									/>
-								</span>
+								</div>
 							</div>
 						</div>
 					</a>
 				{/each}
 			</div>
 		{:else if !isLoading && hasSearched && query.trim()}
-			<div
-				in:fade={{ duration: 200 }}
-				class="text-center py-12 bg-slate-50 rounded-xl border border-slate-100"
-			>
-				<Search class="h-16 w-16 mx-auto mb-4 text-slate-300" />
-				<p class="text-slate-700 text-lg font-medium mb-1">
+			<div class="card text-center">
+				<Search
+					class="h-12 w-12 mx-auto mb-4 text-slate-400 dark:text-slate-500"
+				/>
+				<p class="font-medium text-slate-900 dark:text-slate-100 mb-2">
 					No results found
 				</p>
-				<p class="text-slate-500 text-sm max-w-md mx-auto">
-					Try different keywords, check spelling, or consider broader
-					terms
+				<p class="text-slate-600 dark:text-slate-400 text-sm mb-4">
+					Try different keywords or check spelling
 				</p>
+				<button on:click={clearSearch} class="btn btn-secondary">
+					Clear search
+				</button>
 			</div>
 		{:else if !isLoading && !hasSearched}
 			<div
-				in:fade={{ duration: 200 }}
-				class="text-center py-12 bg-green-50 rounded-xl border border-green-100"
+				class="card bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800 text-center"
 			>
-				<Search class="h-16 w-16 mx-auto mb-4 text-green-300" />
-				<p class="text-slate-800 text-lg font-medium mb-1">
-					Looking for something?
+				<Search
+					class="h-12 w-12 mx-auto mb-4 text-emerald-600 dark:text-emerald-400"
+				/>
+				<p class="font-medium text-slate-900 dark:text-slate-100 mb-2">
+					Search for content
 				</p>
-				<p class="text-slate-600 text-sm max-w-md mx-auto">
-					Type above to search through blog posts, projects, and more
+				<p class="text-slate-600 dark:text-slate-400 text-sm">
+					Find articles, projects, and insights
 				</p>
 			</div>
 		{/if}

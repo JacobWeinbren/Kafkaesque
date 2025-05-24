@@ -1,122 +1,84 @@
-// search/+server.ts
-import { json, error } from "@sveltejs/kit";
-import { getAllPosts, type HashnodePost } from "$lib/server/hashnode";
-import Fuse from "fuse.js";
+import { json } from "@sveltejs/kit";
+import { getAllPosts } from "$lib/server/hashnode";
 
-// --- Caching ---
-interface CacheEntry {
-	posts: HashnodePost[];
-	fuse: Fuse<HashnodePost>;
-	lastUpdated: number;
-	etag: string;
+interface Post {
+	id: string;
+	slug: string;
+	title: string;
+	subtitle: string;
+	brief: string;
+	content?: string;
+	publishedAt: string;
+	tags: { name: string }[];
 }
-let searchCache: CacheEntry | null = null;
-const CACHE_DURATION = 1000 * 60 * 30; // Cache posts data for 30 minutes
 
-// --- Stricter Search Configuration ---
-const FUSE_THRESHOLD = 0.35; // Lowered from 0.4 for stricter matching
-const SCORE_CUTOFF = 0.4; // Maximum allowed score (lower is better match) - results above this will be filtered out
-const MIN_MATCH_LENGTH = 3; // Optional: Increase minimum characters slightly
-// --- End Configuration ---
+// Simple in-memory cache for search data
+let searchCache: Post[] | null = null;
+let lastCacheUpdate = 0;
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
-async function getSearchIndex(): Promise<CacheEntry> {
+async function getSearchData() {
 	const now = Date.now();
-	if (searchCache && now - searchCache.lastUpdated < CACHE_DURATION) {
-		console.log("API /api/search: Using cached index.");
-		return searchCache;
+
+	if (!searchCache || now - lastCacheUpdate > CACHE_DURATION) {
+		console.log("Refreshing search cache...");
+		searchCache = await getAllPosts();
+		lastCacheUpdate = now;
 	}
 
-	console.log(
-		"API /api/search: Cache expired or missing, fetching all posts (including content)..."
-	);
-	try {
-		const posts = await getAllPosts();
-		console.log(
-			`API /api/search: Fetched ${posts.length} posts for indexing.`
-		);
-
-		const fuse = new Fuse(posts, {
-			keys: [
-				{ name: "title", weight: 0.6 },
-				{ name: "subtitle", weight: 0.3 },
-				{ name: "tags.name", weight: 0.3 },
-				{ name: "brief", weight: 0.2 },
-				{ name: "content", weight: 0.1 },
-			],
-			threshold: FUSE_THRESHOLD, // Use the stricter threshold
-			includeScore: true, // Keep this true to filter by score later
-			minMatchCharLength: MIN_MATCH_LENGTH, // Use updated min length
-			ignoreLocation: true,
-		});
-
-		const newEtag = `"search-index-${now}"`;
-		searchCache = { posts, fuse, lastUpdated: now, etag: newEtag };
-		console.log(
-			`API /api/search: Index created and cached (Threshold: ${FUSE_THRESHOLD}, MinLength: ${MIN_MATCH_LENGTH}).`
-		);
-		return searchCache;
-	} catch (err) {
-		console.error("API /api/search: Failed to build search index:", err);
-		searchCache = null;
-		throw new Error("Failed to initialize search index");
-	}
+	return searchCache;
 }
 
-export async function GET({ url, request }) {
-	const query = url.searchParams.get("q");
-
-	// Keep the minimum query length check consistent or adjust if needed
-	if (!query || query.trim().length < MIN_MATCH_LENGTH) {
-		return json([], {
-			headers: { "Cache-Control": "public, max-age=60" },
-		});
-	}
-
+export async function GET({ url }) {
 	try {
-		const index = await getSearchIndex();
+		const query = url.searchParams.get("q")?.trim();
 
-		// --- ETag Caching ---
-		const browserEtag = request.headers.get("if-none-match");
-		const currentEtag = `"search-${query}-${index.etag}"`;
-
-		if (browserEtag === currentEtag) {
-			console.log(
-				`API /api/search: ETag match for query "${query}", returning 304.`
-			);
-			return new Response(null, {
-				status: 304,
-				headers: {
-					ETag: currentEtag,
-					"Cache-Control": "public, max-age=300",
-				},
-			});
+		if (!query || query.length < 2) {
+			return json([]);
 		}
-		// --- End ETag ---
 
-		console.log(`API /api/search: Performing search for query: "${query}"`);
-		const rawResults = index.fuse.search(query.trim());
+		const posts = await getSearchData();
+		const searchTerm = query.toLowerCase();
 
-		// --- Filter by Score ---
-		const filteredResults = rawResults
-			.filter((result) => result.score && result.score <= SCORE_CUTOFF)
-			.map((result) => result.item) // Extract the original post item after filtering
-			.slice(0, 15); // Limit number of results
-		// --- End Score Filter ---
+		const results = posts
+			.filter((post) => {
+				const searchableText = [
+					post.title,
+					post.subtitle,
+					post.brief,
+					post.content?.replace(/<[^>]*>/g, ""), // Strip HTML
+					...post.tags.map((tag) => tag.name),
+				]
+					.join(" ")
+					.toLowerCase();
 
-		console.log(
-			`API /api/search: Found ${rawResults.length} raw results, ${filteredResults.length} results after score filter (<= ${SCORE_CUTOFF}) for query "${query}".`
-		);
+				return searchableText.includes(searchTerm);
+			})
+			.map((post) => ({
+				id: post.id,
+				slug: post.slug,
+				title: post.title,
+				subtitle: post.subtitle,
+				brief: post.brief,
+				publishedAt: post.publishedAt,
+			}))
+			.sort(
+				(a, b) =>
+					new Date(b.publishedAt).getTime() -
+					new Date(a.publishedAt).getTime()
+			)
+			.slice(0, 20); // Limit results
 
-		return json(filteredResults, {
-			// Return the filtered results
-			headers: {
-				"Content-Type": "application/json",
-				"Cache-Control": "public, max-age=300",
-				ETag: currentEtag,
+		return json(results);
+	} catch (error: unknown) {
+		console.error("Search API error:", error);
+		return json(
+			{
+				error: "Search failed",
+				message:
+					error instanceof Error ? error.message : "Unknown error",
 			},
-		});
-	} catch (err: any) {
-		console.error(`API /api/search: Error searching for "${query}":`, err);
-		error(500, err.message || "Search failed");
+			{ status: 500 }
+		);
 	}
 }

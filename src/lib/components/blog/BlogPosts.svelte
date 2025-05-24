@@ -1,4 +1,3 @@
-<!-- BlogPosts.svelte -->
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import { fade } from "svelte/transition";
@@ -7,8 +6,8 @@
 		Image,
 		AlertTriangle,
 		ArrowRight,
-		Sparkles,
 		FileText,
+		Clock,
 	} from "lucide-svelte";
 
 	interface BlogPost {
@@ -27,17 +26,17 @@
 	}
 
 	let posts: BlogPost[] = [];
-	let currentCursor: string | null = null; // Start with null for initial load
-	let hasMore: boolean = true;
+	let currentCursor: string | null = null;
+	let hasMore = true;
 	let loading = false;
-	let initialLoadAttempted = false; // Tracks if the first fetch attempt happened
+	let initialLoadAttempted = false;
 	let errorMessage: string | null = null;
 
-	let loadMoreTrigger: HTMLDivElement | undefined = undefined;
+	// svelte-ignore let-var
+	let loadMoreTrigger: HTMLDivElement;
 	let observer: IntersectionObserver | null = null;
 
 	async function loadPosts(cursor: string | null) {
-		// Prevent concurrent loads or loading when no more posts exist
 		if (loading || (!hasMore && cursor !== null)) return;
 
 		loading = true;
@@ -46,10 +45,9 @@
 
 		try {
 			const timestamp = Date.now();
-			// Construct URL: Add cursor only if it exists, always add timestamp
 			const apiUrl = `/api/posts${
 				cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""
-			}${cursor ? "&" : "?"}t=${timestamp}`; // Cache-busting timestamp
+			}${cursor ? "&" : "?"}t=${timestamp}`;
 
 			const res = await fetch(apiUrl);
 
@@ -65,51 +63,36 @@
 			}
 
 			const data: PostsApiResponse = await res.json();
-			console.log(
-				`[BlogPosts] Data received for ${
-					isInitialLoad ? "initial load" : `cursor: ${cursor}`
-				}:`,
-				data
-			);
 
-			// Sorting and state update logic
 			if (data.posts?.length > 0) {
 				const combinedPosts = isInitialLoad
-					? data.posts // Replace on initial load
-					: [...posts, ...data.posts]; // Append on subsequent loads
+					? data.posts
+					: [...posts, ...data.posts];
 
-				// Always sort the combined list to ensure order
 				combinedPosts.sort(
 					(a, b) =>
 						new Date(b.publishedAt).getTime() -
 						new Date(a.publishedAt).getTime()
 				);
 				posts = combinedPosts;
-				currentCursor = data.endCursor; // Update cursor from response
+				currentCursor = data.endCursor;
 				hasMore = data.hasMore;
 			} else {
-				// No posts received
-				if (isInitialLoad) posts = []; // Clear posts if initial load is empty
-				hasMore = false; // No more posts available
-				// If initial load returned nothing, ensure cursor is null
+				if (isInitialLoad) posts = [];
+				hasMore = false;
 				if (isInitialLoad) currentCursor = null;
 			}
-		} catch (e: any) {
-			errorMessage = e.message || "An unknown error occurred.";
-			console.error(
-				`[BlogPosts] Error during loadPosts (${
-					isInitialLoad ? "initial" : `cursor: ${cursor}`
-				}):`,
-				e
-			);
-			hasMore = false; // Stop loading on error
-			if (isInitialLoad) currentCursor = null; // Reset cursor on initial load error
+		} catch (e) {
+			const err = e instanceof Error ? e : new Error(String(e));
+			errorMessage = err.message || "An unknown error occurred.";
+			console.error("Error loading posts:", err);
+			hasMore = false;
+			if (isInitialLoad) currentCursor = null;
 		} finally {
 			loading = false;
 			if (isInitialLoad) {
-				initialLoadAttempted = true; // Mark initial attempt complete
+				initialLoadAttempted = true;
 			}
-			// Re-evaluate observer setup after loading state changes
 			setupObserver();
 		}
 	}
@@ -120,49 +103,31 @@
 			observer = null;
 		}
 
-		// Setup only if initial load is done, more posts exist, not loading, and trigger is present
 		if (initialLoadAttempted && hasMore && !loading && loadMoreTrigger) {
-			console.log("[BlogPosts] Setting up IntersectionObserver.");
 			observer = new IntersectionObserver(
 				(entries) => {
-					// Trigger load only if intersecting and we have a valid cursor for the *next* page
 					if (entries[0].isIntersecting && currentCursor) {
-						console.log(
-							"[BlogPosts] Observer triggered loadPosts with cursor:",
-							currentCursor
-						);
 						loadPosts(currentCursor);
-					} else if (entries[0].isIntersecting) {
-						console.log(
-							"[BlogPosts] Observer triggered but no valid cursor:",
-							currentCursor
-						);
 					}
 				},
 				{ rootMargin: "300px", threshold: 0.01 }
 			);
 			observer.observe(loadMoreTrigger);
-		} else {
-			// Optional detailed logging for debugging observer setup
-			// console.log("[BlogPosts] Observer conditions not met:", { initialLoadAttempted, hasMore, loading, triggerExists: !!loadMoreTrigger });
 		}
 	}
 
-	// Reactive statement to ensure observer is correctly setup/removed when state changes
 	$: if (loadMoreTrigger || hasMore || loading || initialLoadAttempted) {
 		setupObserver();
 	}
 
-	// Call loadPosts with null on mount for the initial fetch
 	onMount(() => {
-		// Reset state on mount in case of HMR or navigation
 		posts = [];
 		currentCursor = null;
 		hasMore = true;
 		initialLoadAttempted = false;
 		errorMessage = null;
-		loading = false; // Ensure loading is false initially
-		loadPosts(null); // Trigger initial load
+		loading = false;
+		loadPosts(null);
 	});
 
 	onDestroy(() => {
@@ -170,37 +135,40 @@
 	});
 </script>
 
-<!-- TEMPLATE REMAINS EXACTLY THE SAME AS BEFORE -->
 <div class="min-h-[60vh]">
-	<!-- Initial Skeleton Loader -->
+	<!-- Skeleton Loader -->
 	{#if loading && !initialLoadAttempted}
 		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-			{#each Array(6) as _}
+			{#each Array(6) as _, i}
 				<div
-					class="bg-white rounded-xl overflow-hidden border border-slate-100 shadow-xs flex flex-col animate-pulse"
+					class="card p-0 overflow-hidden animate-pulse"
 					aria-hidden="true"
 				>
 					<div
-						class="relative w-full bg-slate-200"
-						style="aspect-ratio: 16 / 9;"
+						class="aspect-video bg-slate-200 dark:bg-slate-700"
 					></div>
-					<div class="p-5 flex-grow flex flex-col">
-						<div class="h-4 w-24 bg-slate-200 mb-2 rounded"></div>
-						<div class="space-y-1.5 mb-2">
+					<div class="p-6 space-y-3">
+						<div
+							class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20"
+						></div>
+						<div class="space-y-2">
 							<div
-								class="h-5 w-full bg-slate-200 rounded-md"
+								class="h-5 bg-slate-200 dark:bg-slate-700 rounded w-full"
 							></div>
 							<div
-								class="h-5 w-5/6 bg-slate-200 rounded-md"
+								class="h-5 bg-slate-200 dark:bg-slate-700 rounded w-3/4"
 							></div>
 						</div>
-						<div class="flex-grow mb-4 space-y-1.5">
-							<div class="h-4 w-full bg-slate-200 rounded"></div>
-							<div class="h-4 w-full bg-slate-200 rounded"></div>
-							<div class="h-4 w-3/4 bg-slate-200 rounded"></div>
+						<div class="space-y-2">
+							<div
+								class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-full"
+							></div>
+							<div
+								class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-5/6"
+							></div>
 						</div>
 						<div
-							class="h-4 w-28 bg-slate-200 rounded mt-auto"
+							class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-24"
 						></div>
 					</div>
 				</div>
@@ -211,12 +179,24 @@
 	<!-- Error Message -->
 	{#if errorMessage && posts.length === 0}
 		<div
-			class="text-center py-6 text-red-600 border border-red-100 bg-red-50/50 p-6 rounded-xl"
+			class="card bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800 text-center"
 			role="alert"
 		>
-			<AlertTriangle class="h-12 w-12 mx-auto mb-3 text-red-500" />
-			<p class="font-medium text-lg">Could not load posts</p>
-			<p class="text-sm mt-1">{errorMessage}</p>
+			<AlertTriangle
+				class="h-12 w-12 mx-auto mb-4 text-red-500 dark:text-red-400"
+			/>
+			<h3
+				class="text-lg font-semibold text-red-800 dark:text-red-200 mb-2"
+			>
+				Could not load posts
+			</h3>
+			<p class="text-red-600 dark:text-red-300 mb-4">{errorMessage}</p>
+			<button
+				on:click={() => loadPosts(null)}
+				class="btn btn-outline border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/50"
+			>
+				Try again
+			</button>
 		</div>
 	{/if}
 
@@ -230,64 +210,67 @@
 						)}&w=800&h=450&q=75`
 					: null}
 				<article
-					in:fade={{ duration: 300, delay: (i % 6) * 75 }}
-					class="group bg-white rounded-xl overflow-hidden border border-slate-100 hover:border-green-200 hover:shadow shadow-xs transition-all duration-300 h-full flex flex-col"
+					in:fade={{ duration: 300, delay: (i % 6) * 50 }}
+					class="group card p-0 overflow-hidden hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200"
 				>
-					<a href={`/post/${post.slug}`} class="h-full flex flex-col">
+					<a href={`/post/${post.slug}`} class="block h-full">
+						<!-- Image -->
 						{#if coverImageUrl}
 							<div
-								class="relative overflow-hidden bg-slate-100"
-								style="aspect-ratio: 16 / 9;"
+								class="relative aspect-video overflow-hidden bg-slate-100 dark:bg-slate-800"
 							>
 								<img
 									src={coverImageUrl}
 									alt={post.title}
-									class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+									class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
 									loading={i < 3 ? "eager" : "lazy"}
 									decoding="async"
 									fetchpriority={i < 3 ? "high" : "auto"}
 									width="800"
 									height="450"
 								/>
-								<div
-									class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-								></div>
 							</div>
 						{:else}
 							<div
-								class="relative bg-gradient-to-br from-green-50 to-slate-100 flex items-center justify-center text-slate-400"
-								style="aspect-ratio: 16 / 9;"
+								class="relative aspect-video bg-slate-100 dark:bg-slate-800 flex items-center justify-center"
 							>
-								<Image class="h-16 w-16 opacity-30" />
+								<Image
+									class="h-16 w-16 text-slate-400 dark:text-slate-500"
+								/>
 							</div>
 						{/if}
-						<div class="p-5 flex-grow flex flex-col">
+
+						<!-- Content -->
+						<div class="p-6 flex flex-col h-full">
 							<time
-								class="text-sm text-green-600 font-medium block mb-2 h-5"
+								class="text-sm font-medium text-emerald-600 dark:text-emerald-400 block mb-2"
 								datetime={post.publishedAt}
 							>
 								{formatDate(post.publishedAt)}
 							</time>
+
 							<h2
-								class="text-lg font-display font-bold text-slate-800 mb-2 group-hover:text-green-700 transition line-clamp-2 min-h-[3.5rem]"
+								class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200 line-clamp-2"
 							>
 								{post.title}
 							</h2>
+
 							{#if post.subtitle}
 								<p
-									class="text-slate-600 text-sm line-clamp-3 mb-4 flex-grow min-h-[3rem]"
+									class="text-slate-600 dark:text-slate-400 text-sm line-clamp-3 mb-4 flex-grow"
 								>
 									{post.subtitle}
 								</p>
 							{:else}
-								<div class="mb-4 flex-grow min-h-[3rem]"></div>
+								<div class="mb-4 flex-grow"></div>
 							{/if}
+
 							<div
-								class="flex items-center text-green-600 text-sm font-medium mt-auto group-hover:text-green-700 transition h-5"
+								class="flex items-center text-emerald-600 dark:text-emerald-400 text-sm font-medium mt-auto group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors duration-200"
 							>
 								Read article
 								<ArrowRight
-									class="ml-1 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+									class="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-1"
 								/>
 							</div>
 						</div>
@@ -297,44 +280,49 @@
 		</div>
 	{/if}
 
-	<!-- Loading More Spinner -->
+	<!-- Loading More -->
 	{#if loading && initialLoadAttempted && posts.length > 0}
-		<div class="flex justify-center py-8 h-[58px]" aria-live="polite">
-			<div class="relative h-10 w-10">
+		<div class="flex justify-center py-8" aria-live="polite">
+			<div class="relative h-8 w-8">
 				<div
-					class="absolute animate-spin rounded-full h-full w-full border-4 border-slate-200"
+					class="absolute animate-spin rounded-full h-8 w-8 border-2 border-slate-200 dark:border-slate-700"
 				></div>
 				<div
-					class="absolute animate-spin rounded-full h-full w-full border-4 border-green-600 border-t-transparent"
+					class="absolute animate-spin rounded-full h-8 w-8 border-2 border-emerald-600 dark:border-emerald-400 border-t-transparent"
 				></div>
 			</div>
 		</div>
 	{/if}
 
-	<!-- End of Posts / No Posts Message -->
+	<!-- End State -->
 	{#if !loading && !hasMore && initialLoadAttempted}
-		<div class="text-center py-8 text-slate-500 min-h-[58px]">
+		<div class="text-center py-8">
 			{#if posts.length > 0}
-				<div class="border-t border-slate-100 pt-6 mt-4">
-					<Sparkles class="h-6 w-6 mx-auto mb-2 text-slate-400" />
-					<p>You've reached the end of the posts</p>
+				<div
+					class="border-t border-slate-200 dark:border-slate-700 pt-6"
+				>
+					<p class="text-slate-500 dark:text-slate-400">
+						You've reached the end of the posts
+					</p>
 				</div>
 			{:else if !errorMessage}
-				<div
-					class="py-16 bg-slate-50 rounded-xl border border-slate-200"
-				>
-					<FileText class="h-12 w-12 mx-auto mb-3 text-slate-400" />
-					<p class="font-medium">No posts found</p>
-					<p class="text-sm mt-1">Check back soon for new content</p>
+				<div class="card text-center">
+					<FileText
+						class="h-12 w-12 mx-auto mb-3 text-slate-400 dark:text-slate-500"
+					/>
+					<p class="font-medium text-slate-900 dark:text-slate-100">
+						No posts found
+					</p>
+					<p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+						Check back soon for new content
+					</p>
 				</div>
 			{/if}
 		</div>
 	{/if}
 
 	<!-- Intersection Observer Trigger -->
-	<!-- Render trigger only after initial load attempt and if more might exist -->
 	{#if hasMore && initialLoadAttempted && !loading}
 		<div bind:this={loadMoreTrigger} class="h-10 mt-8 invisible"></div>
 	{/if}
 </div>
-<!-- End Container -->

@@ -1,11 +1,8 @@
 <script lang="ts">
-	// 1. Import PageData for this specific page route
-	import type { PageData } from "./$types";
-	import SearchBox from "$lib/components/blog/Search.svelte";
+import type { PageData } from "./$types";
+import SearchBox from "$lib/components/blog/Search.svelte";
 
-	// 2. Declare the data prop using PageData
-	//    PageData for this route will include the LayoutData from the root layout
-	export let data: PageData;
+export let data: PageData;
 </script>
 
 <svelte:head>
@@ -14,7 +11,6 @@
 		name="description"
 		content="Search through my articles and projects."
 	/>
-	<!-- 3. Access data.url (it's part of PageData via inheritance) -->
 	{#if data.url}
 		<link rel="canonical" href={data.url.href} />
 		<meta property="og:url" content={data.url.href} />
@@ -27,9 +23,9 @@
 	<meta property="og:type" content="website" />
 </svelte:head>
 
-<section class="relative overflow-hidden">
+<section class="relative overflow-hidden section">
 	<div
-		class="absolute inset-0 bg-gradient-to-br from-green-800 via-green-700 to-green-600"
+		class="absolute inset-0 bg-gradient-to-br from-emerald-800 via-emerald-700 to-emerald-600"
 	></div>
 	<div
 		class="absolute inset-0 opacity-10"
@@ -48,7 +44,7 @@
 <section class="py-16">
 	<div class="max-w-4xl mx-auto px-4">
 		<div
-			class="card p-6 sm:p-8 shadow-lg border border-gray-100 bg-white rounded-2xl"
+			class="card p-6 sm:p-8 shadow-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl"
 		>
 			<SearchBox />
 		</div>

@@ -1,201 +1,232 @@
-<!-- src/routes/post/[slug]/+page.svelte -->
 <script lang="ts">
-	// Import the layout data shape to merge it into PageData expectation
-	import type { LayoutDataShape } from "../../+layout";
-	import type { PageData as ServerPageData } from "./$types"; // Type from +page.server.ts
-	import SignupForm from "$lib/components/blog/SignupForm.svelte";
-	import { formatDate } from "$lib/utils/helpers";
-	import { ChevronLeft } from "lucide-svelte";
-	import type { HashnodePost } from "$lib/server/hashnode";
 	import { onMount } from "svelte";
+	import { fade } from "svelte/transition";
+	import { formatDate } from "$lib/utils/helpers";
+	import CalendarIcon from "lucide-svelte/icons/calendar";
+	import ClockIcon from "lucide-svelte/icons/clock";
+	import TagIcon from "lucide-svelte/icons/tag";
+	import ArrowLeftIcon from "lucide-svelte/icons/arrow-left";
+	import TwitterIcon from "lucide-svelte/icons/twitter";
+	import LinkedinIcon from "lucide-svelte/icons/linkedin";
+	import LinkIcon from "lucide-svelte/icons/link";
+	import Newsletter from "$lib/components/blog/Newsletter.svelte";
+	import type { PageData } from "./$types";
 
-	// Define the combined data type expected by the page component
-	type PageData = ServerPageData & LayoutDataShape;
+	export let data: PageData;
 
-	export let data: PageData; // Expects { post: ..., url: { ... } }
-
-	// --- Derive page-specific values from MERGED data ---
-	const post = data.post as HashnodePost;
-	const baseUrl = data.url?.origin ?? "";
-
-	// --- Page Specific Meta Values ---
-	const postTitle = post?.title ?? "Blog Post";
-	const postDescription =
-		post?.subtitle || post?.brief || "Read this blog post.";
-	const postUrl = data.url?.href ?? "";
-
-	// --- Calculate OG Image URL ---
-	const defaultOgImage = "https://kafkaesque.blog/img/logo_white.png";
-	const ogImageUrl = post?.coverImage?.src
-		? baseUrl
-			? `${baseUrl}/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80`
-			: `/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80`
-		: defaultOgImage;
-
-	// --- Calculate Secure URL Content ---
-	const secureOgImageUrlContent = ogImageUrl.startsWith("https")
-		? ogImageUrl
-		: "";
-
-	// Helper function to determine image type
-	function getImageType(url: string): string {
-		if (!url) return "image/png";
-		const lowerUrl = url.toLowerCase();
-		if (lowerUrl.endsWith(".png")) return "image/png";
-		if (lowerUrl.endsWith(".jpg") || lowerUrl.endsWith(".jpeg"))
-			return "image/jpeg";
-		if (lowerUrl.endsWith(".webp")) return "image/webp";
-		if (url.includes("/api/image")) return "image/jpeg";
-		return "image/png";
-	}
-	const imageType = getImageType(ogImageUrl);
-
-	// --- Image URL for content display ---
-	const coverImageUrl = post?.coverImage?.src
-		? `/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&q=80`
-		: null;
-
-	// --- Other Post Metadata ---
-	const postPublishedAt = post?.publishedAt;
+	let mounted = false;
+	let copied = false;
 
 	onMount(() => {
-		console.log("[+page.svelte] Received merged data:", data);
-		console.log("[+page.svelte] Using OG Image URL:", ogImageUrl);
-		console.log(
-			"[+page.svelte] Secure OG Image URL Content:",
-			secureOgImageUrlContent
-		);
+		mounted = true;
 	});
+
+	$: post = data.post;
+	$: ogImageUrl = post?.coverImage?.src
+		? `/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&h=630&q=80`
+		: "https://jacobweinbren.com/og-image.png";
+
+	function copyLink() {
+		navigator.clipboard.writeText(window.location.href);
+		copied = true;
+		setTimeout(() => {
+			copied = false;
+		}, 2000);
+	}
+
+	function shareOnTwitter() {
+		const text = `${post.title} by @JacobWeinbren`;
+		const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
+		window.open(url, "_blank");
+	}
+
+	function shareOnLinkedIn() {
+		const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`;
+		window.open(url, "_blank");
+	}
 </script>
 
 <svelte:head>
-	<!-- These tags will OVERRIDE the layout's title/description -->
-	<!-- And they will be the *only* source for image/twitter tags on post pages -->
+	<title>{post.title} – Jacob Weinbren</title>
+	<meta
+		name="description"
+		content={post.subtitle || post.brief || "Article by Jacob Weinbren"}
+	/>
 
-	<title>{postTitle}</title>
-	<meta name="description" content={postDescription} />
-
-	{#if postUrl}
-		<link rel="canonical" href={postUrl} />
-		<meta property="og:url" content={postUrl} />
+	{#if data.url}
+		<link rel="canonical" href={data.url.href} />
+		<meta property="og:url" content={data.url.href} />
 	{/if}
 
-	<meta property="og:title" content={postTitle} />
-	<meta property="og:description" content={postDescription} />
 	<meta property="og:type" content="article" />
-
-	<!-- OG Image Block - Always Rendered -->
+	<meta property="og:title" content={post.title} />
+	<meta
+		property="og:description"
+		content={post.subtitle || post.brief || "Article by Jacob Weinbren"}
+	/>
 	<meta property="og:image" content={ogImageUrl} />
-	<meta property="og:image:secure_url" content={secureOgImageUrlContent} />
-	<meta property="og:image:type" content={imageType} />
+	<meta property="og:image:secure_url" content={ogImageUrl} />
+	<meta property="og:image:type" content="image/jpeg" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 
-	<!-- Twitter Card Block - Always Rendered -->
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content={postTitle} />
-	<meta name="twitter:description" content={postDescription} />
 	<meta name="twitter:image" content={ogImageUrl} />
+	<meta name="twitter:title" content={post.title} />
+	<meta
+		name="twitter:description"
+		content={post.subtitle || post.brief || "Article by Jacob Weinbren"}
+	/>
+	<meta name="twitter:creator" content="@JacobWeinbren" />
 
-	<!-- Article Specific Tags -->
-	{#if postPublishedAt}
-		<meta property="article:published_time" content={postPublishedAt} />
-	{/if}
-	{#if post?.tags?.length > 0}
-		{#each post.tags as tag (tag.slug)}
-			<meta property="article:tag" content={tag.name} />
-		{/each}
-	{/if}
+	<meta property="article:published_time" content={post.publishedAt} />
+	<meta property="article:author" content="Jacob Weinbren" />
+
+	{#each post.tags as tag}
+		<meta property="article:tag" content={tag.name} />
+	{/each}
 </svelte:head>
 
-<!-- Component Body (article, header, content, etc.) -->
-{#if post}
-	<article class="max-w-3xl mx-auto px-4 py-8">
-		{#if coverImageUrl}
-			<div class="mb-8 overflow-hidden rounded-lg shadow bg-gray-100">
-				<img
-					src={coverImageUrl}
-					alt={post.title ?? "Cover Image"}
-					width="896"
-					height="504"
-					class="w-full h-auto object-cover aspect-[16/9]"
-					loading="eager"
-					decoding="async"
-					fetchpriority="high"
-				/>
-			</div>
-		{/if}
-
-		<header class="mb-8">
-			<time
-				class="text-green-700 text-sm font-medium block mb-1"
-				datetime={postPublishedAt || undefined}
-			>
-				{#if postPublishedAt}
-					{formatDate(postPublishedAt)}
-				{:else}
-					<span class="text-gray-500 italic">Date Unavailable</span>
-				{/if}
-			</time>
-			<h1
-				class="text-3xl md:text-4xl font-bold mt-1 mb-3 font-display text-gray-900"
-			>
-				{post.title}
-			</h1>
-			{#if post.subtitle}
-				<p class="text-lg text-gray-600">{post.subtitle}</p>
-			{/if}
-			{#if post.tags?.length > 0}
-				<div class="flex flex-wrap gap-2 mt-4">
-					{#each post.tags as tag (tag.slug)}
-						<span
-							class="bg-green-50 text-green-700 px-2 py-1 rounded-md text-xs font-medium"
+<article class="min-h-screen">
+	<!-- Header -->
+	<header class="section">
+		<div class="max-w-4xl mx-auto section-padding">
+			{#if mounted}
+				<div in:fade={{ duration: 400, delay: 200 }}>
+					<div class="mb-8">
+						<a
+							href="/blog"
+							class="inline-flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium transition-colors duration-200"
 						>
-							{tag.name}
-						</span>
-					{/each}
+							<ArrowLeftIcon class="w-4 h-4" />
+							Back to Blog
+						</a>
+					</div>
+
+					<!-- Cover Image -->
+					{#if post.coverImage?.src}
+						<div
+							class="relative aspect-video overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 mb-8"
+						>
+							<img
+								src={`/api/image?url=${encodeURIComponent(post.coverImage.src)}&w=1200&h=630&q=80`}
+								alt={post.title}
+								class="w-full h-full object-cover"
+								loading="eager"
+								fetchpriority="high"
+							/>
+						</div>
+					{/if}
+
+					<!-- Meta -->
+					<div
+						class="flex flex-wrap items-center gap-4 text-slate-600 dark:text-slate-400 text-sm mb-6"
+					>
+						<div class="flex items-center gap-2">
+							<CalendarIcon class="w-4 h-4" />
+							<time datetime={post.publishedAt}>
+								{formatDate(post.publishedAt)}
+							</time>
+						</div>
+						<div class="flex items-center gap-2">
+							<ClockIcon class="w-4 h-4" />
+							<span
+								>{Math.ceil(
+									(post.content?.length || 1000) / 1000
+								)} min read</span
+							>
+						</div>
+					</div>
+
+					<!-- Title -->
+					<h1
+						class="text-3xl md:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-4 font-display leading-tight"
+					>
+						{post.title}
+					</h1>
+
+					<!-- Subtitle -->
+					{#if post.subtitle}
+						<p
+							class="text-lg md:text-xl text-slate-600 dark:text-slate-400 leading-relaxed mb-6"
+						>
+							{post.subtitle}
+						</p>
+					{/if}
+
+					<!-- Tags -->
+					{#if post.tags && post.tags.length > 0}
+						<div class="flex flex-wrap gap-2 mb-8">
+							{#each post.tags as tag}
+								<span
+									class="inline-flex items-center gap-1 badge badge-secondary"
+								>
+									<TagIcon class="w-3 h-3" />
+									{tag.name}
+								</span>
+							{/each}
+						</div>
+					{/if}
+
+					<!-- Share Buttons -->
+					<div
+						class="flex items-center gap-3 mb-8 pb-8 border-b border-slate-200 dark:border-slate-700"
+					>
+						<span
+							class="text-slate-600 dark:text-slate-400 text-sm font-medium"
+							>Share:</span
+						>
+						<button
+							on:click={copyLink}
+							class="p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200"
+							title="Copy link"
+						>
+							<LinkIcon class="w-4 h-4" />
+						</button>
+						<button
+							on:click={shareOnTwitter}
+							class="p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200"
+							title="Share on Twitter"
+						>
+							<TwitterIcon class="w-4 h-4" />
+						</button>
+						<button
+							on:click={shareOnLinkedIn}
+							class="p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200"
+							title="Share on LinkedIn"
+						>
+							<LinkedinIcon class="w-4 h-4" />
+						</button>
+						{#if copied}
+							<span
+								class="text-emerald-600 dark:text-emerald-400 text-sm"
+								>Copied!</span
+							>
+						{/if}
+					</div>
 				</div>
 			{/if}
-		</header>
-
-		{#if post.content && post.content.trim() !== ""}
-			<div class="prose prose-custom max-w-none">
-				{@html post.content}
-			</div>
-		{:else}
-			<p class="text-gray-500 italic my-6">
-				Post content is empty or could not be loaded.
-			</p>
-		{/if}
-
-		<div class="mt-10 border-t pt-8">
-			<SignupForm />
 		</div>
+	</header>
 
-		<div class="mt-8 text-center">
-			<a
-				href="/blog"
-				class="inline-flex items-center text-green-700 hover:text-green-800 transition text-sm font-medium"
-			>
-				<ChevronLeft class="w-4 h-4 mr-1" />
-				Back to Blog
-			</a>
+	<!-- Content -->
+	<section class="pb-16">
+		<div class="max-w-4xl mx-auto section-padding">
+			{#if mounted}
+				<div
+					in:fade={{ duration: 400, delay: 300 }}
+					class="prose prose-lg"
+				>
+					{@html post.content}
+				</div>
+			{/if}
 		</div>
-	</article>
-{:else}
-	<!-- Fallback -->
-	<div class="text-center py-16 px-4">
-		<h1 class="text-2xl font-bold text-red-600 mb-4">Error Loading Post</h1>
-		<p class="text-gray-600">
-			The requested blog post could not be loaded. Please try again later
-			or return to the blog index.
-		</p>
-		<a
-			href="/blog"
-			class="mt-6 inline-flex items-center text-green-700 hover:text-green-800 transition text-sm font-medium"
-		>
-			<ChevronLeft class="w-4 h-4 mr-1" />
-			Back to Blog
-		</a>
-	</div>
-{/if}
+	</section>
+
+	<!-- Newsletter -->
+	<section class="section bg-slate-50 dark:bg-slate-900">
+		<div class="max-w-4xl mx-auto section-padding">
+			<Newsletter />
+		</div>
+	</section>
+</article>

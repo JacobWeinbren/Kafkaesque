@@ -1,183 +1,872 @@
+/* biome-ignore-file */
 /* 1. Imports - MUST be first */
 @import "tailwindcss";
 
-/* 2. Plugins (if applicable) */
+/* 2. Plugins */
 @plugin "@tailwindcss/typography";
 
-/* 3. Theme Definitions */
+/* 3. Configure dark mode variant */
+@variant dark (.dark &);
+
+/* 4. Theme Definitions */
 @theme {
-	/* Colors */
-	--color-green-50: #f0fdf4;
-	--color-green-100: #dcfce7;
-	--color-green-200: #bbf7d0;
-	--color-green-300: #86efac;
-	--color-green-400: #4ade80;
-	--color-green-500: #22c55e;
-	--color-green-600: #16a34a;
-	--color-green-700: #15803d;
-	--color-green-800: #166534;
-	--color-green-900: #14532d;
+	/* Color Palette - Emerald focus for Jacob Weinbren brand */
+	--color-emerald-50: #ecfdf5;
+	--color-emerald-100: #d1fae5;
+	--color-emerald-200: #a7f3d0;
+	--color-emerald-300: #6ee7b7;
+	--color-emerald-400: #34d399;
+	--color-emerald-500: #10b981;
+	--color-emerald-600: #059669;
+	--color-emerald-700: #047857;
+	--color-emerald-800: #065f46;
+	--color-emerald-900: #064e3b;
+	--color-emerald-950: #022c22;
+
 	--color-slate-50: #f8fafc;
 	--color-slate-100: #f1f5f9;
 	--color-slate-200: #e2e8f0;
+	--color-slate-300: #cbd5e1;
+	--color-slate-400: #94a3b8;
+	--color-slate-500: #64748b;
+	--color-slate-600: #475569;
 	--color-slate-700: #334155;
 	--color-slate-800: #1e293b;
 	--color-slate-900: #0f172a;
+	--color-slate-950: #020617;
 
-	/* Fonts */
-	--font-sans:
-		"Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-		"Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-		"Noto Color Emoji";
-	--font-display:
-		"Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-		"Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-		"Noto Color Emoji";
+	--color-gray-50: #f9fafb;
+	--color-gray-100: #f3f4f6;
+	--color-gray-200: #e5e7eb;
+	--color-gray-300: #d1d5db;
+	--color-gray-400: #9ca3af;
+	--color-gray-500: #6b7280;
+	--color-gray-600: #4b5563;
+	--color-gray-700: #374151;
+	--color-gray-800: #1f2937;
+	--color-gray-900: #111827;
+	--color-gray-950: #030712;
 
-	/* Keyframes */
-	@keyframes fadeInFast {
-		"0%": {
-			opacity: 0;
-			transform: scale(0.97);
-		}
-		"100%": {
-			opacity: 1;
-			transform: scale(1);
-		}
-	}
-	@keyframes popUp {
-		"0%": {
+	/* Typography */
+	--font-family-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+	--font-family-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+	/* Transitions */
+	--transition-duration-150: 150ms;
+	--transition-duration-200: 200ms;
+	--transition-duration-300: 300ms;
+	--transition-timing-function-default: cubic-bezier(0.4, 0, 0.2, 1);
+
+	/* Animations */
+	--animate-fade-in: fadeIn 0.4s ease-out forwards;
+	--animate-slide-in: slideIn 0.3s ease-out forwards;
+	--animate-pulse-slow: pulse 3s ease-in-out infinite;
+
+	@keyframes fadeIn {
+		0% {
 			opacity: 0;
 			transform: translateY(10px);
 		}
-		"100%": {
+		100% {
 			opacity: 1;
 			transform: translateY(0);
 		}
 	}
-	@keyframes shimmer {
-		"0%": {
-			background-position: -468px 0;
+
+	@keyframes slideIn {
+		0% {
+			opacity: 0;
+			transform: translateX(-10px);
 		}
-		"100%": {
-			background-position: 468px 0;
+		100% {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
+
+	@keyframes pulse {
+		0% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.7;
+		}
+		100% {
+			opacity: 1;
 		}
 	}
 }
 
-/* 4. Base Layer Styles */
+/* 5. Base Layer Styles */
 @layer base {
 	html {
-		font-family: var(--font-sans);
+		font-family: theme(--font-family-sans);
 		scroll-behavior: smooth;
 		-webkit-tap-highlight-color: transparent;
 		text-rendering: optimizeLegibility;
 		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
 	}
 
 	body {
-		@apply bg-slate-50 text-slate-800;
-		/* @apply dark:bg-gray-900 dark:text-slate-200; */
+		background-color: theme(--color-white);
+		color: theme(--color-slate-900);
+		transition:
+			background-color theme(--transition-duration-300)
+				theme(--transition-timing-function-default),
+			color theme(--transition-duration-300)
+				theme(--transition-timing-function-default);
 	}
 
-	/* Scrollbar */
+	.dark body {
+		background-color: theme(--color-slate-950);
+		color: theme(--color-slate-100);
+	}
+
+	/* Custom Scrollbar */
 	::-webkit-scrollbar {
 		width: 6px;
 		height: 6px;
 	}
+
 	::-webkit-scrollbar-track {
-		@apply bg-slate-100;
-	}
-	::-webkit-scrollbar-thumb {
-		@apply bg-green-500/50 rounded-full;
-	}
-	::-webkit-scrollbar-thumb:hover {
-		@apply bg-green-600/60;
+		background-color: theme(--color-slate-100);
 	}
 
+	.dark ::-webkit-scrollbar-track {
+		background-color: theme(--color-slate-800);
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: color-mix(
+			in srgb,
+			theme(--color-emerald-500) 50%,
+			transparent
+		);
+		border-radius: 9999px;
+	}
+
+	.dark ::-webkit-scrollbar-thumb {
+		background-color: color-mix(
+			in srgb,
+			theme(--color-emerald-400) 50%,
+			transparent
+		);
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background-color: color-mix(
+			in srgb,
+			theme(--color-emerald-600) 70%,
+			transparent
+		);
+	}
+
+	.dark ::-webkit-scrollbar-thumb:hover {
+		background-color: color-mix(
+			in srgb,
+			theme(--color-emerald-300) 70%,
+			transparent
+		);
+	}
+
+	/* Typography */
 	h1,
 	h2,
 	h3,
 	h4,
 	h5,
 	h6 {
-		@apply font-display font-bold tracking-tight;
+		font-family: theme(--font-family-display);
+		font-weight: 600;
+		letter-spacing: -0.025em;
+		color: theme(--color-slate-900);
+	}
+
+	.dark h1,
+	.dark h2,
+	.dark h3,
+	.dark h4,
+	.dark h5,
+	.dark h6 {
+		color: theme(--color-slate-100);
+	}
+
+	/* Selection */
+	::selection {
+		background-color: theme(--color-emerald-100);
+		color: theme(--color-emerald-900);
+	}
+
+	.dark ::selection {
+		background-color: theme(--color-emerald-900);
+		color: theme(--color-emerald-100);
+	}
+
+	/* Focus visible */
+	*:focus-visible {
+		outline: none;
+		box-shadow:
+			0 0 0 2px theme(--color-emerald-500),
+			0 0 0 4px theme(--color-white);
+	}
+
+	.dark *:focus-visible {
+		box-shadow:
+			0 0 0 2px theme(--color-emerald-500),
+			0 0 0 4px theme(--color-slate-950);
 	}
 }
 
-/* 5. Custom Utilities */
+/* 6. Component Layer for Typography */
+@layer components {
+	.prose {
+		max-width: 65ch;
+		color: theme(--color-slate-700);
+		line-height: 1.75;
+
+		/* Headings */
+		h1 {
+			font-size: 2.25rem;
+			line-height: 1.111;
+			margin-top: 0;
+			margin-bottom: 0.889em;
+			font-weight: 800;
+			color: theme(--color-slate-900);
+		}
+
+		h2 {
+			font-size: 1.875rem;
+			line-height: 1.333;
+			margin-top: 2em;
+			margin-bottom: 1em;
+			font-weight: 700;
+			color: theme(--color-slate-900);
+		}
+
+		h3 {
+			font-size: 1.5rem;
+			line-height: 1.333;
+			margin-top: 1.6em;
+			margin-bottom: 0.6em;
+			font-weight: 600;
+			color: theme(--color-slate-900);
+		}
+
+		h4 {
+			font-size: 1.25rem;
+			line-height: 1.4;
+			margin-top: 1.5em;
+			margin-bottom: 0.5em;
+			font-weight: 600;
+			color: theme(--color-slate-900);
+		}
+
+		h5,
+		h6 {
+			font-size: 1.125rem;
+			line-height: 1.556;
+			margin-top: 1.333em;
+			margin-bottom: 0.444em;
+			font-weight: 600;
+			color: theme(--color-slate-900);
+		}
+
+		/* Paragraphs */
+		p {
+			margin-top: 1.25em;
+			margin-bottom: 1.25em;
+		}
+
+		/* Links */
+		a {
+			color: theme(--color-emerald-600);
+			text-decoration: underline;
+			text-decoration-color: theme(--color-emerald-300);
+			text-underline-offset: 2px;
+			font-weight: 500;
+			transition: all 0.2s ease;
+
+			&:hover {
+				color: theme(--color-emerald-700);
+				text-decoration-color: theme(--color-emerald-600);
+			}
+		}
+
+		/* Lists */
+		ul,
+		ol {
+			margin-top: 1.25em;
+			margin-bottom: 1.25em;
+			padding-left: 1.625em;
+		}
+
+		li {
+			margin-top: 0.5em;
+			margin-bottom: 0.5em;
+		}
+
+		ul > li {
+			position: relative;
+		}
+
+		ul > li::marker {
+			color: theme(--color-emerald-600);
+		}
+
+		ol > li::marker {
+			color: theme(--color-emerald-600);
+			font-weight: 600;
+		}
+
+		/* Blockquotes */
+		blockquote {
+			font-weight: 500;
+			font-style: italic;
+			color: theme(--color-slate-900);
+			border-left: 0.25rem solid theme(--color-emerald-200);
+			quotes: "\201C" "\201D" "\2018" "\2019";
+			margin-top: 1.6em;
+			margin-bottom: 1.6em;
+			padding-left: 1em;
+		}
+
+		blockquote p:first-of-type::before {
+			content: open-quote;
+		}
+
+		blockquote p:last-of-type::after {
+			content: close-quote;
+		}
+
+		/* Code */
+		code {
+			color: theme(--color-emerald-600);
+			background-color: theme(--color-emerald-50);
+			border-radius: 0.375rem;
+			padding: 0.125rem 0.375rem;
+			font-size: 0.875em;
+			font-weight: 600;
+		}
+
+		code::before,
+		code::after {
+			content: none;
+		}
+
+		/* Code blocks */
+		pre {
+			color: theme(--color-slate-50);
+			background-color: theme(--color-slate-900);
+			overflow-x: auto;
+			font-weight: 400;
+			font-size: 0.875em;
+			line-height: 1.714;
+			margin-top: 1.714em;
+			margin-bottom: 1.714em;
+			border-radius: 0.5rem;
+			padding: 1.143em 1.429em;
+		}
+
+		pre code {
+			background-color: transparent;
+			border-width: 0;
+			border-radius: 0;
+			padding: 0;
+			font-weight: inherit;
+			color: inherit;
+			font-size: inherit;
+			font-family: inherit;
+			line-height: inherit;
+		}
+
+		/* Images */
+		img {
+			margin-top: 2em;
+			margin-bottom: 2em;
+			border-radius: 0.5rem;
+			box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+		}
+
+		/* Tables */
+		table {
+			width: 100%;
+			table-layout: auto;
+			text-align: left;
+			margin-top: 2em;
+			margin-bottom: 2em;
+			font-size: 0.875em;
+			line-height: 1.714;
+		}
+
+		thead {
+			border-bottom: 1px solid theme(--color-slate-300);
+		}
+
+		thead th {
+			color: theme(--color-slate-900);
+			font-weight: 600;
+			vertical-align: bottom;
+			padding-right: 0.571em;
+			padding-bottom: 0.571em;
+			padding-left: 0.571em;
+		}
+
+		tbody tr {
+			border-bottom: 1px solid theme(--color-slate-200);
+		}
+
+		tbody td {
+			vertical-align: baseline;
+			padding: 0.571em;
+		}
+
+		/* HR */
+		hr {
+			border-color: theme(--color-slate-200);
+			border-top-width: 1px;
+			margin-top: 3em;
+			margin-bottom: 3em;
+		}
+
+		/* Dark mode styles */
+		:is(.dark &) {
+			color: theme(--color-slate-300);
+
+			h1,
+			h2,
+			h3,
+			h4,
+			h5,
+			h6 {
+				color: theme(--color-slate-100);
+			}
+
+			a {
+				color: theme(--color-emerald-400);
+				text-decoration-color: theme(--color-emerald-600);
+
+				&:hover {
+					color: theme(--color-emerald-300);
+					text-decoration-color: theme(--color-emerald-400);
+				}
+			}
+
+			blockquote {
+				color: theme(--color-slate-100);
+				border-left-color: theme(--color-emerald-800);
+			}
+
+			code {
+				color: theme(--color-emerald-400);
+				background-color: color-mix(
+					in srgb,
+					theme(--color-emerald-950) 50%,
+					transparent
+				);
+			}
+
+			pre {
+				background-color: theme(--color-slate-950);
+				border: 1px solid theme(--color-slate-800);
+			}
+
+			thead {
+				border-bottom-color: theme(--color-slate-600);
+			}
+
+			thead th {
+				color: theme(--color-slate-100);
+			}
+
+			tbody tr {
+				border-bottom-color: theme(--color-slate-700);
+			}
+
+			hr {
+				border-color: theme(--color-slate-700);
+			}
+		}
+	}
+}
+
+/* Rest of your existing utilities remain the same */
 @utility card {
-	@apply bg-white rounded-xl shadow-xs border border-slate-100 p-6 transition-all duration-300 hover:shadow;
-	/* @apply dark:bg-gray-800 dark:border-gray-700; */
+	background-color: theme(--color-white);
+	border-radius: 8px;
+	box-shadow: 0 1px 2px 0
+		color-mix(in srgb, theme(--color-slate-900) 5%, transparent);
+	border: 1px solid theme(--color-slate-200);
+	padding: 24px;
+	transition:
+		box-shadow theme(--transition-duration-200)
+			theme(--transition-timing-function-default),
+		border-color theme(--transition-duration-200)
+			theme(--transition-timing-function-default);
+
+	&:hover {
+		box-shadow: 0 4px 6px -1px
+			color-mix(in srgb, theme(--color-slate-900) 10%, transparent);
+		border-color: theme(--color-slate-300);
+	}
+
+	:is(.dark &) {
+		background-color: theme(--color-slate-900);
+		border-color: theme(--color-slate-800);
+
+		&:hover {
+			border-color: theme(--color-slate-700);
+		}
+	}
 }
 
 @utility btn {
-	@apply inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-all duration-200 hover:translate-y-[-1px] active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed gap-1.5;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 8px 16px;
+	border-radius: 8px;
+	font-weight: 500;
+	transition: all theme(--transition-duration-200)
+		theme(--transition-timing-function-default);
+	outline: none;
+
+	&:focus {
+		box-shadow:
+			0 0 0 2px theme(--color-slate-500),
+			0 0 0 4px
+				color-mix(in srgb, theme(--color-slate-500) 20%, transparent);
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
 }
 
 @utility btn-primary {
-	@apply bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-xs hover:shadow-sm;
+	background-color: theme(--color-emerald-600);
+	color: theme(--color-white);
+	box-shadow: 0 1px 2px 0
+		color-mix(in srgb, theme(--color-slate-900) 5%, transparent);
+
+	&:hover:not(:disabled) {
+		background-color: theme(--color-emerald-700);
+		box-shadow: 0 4px 6px -1px
+			color-mix(in srgb, theme(--color-slate-900) 10%, transparent);
+	}
+
+	&:active {
+		background-color: theme(--color-emerald-800);
+	}
+
+	&:focus {
+		box-shadow:
+			0 0 0 2px theme(--color-emerald-500),
+			0 0 0 4px
+				color-mix(in srgb, theme(--color-emerald-500) 20%, transparent);
+	}
 }
 
 @utility btn-secondary {
-	@apply bg-slate-700 text-white hover:bg-slate-800 focus:ring-slate-600;
+	background-color: theme(--color-slate-100);
+	color: theme(--color-slate-700);
+	box-shadow: 0 1px 2px 0
+		color-mix(in srgb, theme(--color-slate-900) 5%, transparent);
+
+	&:hover:not(:disabled) {
+		background-color: theme(--color-slate-200);
+		box-shadow: 0 4px 6px -1px
+			color-mix(in srgb, theme(--color-slate-900) 10%, transparent);
+	}
+
+	/* Dark mode styles */
+	:is(.dark &) {
+		background-color: theme(--color-slate-800);
+		color: theme(--color-slate-300);
+
+		&:hover:not(:disabled) {
+			background-color: theme(--color-slate-700);
+		}
+	}
+}
+
+@utility btn-ghost {
+	color: theme(--color-slate-600);
+
+	&:hover:not(:disabled) {
+		background-color: theme(--color-slate-100);
+		color: theme(--color-slate-900);
+	}
+
+	/* Dark mode styles */
+	:is(.dark &) {
+		color: theme(--color-slate-400);
+
+		&:hover:not(:disabled) {
+			background-color: theme(--color-slate-800);
+			color: theme(--color-slate-100);
+		}
+	}
 }
 
 @utility btn-outline {
-	@apply border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 focus:ring-slate-400;
+	border: 1px solid theme(--color-slate-300);
+	background-color: transparent;
+	color: theme(--color-slate-700);
+	box-shadow: 0 1px 2px 0
+		color-mix(in srgb, theme(--color-slate-900) 5%, transparent);
+
+	&:hover:not(:disabled) {
+		background-color: theme(--color-slate-50);
+		box-shadow: 0 4px 6px -1px
+			color-mix(in srgb, theme(--color-slate-900) 10%, transparent);
+	}
+
+	/* Dark mode styles */
+	:is(.dark &) {
+		border-color: theme(--color-slate-700);
+		color: theme(--color-slate-300);
+
+		&:hover:not(:disabled) {
+			background-color: theme(--color-slate-800);
+		}
+	}
 }
 
 @utility badge {
-	@apply px-2 py-0.5 rounded-md text-xs font-medium inline-flex items-center;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 500;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
 }
 
 @utility badge-primary {
-	@apply bg-green-100 text-green-800;
+	background-color: theme(--color-emerald-100);
+	color: theme(--color-emerald-800);
+
+	/* Dark mode styles */
+	:is(.dark &) {
+		background-color: color-mix(
+			in srgb,
+			theme(--color-emerald-900) 50%,
+			transparent
+		);
+		color: theme(--color-emerald-200);
+	}
 }
 
 @utility badge-secondary {
-	@apply bg-slate-100 text-slate-800;
+	background-color: theme(--color-slate-100);
+	color: theme(--color-slate-700);
+
+	/* Dark mode styles */
+	:is(.dark &) {
+		background-color: theme(--color-slate-800);
+		color: theme(--color-slate-300);
+	}
 }
 
 @utility section {
-	@apply py-16 md:py-24;
+	padding-top: 64px;
+	padding-bottom: 64px;
+
+	@media (min-width: 768px) {
+		padding-top: 96px;
+		padding-bottom: 96px;
+	}
 }
 
 @utility container-narrow {
-	@apply max-w-4xl mx-auto px-4 sm:px-6;
+	max-width: 56rem;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 16px;
+	padding-right: 16px;
+
+	@media (min-width: 640px) {
+		padding-left: 24px;
+		padding-right: 24px;
+	}
 }
 
-@utility prose-custom {
-	@apply prose prose-lg prose-slate; /* Add dark:prose-invert if needed */
-	@apply prose-headings:font-display prose-headings:font-bold prose-headings:text-slate-900;
-	@apply prose-a:text-green-600 prose-a:no-underline hover:prose-a:underline;
-	@apply prose-img:rounded-lg;
-	@apply prose-pre:bg-slate-800 prose-pre:border prose-pre:border-slate-700;
-	@apply prose-code:text-slate-800 prose-code:bg-slate-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none;
+@utility section-padding {
+	padding-left: 16px;
+	padding-right: 16px;
+
+	@media (min-width: 640px) {
+		padding-left: 24px;
+		padding-right: 24px;
+	}
+
+	@media (min-width: 1024px) {
+		padding-left: 32px;
+		padding-right: 32px;
+	}
+}
+
+@utility content-center {
+	max-width: 72rem;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+@utility skeleton {
+	animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	background-color: theme(--color-slate-200);
+	border-radius: 4px;
+
+	/* Dark mode styles */
+	:is(.dark &) {
+		background-color: theme(--color-slate-700);
+	}
+}
+
+@utility form-input {
+	width: 100%;
+	padding: 8px 12px;
+	border-radius: 8px;
+	border: 1px solid theme(--color-slate-300);
+	background-color: theme(--color-white);
+	color: theme(--color-slate-900);
+	transition: all theme(--transition-duration-200)
+		theme(--transition-timing-function-default);
+
+	&::placeholder {
+		color: theme(--color-slate-500);
+	}
+
+	&:focus {
+		border-color: theme(--color-emerald-500);
+		box-shadow: 0 0 0 2px
+			color-mix(in srgb, theme(--color-emerald-500) 20%, transparent);
+		outline: none;
+	}
+
+	/* Dark mode styles */
+	:is(.dark &) {
+		border-color: theme(--color-slate-700);
+		background-color: theme(--color-slate-900);
+		color: theme(--color-slate-100);
+
+		&::placeholder {
+			color: theme(--color-slate-400);
+		}
+
+		&:focus {
+			border-color: theme(--color-emerald-400);
+			box-shadow: 0 0 0 2px
+				color-mix(in srgb, theme(--color-emerald-400) 20%, transparent);
+		}
+	}
+}
+
+@utility form-label {
+	display: block;
+	font-size: 14px;
+	font-weight: 500;
+	color: theme(--color-slate-700);
+	margin-bottom: 8px;
+
+	/* Dark mode styles */
+	:is(.dark &) {
+		color: theme(--color-slate-300);
+	}
 }
 
 /* Animation Utilities */
-@utility animate-fade-in-fast {
-	animation: fadeInFast 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-@utility animate-pop-up {
-	animation: popUp 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-@utility animate-shimmer {
-	animation: shimmer 1.5s infinite linear;
-	/* Consider adding background gradient/size here if needed for shimmer */
+@utility animate-fade-in {
+	animation: theme(--animate-fade-in);
 }
 
-/* Line Clamp Utilities - FIX: Added missing -webkit-line-clamp */
-@utility line-clamp-2 {
-	display: -webkit-box;
-	-webkit-box-orient: vertical;
-	overflow: hidden;
+@utility animate-slide-in {
+	animation: theme(--animate-slide-in);
 }
-@utility line-clamp-3 {
-	display: -webkit-box;
-	-webkit-box-orient: vertical;
-	overflow: hidden;
+
+@utility animate-pulse-slow {
+	animation: theme(--animate-pulse-slow);
+}
+
+/* Prose styles for typography plugin */
+@utility prose-custom {
+	max-width: none;
+
+	& h1,
+	& h2,
+	& h3,
+	& h4,
+	& h5,
+	& h6 {
+		font-family: theme(--font-family-display);
+		font-weight: 600;
+		letter-spacing: -0.025em;
+		color: theme(--color-slate-900);
+	}
+
+	& a {
+		color: theme(--color-emerald-600);
+		text-decoration: none;
+		font-weight: 500;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	& img {
+		border-radius: 8px;
+		box-shadow: 0 1px 3px 0
+			color-mix(in srgb, theme(--color-slate-900) 10%, transparent);
+	}
+
+	& pre {
+		background-color: theme(--color-slate-900);
+		border: 1px solid theme(--color-slate-200);
+	}
+
+	& code {
+		color: theme(--color-emerald-600);
+		background-color: theme(--color-emerald-50);
+		padding: 2px 4px;
+		border-radius: 4px;
+
+		&::before,
+		&::after {
+			content: none;
+		}
+	}
+
+	/* Dark mode styles */
+	:is(.dark &) {
+		& h1,
+		& h2,
+		& h3,
+		& h4,
+		& h5,
+		& h6 {
+			color: theme(--color-slate-100);
+		}
+
+		& a {
+			color: theme(--color-emerald-400);
+		}
+
+		& pre {
+			background-color: theme(--color-slate-950);
+			border-color: theme(--color-slate-800);
+		}
+
+		& code {
+			color: theme(--color-emerald-400);
+			background-color: color-mix(
+				in srgb,
+				theme(--color-emerald-950) 50%,
+				transparent
+			);
+		}
+	}
 }

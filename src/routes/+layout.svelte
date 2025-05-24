@@ -1,104 +1,121 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import Navbar from "$lib/components/layout/Navbar.svelte";
-	import Footer from "$lib/components/layout/Footer.svelte";
-	import { ArrowUp } from "lucide-svelte";
-	import type { LayoutData } from "./$types";
-	import "../app.css";
-	import { page } from "$app/stores"; // Import the page store
+import { onMount } from "svelte";
+import { browser } from "$app/environment";
+import Navbar from "$lib/components/layout/Navbar.svelte";
+import Footer from "$lib/components/layout/Footer.svelte";
+import BackToTop from "$lib/components/ui/BackToTop.svelte";
+import ScrollProgress from "$lib/components/ui/ScrollProgress.svelte";
+import type { LayoutData } from "./$types";
+import "../app.css";
+import { page } from "$app/stores";
 
-	export let data: LayoutData; // Expects { url: { href, pathname, origin } }
+export let data: LayoutData;
 
-	// --- Default Meta Values ---
-	const defaultOgImage = "https://kafkaesque.blog/img/logo_white.png";
-	const defaultTitle =
-		"Jacob Weinbren | GIS Specialist & Full-Stack Developer";
-	const defaultDescription =
-		"Specialising in geospatial data visualisation and full-stack web development.";
+// Simple theme management
+let darkMode = false;
+let mounted = false;
 
-	// --- Determine if we are on a post page using the route ID ---
-	let isPostPage = false;
-	$: isPostPage = $page.route.id === "/post/[slug]";
+// Initialize theme
+onMount(() => {
+	mounted = true;
 
-	// --- Back to Top Button Logic ---
-	let showBackToTop = false;
-	function handleScroll() {
-		showBackToTop = window.scrollY > 300;
+	// Get initial theme from localStorage or system preference
+	const stored = localStorage.getItem("theme");
+	const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+	darkMode = stored === "dark" || (!stored && systemDark);
+
+	// Apply theme immediately
+	updateTheme();
+
+	// Listen for system theme changes
+	const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+	const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+		if (!localStorage.getItem("theme")) {
+			darkMode = e.matches;
+			updateTheme();
+		}
+	};
+
+	mediaQuery.addEventListener("change", handleSystemThemeChange);
+
+	return () => {
+		mediaQuery.removeEventListener("change", handleSystemThemeChange);
+	};
+});
+
+function updateTheme() {
+	if (darkMode) {
+		document.documentElement.classList.add("dark");
+	} else {
+		document.documentElement.classList.remove("dark");
 	}
-	function scrollToTop() {
-		window.scrollTo({ top: 0, behavior: "smooth" });
-	}
-	onMount(() => {
-		window.addEventListener("scroll", handleScroll);
-		handleScroll();
-		return () => window.removeEventListener("scroll", handleScroll);
-	});
+}
 
-	// --- Logging ---
-	console.log("[+layout.svelte] Received data:", data);
-	$: console.log(
-		"[+layout.svelte] Current route ID:",
-		$page.route.id,
-		" | Is Post Page:",
-		isPostPage
-	);
+// Toggle theme function
+function toggleTheme() {
+	darkMode = !darkMode;
+
+	if (browser) {
+		localStorage.setItem("theme", darkMode ? "dark" : "light");
+		updateTheme();
+	}
+}
+
+// Determine if we are on a post page
+$: isPostPage = $page.route.id === "/post/[slug]";
+
+// Default meta values
+const defaultOgImage = "https://jacobweinbren.com/og-image.png";
+const defaultTitle = "Jacob Weinbren | GIS Specialist & Full-Stack Developer";
+const defaultDescription =
+	"GIS specialist and full-stack developer creating innovative mapping solutions and spatial data visualisations.";
 </script>
 
 <svelte:head>
-	<!-- Site-wide defaults -->
-	<!-- Title is overridden by page -->
 	<title>{defaultTitle}</title>
-
+	
 	{#if data.url?.href}
 		<link rel="canonical" href={data.url.href} />
 		<meta property="og:url" content={data.url.href} />
 	{/if}
 
-	<!-- Default OG Type -->
 	<meta property="og:type" content="website" />
 
-	<!-- *** Conditionally render default Meta/OG/Twitter tags *** -->
 	{#if !isPostPage}
-		<!-- Only render these if NOT on a post page -->
-
-		<!-- Default Description -->
 		<meta name="description" content={defaultDescription} />
-
-		<!-- Default OG Title/Description -->
 		<meta property="og:title" content={defaultTitle} />
 		<meta property="og:description" content={defaultDescription} />
-
-		<!-- Default OG Image -->
 		<meta property="og:image" content={defaultOgImage} />
 		<meta property="og:image:secure_url" content={defaultOgImage} />
 		<meta property="og:image:type" content="image/png" />
 		<meta property="og:image:width" content="1200" />
 		<meta property="og:image:height" content="630" />
-
-		<!-- Default Twitter Card -->
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:image" content={defaultOgImage} />
 		<meta name="twitter:title" content={defaultTitle} />
 		<meta name="twitter:description" content={defaultDescription} />
 	{/if}
-	<!-- If it *is* a post page, this block is skipped, leaving the responsibility -->
-	<!-- entirely to the +page.svelte component for description, OG/Twitter title, desc, image. -->
 </svelte:head>
 
-<div class="min-h-screen flex flex-col bg-slate-50 antialiased">
-	<Navbar currentPathname={data.url?.pathname ?? ""} />
+<div class="min-h-screen flex flex-col bg-white dark:bg-slate-950 antialiased transition-colors duration-300">
+	<!-- Scroll progress indicator -->
+	{#if mounted}
+		<ScrollProgress />
+	{/if}
+
+	<!-- Navigation -->
+	<Navbar currentPathname={data.url?.pathname ?? ""} {darkMode} {toggleTheme} />
+
+	<!-- Main content -->
 	<main class="flex-grow">
 		<slot />
 	</main>
+
+	<!-- Footer -->
 	<Footer />
-	{#if showBackToTop}
-		<button
-			id="backToTop"
-			class="fixed bottom-5 right-5 bg-green-700 text-white p-2 rounded-md shadow-lg transition-opacity duration-300 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
-			aria-label="Back to top"
-			on:click={scrollToTop}
-		>
-			<ArrowUp class="h-5 w-5" />
-		</button>
+
+	<!-- Back to top button -->
+	{#if mounted}
+		<BackToTop />
 	{/if}
 </div>
