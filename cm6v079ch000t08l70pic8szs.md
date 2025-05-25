@@ -1,0 +1,31 @@
+---
+title: "Barbie and God"
+datePublished: Mon Aug 07 2023 08:12:56 GMT+0000 (Coordinated Universal Time)
+cuid: cm6v079ch000t08l70pic8szs
+slug: barbie-and-god
+cover: https://cdn.hashnode.com/res/hashnode/image/upload/v1738951458901/c09f3053-ab95-4b9f-bebf-935eed8c14d1.webp
+tags: god, religion, barbie
+
+---
+
+**\[Spoiler Warning\]**
+
+A towering Barbie dominates the vast, unformed land, a monument to human accomplishment. Helen Mirren's voiceover fills the emptiness, ‘Since the beginning of time - there have been dolls.’ *Also Sprach Zarathustra* plays as the new generation destroys the remnants of the past. *Barbie*’s introduction plays homage to [*2001 Space Odyssey*](https://theconversation.com/stanley-kubricks-films-all-had-one-thing-in-common-jewishness-92770), Kubrick’s retelling of the creation story. More than a fun adventure in a world of dolls, *Barbie* delves into modern politics and gender relations within a reinterpretation of the Hebrew Bible.
+
+As the storyline progresses, the contours of Barbieland are revealed - a surreal world reminiscent of Eden. Barbie and Ken, the archetypal Adam and Eve, explore their plastic surroundings. [Gerwig explains](https://www.thejc.com/life-and-culture/all/i-want-barbie-movie-to-feel-like-shabbat-dinner-says-director-greta-gerwig-6OBMmwWsSSr2jpAXFc0VnM) this world is an allegory of Shabbat, an ode to creation and the respite that follows, ‘You are a child of God. I put my hand over you, and I bless you as a child of God at this table. And that’s your value.’
+
+Yet, this sanctuary serves more than one of comfort and subsistence, as Barbieland challenges traditional gender roles. Here, [Barbie assumes any position she likes](https://www.vox.com/culture/23800753/barbie-review-bible-eden) - from Lawyer to President to Doctor. She owns a Dreamhouse, a car and lives on her terms. Ken is still around in the form of Beach - just as Adam and Eve work in tandem. The reciprocity built into Barbieland reflects how humans are created in God’s likeness, [Handler’s dream](https://www.independent.co.uk/life-style/ruth-handler-barbie-creator-barbara-b2382149.html) for girls, [emphasising our inherent worth](https://au.thegospelcoalition.org/article/barbieland-and-the-garden-of-eden/).
+
+The narrative of Barbie's origin story takes a twist, inverting the account where Eve is created from Adam's half. [In Gerwig's universe](https://www.vogue.com/article/margot-robbie-barbie-summer-cover-2023-interview), ‘Ken was invented after Barbie, to burnish Barbie’s position in our eyes and in the world. That kind of creation myth is the opposite of the creation myth in Genesis.’ Here, roles are deliberately reversed, and a new myth is born.
+
+Barbie’s uncomplicated existence suddenly becomes overshadowed by the spectre of her mortality, echoing [God's revelation of death](https://www.sefaria.org/Genesis.3.19), ‘For dust you are, And to dust you shall return.’ These thoughts become all-consuming, prompting her quest for meaning in a plastic world. Her journey echoes the narrative of *Paradise Lost*, where suffering and evil eventually lead to self-discovery and the [affirmation of innate goodness](https://www.christianitytoday.com/ct/2023/july-web-only/barbie-movie-sexism-feminism-patriarchy-east-of-eden.html), ‘Than that which creation first brought forth / Light out of darkness!’
+
+In the absence of a deceptive serpent, Weird Barbie, a misfit in the world of Barbies, plays the role of the Tree of Knowledge, offering uncanny wisdom. This knowledge brings Barbie haunting feelings of shame, [echoing Adam and Eve's guilt after consuming the forbidden fruit](https://www.heyalma.com/is-the-barbie-movie-the-greatest-biblical-retelling-ever-made/). Yet, Barbie wrestling with her creator, Ruth Handler, emerges as a necessary, even courageous step towards [grasping self-actualisation](https://sojo.net/articles/barbie-greta-gerwig-s-genesis-story).
+
+At the narrative's crux, Barbie grapples with a choice: to remain in the [blissful innocence](https://www.christianitytoday.com/ct/2023/july-web-only/barbie-movie-sexism-feminism-patriarchy-east-of-eden.html) of Barbieland or venture into reality, a mixture of life and death, good and evil. It is through her [struggle with life's dualities](https://www.premierchristianity.com/reviews/barbie-a-film-that-asks-the-questions-only-christ-can-truly-answer/15996.article) that Barbie discovers [her humanity](https://peripateticpastor.com/2023/07/28/barbie-and-the-garden-of-eden-what-it-means-to-be-human/). Ken, too, embarks on a journey of self-discovery, understanding that relationships require more than performance.
+
+Driven by a deep-seated need for recognition, Ken follows the path of idolatry. Kendom, the realm of Ken, stands as a testament to human folly, which Barbie confronts on her return from her voyage into Malibu. This world stands in stark contrast to the maternal authority of Barbieland. Like the Israelites of old, Barbie and Ken's unity can only be recaptured by dismantling the idolatrous symbol - Ken's Mojo Dojo Casa House. Only then does Ken realise he must live on his terms rather than depending on false archetypes.
+
+The climax sees Mattel’s corporate structure realigned and Barbie resurrected from Ruth Handler’s design, revealing her true nature. The Barbies unite to discover their purpose, overthrowing Kendom and their human puppeteers. Their defiance isn't only a narrative twist but a comment on the dangers of commodifying identity and suppressing the human spirit. This turning point evokes the ending of *2001 Space Odyssey*. Just as David (symbolising humanity) rises above and overcomes HAL (representing God) and is then reborn, so does Barbie, reflecting on the [death of God](https://www.vulture.com/2023/07/what-is-barbie-about-religion-girlhood-theories.html) - not in the nihilistic sense, but as a celebration of human perseverance.
+
+Through biblical narratives, modern politics, existentialism, and gender dynamics, *Barbie* mirrors the human struggle to understand the divine. The film draws influence from *Paradise Lost* and *2001 Space Odyssey*. More than a fun movie, Gerwig’s creation should be remembered as an exploration of our search for knowledge and connection to God.
