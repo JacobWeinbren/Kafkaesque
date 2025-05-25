@@ -3,7 +3,7 @@ title: "2022 Local Elections - Great Britain"
 datePublished: Sat May 14 2022 17:05:29 GMT+0000 (Coordinated Universal Time)
 cuid: cm6v080sq000509jsbk6z2uyu
 slug: 2022-local-elections-great-britain
-cover: https://cdn.hashnode.com/res/hashnode/image/upload/v1738952055269/592d98c4-03a3-4a7b-a988-490e88177f4a.webp
+cover: https://cdn.hashnode.com/res/hashnode/image/upload/v1748140656392/863d6651-591f-479f-9f32-852131357149.jpeg
 tags: maps, elections, local-elections
 
 ---
@@ -18,8 +18,10 @@ As ever, the source code is on [GitHub](https://github.com/JacobWeinbren/2022-LE
 
 ### Results
 
-<iframe src="https://jacobweinbren.github.io/2022-LE/docs/maps1andahalf.html" style="height:1000px;width:100vw;position:relative;left:calc(-50vw + 50%)"></iframe>
+<iframe src="https://jacobweinbren.github.io/2022-LE/docs/maps1andahalf.html" style="height:min(80vh, 800px);width:100%;max-width:100vw;border:1px solid #e0e0e0;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:block;margin:20px auto;background-color:#f8f9fa">
+</iframe>
 
 ### Where parties found support
 
-<iframe src="https://jacobweinbren.github.io/2022-LE/docs/maps1.html" style="height:1000px;width:100vw;position:relative;left:calc(-50vw + 50%)"></iframe>
+<iframe src="https://jacobweinbren.github.io/2022-LE/docs/maps1.html" style="height:min(80vh, 800px);width:100%;max-width:100vw;border:1px solid #e0e0e0;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:block;margin:20px auto;background-color:#f8f9fa">
+</iframe>
