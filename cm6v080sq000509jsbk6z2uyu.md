@@ -18,10 +18,10 @@ As ever, the source code is on [GitHub](https://github.com/JacobWeinbren/2022-LE
 
 ### Results
 
-<iframe src="https://jacobweinbren.github.io/2022-LE/docs/maps1andahalf.html" style="height:min(80vh, 800px);width:100%;max-width:100vw;border:1px solid #e0e0e0;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:block;margin:20px auto;background-color:#f8f9fa">
+<iframe src="https://jacobweinbren.github.io/2022-LE/docs/maps1andahalf.html" style="height:min(70vh, 600px);width:100%;max-width:800px;border:1px solid #e0e0e0;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:block;margin:30px auto;background-color:#f8f9fa">
 </iframe>
 
 ### Where parties found support
 
-<iframe src="https://jacobweinbren.github.io/2022-LE/docs/maps1.html" style="height:min(80vh, 800px);width:100%;max-width:100vw;border:1px solid #e0e0e0;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:block;margin:20px auto;background-color:#f8f9fa">
+<iframe src="https://jacobweinbren.github.io/2022-LE/docs/maps1.html" style="height:min(70vh, 600px);width:100%;max-width:800px;border:1px solid #e0e0e0;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:block;margin:30px auto;background-color:#f8f9fa">
 </iframe>
